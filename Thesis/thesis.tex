@@ -147,43 +147,11 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  \end{equation*}
 \end{example}
 
-\begin{thm}[Doob-Meyer decomposition]
- For martingale $M$ there exists exactly one nondecreasing process $\langle M\rangle = (\langle M\rangle_t)_{t=0}^T$ with continous trajectories, such that $\langle M\rangle_0 = 0$ and $(M_t^2 - \langle M\rangle_t)_{t=0}^T$ is a martingale.
-\end{thm}
-
-\begin{example}
- Example \ref{ex:angleWt} shows that \[\langle W\rangle_t = t\]
-\end{example}
-
-\begin{mydef}
- For martingales $M,N$ we define \textbf{process of angle brackets} by
- \[\langle M,N\rangle = \frac{1}{4}(\langle M+N\rangle - \langle M-N\rangle)\]
-\end{mydef}
-
-\begin{remark}
- For any martingale $M,\ \langle M,M\rangle = \langle M\rangle$.
-\end{remark}
-
-\noindent Now we shall move to It\^{o}'s lemma, but first let us do a notation remark. Let $X$ be a square integrable process and $M,N$ be martingales.
+\noindent Before we move to SDE's and It\^{o}'s lemma, let us do a notation remark. Let $X$ be a square integrable process and $Z$ be a process with respect to which we can integrate ($Z$ may be a Brownian motion, a martingale, or in general even a semimartingale).
 \begin{itemize}
  \item $\int\limits_0^t X_s ds$ is a ``standard'' Riemann integral. The integrated function is random, but for fixed $\omega$ we can use Riemann's theory to integrate it.
- \item $\int\limits_0^t X_s d\langle M,N\rangle_s$ is a Stieltjes integral. The integrand and integrator are random, but for fixed $\omega$ we can use Stieltjes definition, since trajectories of $\langle M,N\rangle$ have bounded variation on every $[0,t]$.
- \item $\int\limits_0^t X_s dM_s$ denotes isometric It\^{o} integral.
+ \item $\int\limits_0^t X_s dZ_s$ denotes isometric It\^{o} integral.
 \end{itemize}
-
-\begin{thm}[It\^{o}'s lemma]
- \label{thm:itoGen}
- Let $f:\ \mathbb{R}^d \rightarrow \mathbb{R},\ f \in C^2$, $Z = (Z^{(1)}, Z^{(2)}, \ldots, Z^{(d)})$, where each $Z^{(i)}$ is a process, which can be written in the form $Z^{(i)} = Z^{(i)}_0 + M^{(i)} + A^{(i)}$, where $Z^{(i)}_0$ is $\mathcal{F}_0$-measurable, $M^{(i)}$ is a martingale, $A^{(i)}$ is nondecreasing and $M^{(i)}_0=A^{(i)}_0=0$. Then
- \begin{equation}
-  f(Z_t) = f(Z_0) + \sum\limits_{i=1}^d \int\limits_0^t \frac{\partial f}{\partial x_i}(Z_s)dZ^{(i)}_s + \frac{1}{2}\sum\limits_{i,j=1}^d \int\limits_0^t \frac{\partial^2 f}{\partial x_i\partial x_j}(Z_s)d\langle Z^{(i)}, Z^{(j)}\rangle_s
-  \label{eq:itoGen}
- \end{equation}
- where 
- \begin{equation*}
-  \int\limits_0^t \frac{\partial f}{\partial x_i}(Z_s)dZ^{(i)}_s = \int\limits_0^t \frac{\partial f}{\partial x_i}(Z_s)dM^{(i)}_s + \int\limits_0^t \frac{\partial f}{\partial x_i}(Z_s)dA^{(i)}_s.
- \end{equation*}
-\end{thm}
-\noindent In the books on the stochastic processes It\^{o}'s lemma is proven in even greater equality. However, for our purposes even this is too much. As in many other literature on financial mathematics by It\^{o}'s lemma we will understand some special case of above theorem, applied for geometric Brownian motion. 
 
 \begin{mydef}
  Let $\mu, \sigma \in C^1,\ \xi$ be $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
@@ -192,10 +160,6 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  \[X_t = \xi + \int\limits_0^t \mu(X_s)ds + \int\limits_0^t\sigma(X_s) dW_s\]
 for all $t \in [0,T)$.
 \end{mydef}
-
-% \begin{remark}
-%  Note that $\int\limits_0^t \mu(X_s)ds$ is an ordinary integral, while $\int\limits_0^t\sigma(X_s) dW_s$ is an It\^{o} integral.
-% \end{remark}
 
 \begin{mydef}
  A stochastic process $S$ given by SDE
@@ -206,21 +170,20 @@ for all $t \in [0,T)$.
 where $\mu,\sigma \in \mathbb{R}$ is called a \textbf{geometic Brownian motion}.
 \end{mydef}
 
-\noindent Now we can formulate a simplified version of It\^{o}'s lemma.
-\begin{coll}[It\^{o}'s lemma]
+\noindent Now we can formulate a version of It\^{o}'s lemma, which is commonly used in financial mathematics.
+\begin{thm}[It\^{o}'s lemma]
   Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $V:\ \mathbb{R}^2 \rightarrow \mathbb{R},\ V \in C^2$. Then 
   \begin{equation*}
    V(S_t, t) = V(S_0, 0) + \int\limits_0^t \frac{\partial V}{\partial S}(S_r,r)dS_r + \int\limits_0^t \frac{\partial V}{\partial t}(S_r,r)dr + \frac{1}{2}\sigma^2 S_t^2 \int\limits_0^t \frac{\partial^2 V}{\partial S^2}(S_r,r)dr
   \end{equation*}
   or equivalently in SDE form
   \begin{equation}
-   dV(S_t, t) = \frac{\partial V}{\partial S}(S_t,t)dS_t + \frac{\partial V}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 V}{\partial S^2}(S_t,t)dt   
+   \label{eq:ito}
+   dV(S_t, t) = \frac{\partial V}{\partial S}(S_t,t)dS_t + \frac{\partial V}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 V}{\partial S^2}(S_t,t)dt   .
   \end{equation}  
-\end{coll}
-\begin{proof}
-This is an easy conclusion form theorem \ref{thm:itoGen} if we remeber that $(\langle S_t, t\rangle)_{t=0}^T~\equiv~0$, $(\langle t, t\rangle)_{t=0}^T \equiv 0$ and $\langle S\rangle_t = \int\limits_0^t \sigma^2 S_r^2 dr$.
-\end{proof}
+\end{thm}
 
+\noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient. Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
 
 \subsection{Elements of Monte Carlo theory}
