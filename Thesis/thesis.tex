@@ -1,24 +1,177 @@
-\documentclass[a4paper,12pt]{book}
+\documentclass[a4paper,12pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage[polish, english]{babel}
+\usepackage[OT4]{fontenc}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+ 
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{prop}{Proposition}
 
+\theoremstyle{definition}
+\newtheorem{mydef}{Definition}[section]
+\newtheorem{example}{Example}[section]
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% \newcounter{example}
+% \newenvironment{example}
+%   {\refstepcounter{example} \par\medskip\noindent \textbf{Example~\arabic{example}.}  }
+%   {\begin{flushright}$\square$\end{flushright}}
+  
+
+     
 %opening
 \title{Pricing american and exotic option using Least Squares Monte Carlo approach}
 \author{Grzegorz Łoś}
 
 \begin{document}
  
-\section{Introduction}
-  This thesis presents a technique of pricing options known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discovers Francis Longstaff and Eduardo Schwartz. In the first two chapters some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded. Next chapters describe LSM algorithm, the implementation, examples of usege for valuation of exotic options.
+\newpage
+\thispagestyle{empty}
+\begin{center}
+\textbf{\large Uniwersytet Wrocławski\\
+Wydział Matematyki i Informatyki\\
+Instytut Matematyczny}\\
+\textit{\large specjalność: brak}\\
+\vspace{4cm}
+\textbf{\textit{\large Grzegorz Łoś}\\
+\vspace{0.5cm}
+{\Large Pricing american and exotic option using Least Squares Monte Carlo approach}}\\
+\end{center}
+\vspace{3cm}
+{\hspace*{6.5cm}\large Praca magisterska\\
+\hspace*{6.5cm}\large  napisana pod kierunkiem\\
+\hspace*{6.5cm}\large  doktora Pawła Kawy }
+\vfill
+\begin{center}
+{\large Wrocław 2013}\\
+\end{center}
 
-\chapter{Preliminaries}
-\section{Elements of stochastic analysis}
-\section{Elements of Monte Carlo theory}
+\newpage
+\thispagestyle{empty}
+\vspace*{10cm}
+\noindent {\large Oświadczam, że pracę magisterską wykonałem samodzielnie\\ i~zgłaszam ją do oceny.\\[1.5cm]
+Data:....................\hfill Podpis autora pracy:.........................\\[1.5cm]
+Oświadczam, że praca jest gotowa do oceny przez recenzenta.\\[1.5cm]
+Data:.................... \hfill Podpis opiekuna pracy:.........................}
 
-\chapter{Option pricing basics}
-\section{Types of options}
-\section{Black-Scholes model}
-\section{Pricing European options with Monte Carlo method}
+\newpage
 
-\chapter{Least Squares Monte Carlo}
+\tableofcontents
+
+\newpage
+
+\begin{abstract}
+  Thesis presents a technique of option pricing known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discoverers Francis Longstaff and Eduardo Schwartz. In the first chapter some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded. Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
+\end{abstract}
+
+\section{Preliminaries}
+We expect from the reader some basic knowledge of stochastic processes and option pricing. Purpose of this section is to recall definitions and facts essential in this work and establish notation.
+
+\subsection{Elements of stochastic analysis}
+\begin{mydef}
+ Let $(\Omega, \mathcal{F}, {P})$ be a probability space, $(E, \mathcal{E})$ be a measureable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
+ 
+ For given $\omega \in \Omega$ a \textbf{trajectory} of process $X$ is a function $t \mapsto X_t(\omega)$, with domain $T$ and codomain $E$.
+\end{mydef}
+
+\begin{remark}
+ Stochastic process may be viewed as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is it's concrete realization.
+\end{remark}
+
+\begin{remark}
+ In our applications space $E$ will be equal $\mathbb{R}$ or $\mathbb{R}^n$. 
+\end{remark}
+
+
+\begin{mydef}
+ A \textbf{Brownian motion} (or a \textbf{Wiener process}) is a stochastic process $(W_t)_{t \geq 0}$ defined by following conditions:
+ \begin{itemize}
+  \item $W_0 = 0$ a.s.,
+  \item for any $t,\ W_t \sim \mathcal{N}(0,t)$,
+  \item increments of $W$ are independent (i.e. for any $t_0 \leq t_1 \leq \ldots \leq t_n$ random variable $W_{t_0}, W_{t_1} - W_{t_0},\ \ldots, W_{t_n} - W_{t_{n-1}}$ are independent,
+  \item increments of $W$ are stationary (i.e. for every $0 \leq s < t,\ W_t-W_s$ is equal in distribution to $W_{t-s})$,
+  \item trajectories of $W$ are continous a.s.
+ \end{itemize}
+\end{mydef}
+
+\begin{mydef}
+ Let $\mu, \sigma \in C^1,\ \xi$ be $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
+ \[dX_t = \mu(X_t)dt + \sigma(X_t) dW_t,\ X_0 = \xi\]
+ if and only if
+ \[X_t = \xi + \int\limits_0^t \mu(X_s)ds + \int\limits_0^t\sigma(X_s) dW_s\]
+for all $t \in [0,T)$.
+\end{mydef}
+
+\begin{remark}
+ Note that $\int\limits_0^t \mu(X_s)ds$ is an ordinary integral, while $\int\limits_0^t\sigma(X_s) dW_s$ is an It\^{o} integral.
+\end{remark}
+
+\begin{mydef}
+ A stochastic process $S$ given by SDE
+ \begin{equation}
+  dS_t = \mu S_t dt + \sigma S_t dW_t, 
+  \label{gbm}
+ \end{equation}
+where $\mu,\sigma \in \mathbb{R}$ is called a \textbf{geometic Brownian motion}.
+\end{mydef}
+
+\begin{mydef}
+ \textbf{Filtration} $(\mathcal{F}_t)_{t=0}^T$ on probability space $(\Omega, \mathcal{F}, {P})$ is an increasing family of $\sigma$-algebras contained in $\mathcal{F}$, i.e. for all $s<t,\ \mathcal{F}_s \subseteq \mathcal{F}_t \subseteq \mathcal{F}$.
+\end{mydef}
+Sometimes $\mathcal{F}_t$ is interpreted as a set of all events observable up to time $t$.
+
+\begin{mydef}
+ Process $X=(X_t)_{t=0}^T$ is called $\mathcal{F}_t$-\textbf{adoptable} if and only if for all $t~\in~[0,T],\ X_t$ is $\mathcal{F}_t$-measurable.
+\end{mydef}
+Minimal filtration to which $X$ is adoptable if of course filtration generated by $X$, defined as $\mathcal{F}_t^X = \sigma(X_s:\ s \leq t)$.
+
+\begin{mydef}
+ A \textbf{stopping time} with respect to filtration $(\mathcal{F}_t)_{t=0}^T$ is a random variable $\tau:\ \Omega \rightarrow [0,T]\cup\{\infty\}$, such that $\{\tau \leq t\} \in \mathcal{F}_t$ for all $t \in [0,T]$.
+\end{mydef}
+If $X$ is a process corresponding to some risky game, then a stopping time may be seen as a strategy which tells us whether we should withdraw at time $t$ basing only on the information accessible at time $t$.
+\begin{example}
+ A typical example of a stopping time is first $t$, when $X_t$ reaches a fixed barrier, i.e.
+ \[\tau = \inf\{t\in[0,T]: X_t \geq b\}\]
+\end{example}
+Stopping times play important part in financial mathematics. Often we are interested iin finding an optimal strategy for exercising an option. Such strategy is a stopping time.
+
+\begin{mydef}
+ We call a stochastic process $X=(X_t)_{t=0}^T$ a \textbf{martingale} with respect to filtration $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
+ \begin{itemize}
+  \item for all $t \in [0,T],\ X_t$ is $\mathcal{F}_t$-measurable,
+  \item $E|X_t| < \infty$,
+  \item for all $0 \leq s < t \leq T, E[X_t|\mathcal{F}_s] = X_s$  a.s.
+ \end{itemize}
+\end{mydef}
+
+\begin{example}
+ Brownian motion $W$ is a martingale. Indeed, we have
+ \begin{equation*}
+  E[W_t|\mathcal{F}_s] = E[W_t-W_s|\mathcal{F}_s] + E[W_s|\mathcal{F}_s] = E[W_t-W_s] + W_s = W_s.
+ \end{equation*}
+ for all $t > s$.
+\end{example}
+\begin{example}
+ Process $(W_t^2-t)_t$ is a martingale. As previously, for any $t > s$
+ \begin{equation*}
+  \begin{split}
+       & E[W_t^2-t|\mathcal{F}_s] = E[(W_t-W_s)^2 + 2W_tW_s - W_s^2|\mathcal{F}_s] -t =\\ 
+    =\ & E[(W_t-W_s)^2|\mathcal{F}_s] + E[2W_tW_s|\mathcal{F}_s] - E[W_s^2|\mathcal{F}_s] -t = \\
+    =\ & E[(W_t-W_s)^2] + 2W_sE[W_t|\mathcal{F}_s] - W_s^2 -t = \\
+    =\ & E[(W_t-W_s)^2] + 2W_s^2 - W_s^2 -t = W_s^2 - s.
+  \end{split}
+ \end{equation*}
+\end{example}
+
+
+\subsection{Elements of Monte Carlo theory}
+\subsection{Types of options}
+\subsection{Black-Scholes model}
+\subsection{Pricing European options with Monte Carlo method}
+\newpage
+\section{Least Squares Monte Carlo}
 
 \end{document}
