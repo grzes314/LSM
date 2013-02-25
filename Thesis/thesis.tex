@@ -1,10 +1,13 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass[a4paper,12pt, twoside]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[polish, english]{babel}
 \usepackage[OT4]{fontenc}
 \usepackage[left=2.5cm,right=2.5cm]{geometry}
- 
+\usepackage{fancyhdr}
+\usepackage[section]{placeins} %powinno utrzymac obrazki w odpowiednich sekcjach
+\usepackage{graphicx}
+
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{coll}[thm]{Colloraly}
@@ -21,11 +24,25 @@
 %   {\refstepcounter{example} \par\medskip\noindent \textbf{Example~\arabic{example}.}  }
 %   {\begin{flushright}$\square$\end{flushright}}
   
+\def\Var{{\rm Var}\,}
+\def\E{{\mathbb{E}}\,}
+\def\P{{\mathbb{P}}\,}
+\def\conv{\xrightarrow[n \rightarrow \infty]{}}
+\def\limn{\lim\limits_{n \rightarrow \infty} }
 
-     
 %opening
 \title{Pricing american and exotic option using Least Squares Monte Carlo approach}
 \author{Grzegorz Łoś}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\small\bfseries\thepage}
+\fancyhead[LO]{\small\bfseries\nouppercase\rightmark}
+\fancyhead[RE]{\small\bfseries\nouppercase\leftmark}
+
+%\lhead{\nouppercase{\bfseries \leftmark}}
+%\rhead{\nouppercase \rightmark}
+\setlength{\headheight}{15pt}
 
 \begin{document}
  
@@ -73,7 +90,7 @@ We expect from the reader some basic knowledge of stochastic processes and optio
 
 \subsection{Elements of stochastic analysis}
 \begin{mydef}
- Let $(\Omega, \mathcal{F}, {P})$ be a probability space, $(E, \mathcal{E})$ be a measureable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
+ Let $(\Omega, \mathcal{F}, \P)$ be a probability space, $(E, \mathcal{E})$ be a measureable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
  
  For given $\omega \in \Omega$ a \textbf{trajectory} of process $X$ is a function $t \mapsto X_t(\omega)$, with domain $T$ and codomain $E$.
 \end{mydef}
@@ -122,15 +139,15 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  We call a stochastic process $M=(M_t)_{t=0}^T$ a \textbf{martingale} with respect to filtration $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
  \begin{itemize}
   \item for all $t \in [0,T],\ M_t$ is $\mathcal{F}_t$-measurable,
-  \item $E|M_t| < \infty$,
-  \item for all $0 \leq s < t \leq T, E[M_t|\mathcal{F}_s] = M_s$  a.s.
+  \item $\E|M_t| < \infty$,
+  \item for all $0 \leq s < t \leq T, \E[M_t|\mathcal{F}_s] = M_s$  a.s.
  \end{itemize}
 \end{mydef}
 
 \begin{example}
  Brownian motion $W$ is a martingale. Indeed, we have
  \begin{equation*}
-  E[W_t|\mathcal{F}_s] = E[W_t-W_s|\mathcal{F}_s] + E[W_s|\mathcal{F}_s] = E[W_t-W_s] + W_s = W_s.
+  \E[W_t|\mathcal{F}_s] = \E[W_t-W_s|\mathcal{F}_s] + \E[W_s|\mathcal{F}_s] = \E[W_t-W_s] + W_s = W_s.
  \end{equation*}
  for all $t > s$.
 \end{example}
@@ -139,10 +156,10 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  Process $(W_t^2-t)_t$ is a martingale. As previously, for any $t > s$
  \begin{equation*}
   \begin{split}
-       & E[W_t^2-t|\mathcal{F}_s] = E[(W_t-W_s)^2 + 2W_tW_s - W_s^2|\mathcal{F}_s] -t =\\ 
-    =\ & E[(W_t-W_s)^2|\mathcal{F}_s] + E[2W_tW_s|\mathcal{F}_s] - E[W_s^2|\mathcal{F}_s] -t = \\
-    =\ & E[(W_t-W_s)^2] + 2W_sE[W_t|\mathcal{F}_s] - W_s^2 -t = \\
-    =\ & E[(W_t-W_s)^2] + 2W_s^2 - W_s^2 -t = W_s^2 - s.
+       & \E[W_t^2-t|\mathcal{F}_s] = \E[(W_t-W_s)^2 + 2W_tW_s - W_s^2|\mathcal{F}_s] -t =\\ 
+    =\ & \E[(W_t-W_s)^2|\mathcal{F}_s] + \E[2W_tW_s|\mathcal{F}_s] - \E[W_s^2|\mathcal{F}_s] -t = \\
+    =\ & \E[(W_t-W_s)^2] + 2W_s\E[W_t|\mathcal{F}_s] - W_s^2 -t = \\
+    =\ & \E[(W_t-W_s)^2] + 2W_s^2 - W_s^2 -t = W_s^2 - s.
   \end{split}
  \end{equation*}
 \end{example}
@@ -187,10 +204,103 @@ where $\mu,\sigma \in \mathbb{R}$ is called a \textbf{geometic Brownian motion}.
 
 
 \subsection{Elements of Monte Carlo theory}
+Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation. They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
+
+Suppose we want to estimate an unknown value $I$, which can be written as expected value of some random variable, i.e.
+\[ I = \E Y. \]
+The idea of Monte Carlo technique is to replicate $Y$ many times, and as estimation of $I$ take an average. So
+\[ I \approx \frac{1}{n} \sum\limits_{i=1}^n Y_i, \]
+where $n$ is big natural number and $Y_i$ are independent, with the same distribution as $Y$.
+
+This procedure is justified by the strong low of large numbers. Let 
+\begin{equation}
+ \label{eq:CMC}
+ \hat{Y}_n = \frac{1}{n}\sum\limits_{i=1}^n Y_i
+\end{equation}
+It is called \textbf{crude Monte Carlo} estimator. Of course $\E\hat{Y}_n = \E Y = I$, so $\hat{Y}_n$ is unbiased. Moreover, from law of large numbers $\hat{Y}_n \conv I$ a.s., what implies 
+\[ \P(|\hat{Y}_n - I| > b) \conv 0 \hbox{\ \ a.s.,} \]
+for any $b > 0$. 
+
+Here appears a natural question, how big should be number $n$ for fixed $b$, so we could tell, that error of our estimation, with known probability $1-\alpha$, is not greater than $b$?
+Let $\sigma = \sqrt{\Var{Y}}$, $z_{1-\alpha/2} = \Phi^{-1}(1-\alpha/2)$, where $\Phi$ is cumulative distribution function of normal distribution. Simple calculations give
+\begin{align*}
+ \P(-b \leq \hat{Y}_n - I \leq b) &= 1 - \alpha\\
+ \P(-b \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{n}  \leq b) &= 1 - \alpha\\
+ \P(-\frac{b\sqrt{n}}{\sigma} \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{\sqrt{n}\sigma}  \leq \frac{b\sqrt{n}}{\sigma}) &= 1 - \alpha
+\end{align*}
+From Central Limit Theorem we have
+\[ \limn \P(-z_{1-\alpha/2} \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{\sqrt{n}\sigma}  \leq z_{1-\alpha/2}) = 1 - \alpha, \]
+hence for large $n$ we have
+\[z_{1-\alpha/2} \approx \frac{b\sqrt{n}}{\sigma}.\]
+In a typical situation we do not know variation of $Y$ (we don't even know the expected value, yet we are using Monte Carlo method to find it!), so above formula has rather theoretical meaning. However, there is a version of CLT which uses unbiased estimator
+\[ \hat{\sigma} = \frac{1}{n-1}\sum\limits_{i=1}^n (Y_i - \hat{Y}_n)^2 \]
+instead of $\sigma$, what allows to replace $\sigma$ by $\hat{\sigma}$ in above approximation. We have proven following 
+\begin{thm}
+ Dependency between number of simulations $n$, error $b$ and confidence level $\alpha$ is given by following formulas
+ \begin{equation}
+   \label{eq:error}
+   b = \frac{\hat{\sigma} z_{1-\alpha/2}}{\sqrt{n}}
+ \end{equation}
+ \begin{equation}
+   \label{eq:sim}
+   n = \frac{\hat{\sigma}^2 z_{1-\alpha/2}^2}{b^2}.
+ \end{equation}
+\end{thm}
+\noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulation. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
+
+\paragraph{Simulation.} Now, when we know how Monte Carlo methods work, we need to describe how to get random values. Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
+
+The most popular way is to use Box-Muller algorithm
+\begin{enumerate}
+ \item generate independent random variables $U_1, U_2$ with uniform distribution,
+ \item $N_1 := \sqrt{-2\log(U_1)} \cos(2\pi U_2)$,
+ \item $N_2 := \sqrt{-2\log(U_1)} \sin(2\pi U_2)$,
+ \item return($N_1$, $N_2$).
+\end{enumerate}
+This method returns values of two independent random variables coming from standard normal distribution. Necessity of calculating sine and cosine may is slowing algorithm down. The second procedure is significantly faster.
+\begin{enumerate}
+ \item generate independent random variables $U_1, U_2$ with uniform distribution,
+ \item $V_1 := 2U_1-1$,
+ \item $V_2 := 2U_2-1$,
+ \item $W := U_1^2 + U_2^2$,
+ \item $N_1 := \sqrt{\frac{-2\log(W)}{W}} V_1$,
+ \item $N_2 := \sqrt{\frac{-2\log(W)}{W}} V_2$,
+\end{enumerate}
+
+Above methods allows us to generate independent random variables. In the real world however, movements of observed values are often correlated. Following algorithm generetes values from multivariate normal distribution with given mean vector $\mu$ and covariation matrix $\Sigma$. 
+\begin{enumerate}
+ \item use Cholesky decomposition to obtain matrix $L$ such that $\Sigma = LL^T$,
+ \item using previously shown method generate vector $N$ of independent random variables with standard normal distribution.
+ \item return $\mu + LN$.
+\end{enumerate}
+
+
+\newpage
+\section{Basics of option pricing}
 \subsection{Types of options}
 \subsection{Black-Scholes model}
 \subsection{Pricing European options with Monte Carlo method}
+\begin{figure}
+\centering
+ \includegraphics[scale=0.5]{images/trajectories.pdf}
+\caption{Generated trajectories}
+\end{figure}
+
+
+
 \newpage
 \section{Least Squares Monte Carlo}
+\subsection{The idea of LSM}
+\begin{figure}
+\centering
+ \includegraphics[scale=0.5]{images/LSMidea1.pdf}
+\caption{To co chcemy}
+\end{figure}
+\begin{figure}
+\centering
+ \includegraphics[scale=0.5]{images/LSMidea2.pdf}
+\caption{To co mozemy}
+\end{figure}
+
 
 \end{document}
