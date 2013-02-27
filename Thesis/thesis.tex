@@ -277,7 +277,7 @@ Above methods allows us to generate independent random variables. In the real wo
 
 \newpage
 \section{Basics of option pricing}
-The main field of interest of financial mathematics is pricing contingent claims, which are assets whose payoff depends on stock prices. In case of European options there exists a simple forumula, derived by Black and Scholes in 1973, which gives price of the option. Antother way of pricing is using Monte Carlo simulation. Although simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of possibility to adjust them to diffrent contingent claims. 
+The main field of interest of financial mathematics is pricing contingent claims, which are assets whose payoff depends on stock prices. In case of European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives price of the option. Antother way of pricing is using Monte Carlo simulation. Although simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of possibility to adjust them to diffrent contingent claims. 
 
 Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a real measure, in opposite to artificial risk-neutral measure, which will be later on. Elements of $\Omega$ are called market scenarios. Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as set of all events observable up to time $t$.
 
@@ -343,8 +343,62 @@ We have eight types of barrier options, as every one is call or put, up or down,
 \label{fig:barrier}
 \end{figure}
 
-
+\FloatBarrier
 \subsection{Black-Scholes model}
+In this section we will recall famous Black-Scholes model, leading to a straightforward formula for picing European options. Here we are considering a market with only one stock $S$. The assumptions of that model, are following.
+
+\noindent \textbf{The underlying stock price follows a lognormal model.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE for option price is described by equation
+\begin{equation}
+ \label{eq:stockDynamics}
+ dS_t = \mu S_t dt + \sigma S_t dW_t. 
+\end{equation}
+
+\noindent \textbf{There exists constant risk-free interest rate $r$.} Investors may both, borrow and lend, any amount of cash at rate $r$.
+
+\noindent \textbf{It is possible to buy and sell any amount of stock.} It means that investors can even trade fractional numbers of stock, and short sell unbounded quantity of shares.
+
+\noindent \textbf{All transactions do not incur any additional costs.}
+
+\noindent \textbf{Market does not admit arbitrage opportunities.} A strict definition of arbitrage will be given in the section \textit{Risk-neutral pricing}. For now it is sufficient to know that the market is arbitrage-free when assets yielding identical cash flows have the same price and instruments with a known payoff in the future must be priced as its future payoff discounted at the risk-free rate.
+
+Let us suppose we are constructing a portfolio consisting of short position in one option and long position in $\Delta$ shares. Hence
+\begin{equation}
+ \label{eq:portfolio}
+  \Pi = \Delta S - V 
+\end{equation}
+We may ask how much the portfolio will change in a short period of time. We have
+\[ d\Pi = \Delta dS - dV  \]
+Note that we do not have to differentiate $\Delta$, because it does not change in an infinitezimal increment in time. To handle $dV$ we will use It\^{o}s lemma. Thus
+\[ d\Pi = \Delta dS - \frac{\partial V}{\partial S}dS - \frac{\partial V}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}dt  \]
+Risk in increment of portfolio is carriered by changes of stock price. By choosing
+\begin{equation}
+ \label{eq:delta}
+ \Delta = \frac{\partial V}{\partial S}
+\end{equation}
+we get rid off uncertainity. Now we have
+\begin{equation}
+  \label{eq:portfolio_inc}
+ d\Pi = -(\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2})dt.
+\end{equation}
+Increment of $\Pi$ does not depend on any risky asset, hence no-arbitrage assumption induces
+\[ d\Pi = r\Pi dt. \]
+After substituting (\ref{eq:portfolio}), (\ref{eq:delta}) and (\ref{eq:portfolio_inc}) into above equation, we obtain
+\[ -(\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2})dt = r(\frac{\partial V}{\partial S} S - V)dt, \]
+which after simple calculation gives
+\begin{equation}
+ \label{eq:BSeq}
+ \frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + r\frac{\partial V}{\partial S} S - rV = 0.
+\end{equation}
+(\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about payoff off the option, thus this is a general equation. For European options it has straightforward solution.
+
+\begin{align*}
+V\textsuperscript{call} &= N(d_1)S  - N(d_2)K e^{-r(T-t)},\\
+V\textsuperscript{put} &= -N(-d_1)S + N(-d_2)K e^{-r(T-t)},\\
+d_1 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
+d_2 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}-\sigma\sqrt{T-t}.
+\end{align*}
+It is called \textbf{Black-Scholes formula}.
+
 \subsection{Risk-neutral pricing}
 \subsection{Pricing European options with Monte Carlo method}
 \begin{figure}
@@ -380,6 +434,9 @@ R. Latała, \emph{Wstęp do Analizy Stochastycznej}, Warszawa, 2011
 
 \bibitem{london}
 J. London, \emph{Modeling derivatives in C++}, John Wiley \& Sons, Hoboken, 2005
+
+\bibitem{l-sch}
+F. Longstaff, E. Schwartz, \emph{Valuing American Options by Simulation: A Simple Least Swuares Approach}, The Review of Financial Studies, Vol.14, No.1, pp.113-147, 2001
 
 \bibitem{wilmott}
 P. Wilmott, \emph{On quantitative finance}, John Wiley \& Sons, Chichester, 2nd edition, 2006
