@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt, twoside]{article}
+\documentclass[a4paper,12pt, twoside]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[polish, english]{babel}
@@ -7,6 +7,25 @@
 \usepackage{fancyhdr}
 \usepackage[section]{placeins} %powinno utrzymac obrazki w odpowiednich sekcjach
 \usepackage{graphicx}
+\usepackage{color}
+\usepackage{titlesec}
+
+\addto\captionsenglish{
+  \renewcommand\chaptername{Part}}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\filcenter\sffamily}
+  {\titlerule[1pt]%
+   \vspace{1pt}%
+   \titlerule
+   \vspace{1pc}%
+   \LARGE\MakeUppercase{\chaptertitlename} \Roman{chapter}
+  }
+  {1pc}
+  {\titlerule
+  \vspace{1pc}%
+  \Huge}
+
+ 
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
@@ -27,11 +46,14 @@
 \def\Var{{\rm Var}\,}
 \def\E{{\mathbb{E}}\,}
 \def\P{{\mathbb{P}}\,}
+\def\R{{\mathbb{R}}}
 \def\conv{\xrightarrow[n \rightarrow \infty]{}}
 \def\limn{\lim\limits_{n \rightarrow \infty} }
-
+\def\Sa{\bar{S}}
+\def\Xa{\bar{X}}
+\def\xia{\bar{\xi}}
 %opening
-\title{Pricing american and exotic option using Least Squares Monte Carlo approach}
+\title{Pricing American and Exotic options using Least Squares Monte Carlo approach}
 \author{Grzegorz Łoś}
 
 \pagestyle{fancy}
@@ -46,7 +68,6 @@
 
 \begin{document}
  
-\newpage
 \thispagestyle{empty}
 \begin{center}
 \textbf{\large Uniwersytet Wrocławski\\
@@ -56,7 +77,7 @@ Instytut Matematyczny}\\
 \vspace{4cm}
 \textbf{\textit{\large Grzegorz Łoś}\\
 \vspace{0.5cm}
-{\Large Pricing american and exotic option using Least Squares Monte Carlo approach}}\\
+{\Large Pricing American and Exotic options using Least Squares Monte Carlo approach}}\\
 \end{center}
 \vspace{3cm}
 {\hspace*{6.5cm}\large Praca magisterska\\
@@ -81,14 +102,16 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 
 \newpage
 
-\begin{abstract}
+\section*{\centering \begin{normalsize}Abstract\end{normalsize}}
+\begin{quotation}
+\noindent 
   Thesis presents a technique of option pricing known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discoverers Francis Longstaff and Eduardo Schwartz. In the first chapter some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded. Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
-\end{abstract}
+\end{quotation}
 
-\section{Preliminaries}
+\chapter{Preliminaries}
 We expect from the reader some basic knowledge of stochastic processes and option pricing. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
 
-\subsection{Elements of stochastic analysis}
+\section{Elements of stochastic analysis}
 \begin{mydef}
  Let $(\Omega, \mathcal{F}, \P)$ be a probability space, $(E, \mathcal{E})$ be a measureable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
  
@@ -100,7 +123,7 @@ We expect from the reader some basic knowledge of stochastic processes and optio
 \end{remark}
 
 \begin{remark}
- In our applications space $E$ will be equal $\mathbb{R}$ or $\mathbb{R}^n$. 
+ In our applications space $E$ will be equal $\R$ or $\R^n$. 
 \end{remark}
 
 \begin{mydef}
@@ -184,12 +207,12 @@ for all $t \in [0,T)$.
   dS_t = \mu S_t dt + \sigma S_t dW_t, 
   \label{eq:gbm}
  \end{equation}
-where $\mu,\sigma \in \mathbb{R}$ is called a \textbf{geometic Brownian motion}.
+where $\mu,\sigma \in \R$ is called a \textbf{geometic Brownian motion}.
 \end{mydef}
 
 \noindent Now we can formulate a version of It\^{o}'s lemma, which is commonly used in financial mathematics.
 \begin{thm}[It\^{o}'s lemma]
-  Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $V:\ \mathbb{R}^2 \rightarrow \mathbb{R},\ V \in C^2$. Then 
+  Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $V:\ \R^2 \rightarrow \R,\ V \in C^2$. Then 
   \begin{equation*}
    V(S_t, t) = V(S_0, 0) + \int\limits_0^t \frac{\partial V}{\partial S}(S_r,r)dS_r + \int\limits_0^t \frac{\partial V}{\partial t}(S_r,r)dr + \frac{1}{2}\sigma^2 S_t^2 \int\limits_0^t \frac{\partial^2 V}{\partial S^2}(S_r,r)dr
   \end{equation*}
@@ -199,13 +222,15 @@ where $\mu,\sigma \in \mathbb{R}$ is called a \textbf{geometic Brownian motion}.
    dV(S_t, t) = \frac{\partial V}{\partial S}(S_t,t)dS_t + \frac{\partial V}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 V}{\partial S^2}(S_t,t)dt   .
   \end{equation}  
 \end{thm}
+{\Large \color{red} Wskazac pozycje z dowodem}
 
 \noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient. Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
 
-\subsection{Elements of Monte Carlo theory}
+\section{Elements of Monte Carlo theory}
 Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation. They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
 
+\subsection{Crude Monte Carlo}
 Suppose we want to estimate an unknown value $I$, which can be written as expected value of some random variable, i.e.
 \[ I = \E Y. \]
 The idea of Monte Carlo technique is to replicate $Y$ many times, and as estimation of $I$ take an average. So
@@ -248,7 +273,8 @@ instead of $\sigma$, what allows to replace $\sigma$ by $\hat{\sigma}$ in above 
 \end{thm}
 \noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulation. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
 
-\paragraph{Simulation.} Now, when we know how Monte Carlo methods work, we need to describe how to get random values. Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
+\subsection{Simulation.}
+Now, when we know how Monte Carlo methods work, we need to describe how to get random values. Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
 
 The most popular way is to use Box-Muller algorithm
 \begin{enumerate}
@@ -273,24 +299,73 @@ Above methods allows us to generate independent random variables. In the real wo
  \item using previously shown method generate vector $N$ of independent random variables with standard normal distribution.
  \item return $\mu + LN$.
 \end{enumerate}
+{\Large \color{red} Wskazac pozycje z dowodem}
 
 
-\newpage
-\section{Basics of option pricing}
-The main field of interest of financial mathematics is pricing contingent claims, which are assets whose payoff depends on stock prices. In case of European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives price of the option. Antother way of pricing is using Monte Carlo simulation. Although simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of possibility to adjust them to diffrent contingent claims. 
+\chapter{Basics of option pricing}
+The main field of interest of the financial mathematics is pricing so-called contingent claims, which are assets whose payoff depends on the stock prices. In case of the European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives price of the option. Antother way of pricing is using Monte Carlo simulations. Although the simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of the possibility to adjust them to diffrent contingent claims. 
 
-Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a real measure, in opposite to artificial risk-neutral measure, which will be later on. Elements of $\Omega$ are called market scenarios. Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as set of all events observable up to time $t$.
+\section{Elements of arbitrage theory}
 
-We consider a market with $d+1$ assets, where each asset $S^{(i)}$ is modelled as a stochastic process adapted to $(\mathcal{F}_t)_{t=0}^T$. The $0$\textsuperscript{th} asset is considered to be a riskless bond, what means that it's value does not depend on market scenario $\omega$ and is given by 
+\subsection{Notation}
+Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a \textbf{real measure}, in opposite to artificial \textbf{risk-neutral measure}, which will be later on. Elements of $\Omega$ are called \textbf{market scenarios}. Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as set of all events observable up to time $t$.
+
+We consider a market with $d+1$ assets, where each asset $S^{(i)} = (S^{(i)}_t)_{t=0}^T$ is modelled as a $\R_+$-valued stochastic process adapted to $(\mathcal{F}_t)_{t=0}^T$. The $0$\textsuperscript{th} asset is considered to be a riskless bond, what means that its value does not depend on a market scenario $\omega$ and is given by 
 \[S^{(0)}_t = e^{rt},\]
-where $r$ is riskless interest rate.
+where $r$ is riskless interest rate. By $S$ we will denote a $d$-dimensional vector of the prices of risky assets, i.e.
+\begin{equation*}
+ S_t = (S^{(1)}_t, S^{(2)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
+\end{equation*}
+We also introduce notation $\Sa$ for a $(d+1)$-dimensional vector of the prices of all assets, that is
+\begin{equation*}
+ \Sa_t = (S^{(0)}_t, S_t) = (S^{(0)}_t, S^{(1)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
+\end{equation*}
 
-For convenience we also consider a discounted time processes
+For convenience we also consider discounted time processes
 \[ X^{(i)}_t = \frac{S^{(i)}_t}{S^{(0)}_t}. \]
-It allows us to compare asset prices quoted at diffrent times.
+It allows us to compare asset prices quoted at diffrent times. In similar manner as previously we will use notation $X, \Xa$ for vectors of the discounted prices,
+\begin{equation*}
+ X_t = (X^{(1)}_t, X^{(2)}_t, \ldots, X^{(d)}_t), \ \ \ 0 \leq t \leq T.
+\end{equation*}
+\begin{equation*}
+ \Xa_t = (X^{(0)}_t, X^{(1)}_t, \ldots, X^{(d)}_t), \ \ \ 0 \leq t \leq T.
+\end{equation*}
+
+Next definition gives us a notation to describe the content of \textbf{portfolio}.
+\begin{mydef}
+A \textbf{dynamic trading strategy} is any $\mathcal{F}_t$-adapted,  $\R^{d+1}$-valued process $\xia = (\xia_t)_{t=0}^T = (\xi^{(0)}_t, \xi_t)_{t=0}^T = (\xi^{(0)}_t, \xi^{(1)}_t, \ldots, \xi^{(d)}_t)_{t=0}^T$.
+\end{mydef}
+Each $\xi^{(i)}_t$ has an interpretation of the quantity of shares of the $i$\textsuperscript{th} asset held in portfolio at time $t$ (it may be negative, then it corresponds to the short sale). Thus, the notion of the portfolio and the dynamic trading strategy may be equated. The value of the portfolio at time $t$ equals
+\[\xia_t \cdot \Sa_t = \sum\limits_{i=0}^d \xi^{(i)}_t S^{(i)}_t,\]
+where $\cdot$ is the inner product of two vectors.
+
+Assume that investor's portfolio is worth 101\$ today and a year ago it was worth 100\$. Did this investor really make a profit? If riskless interest rate equals 5\%, then investor would gain more if he put all his capital into bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
+\begin{mydef}
+ The \textbf{discounted value process} $V^{\xi} = (V^{\xi}_t)_{t=0}^T$ associated with a trading strategy $\xia$ is given by 
+ \begin{equation*}
+  V^{\xi}_t = \xia_t \cdot \Xa_t.
+ \end{equation*}
+\end{mydef}
+
+\subsection{Arbitrage opportunities}
+The value $V^{\xi}_0$ is the initial investment into the portfolio. Following definition introduces portfolios which do not receive cash flows from the ``outside world''. They are rearranged in such a way that purchases of new assets must be covered by sell of some other assets, so value of the portfolio before and after rearranging stays the same.
+\begin{mydef}
+ A dynamic trading strategy is called \textbf{self-financing} if and only if for every $0 \leq t \leq T$
+ \[ \sum\limits_{i=0}^d d\xi^{(i)}_t (S^{(i)}_t + dS^{(i)}_t) = 0. \]
+\end{mydef}
+This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let's think that $dt$ is a very small, even infinitesimal, period of time. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $dS_t$. The portfolio needs a rearrangment -- $d\xia_t$ means changes of quantities of the held assets. Thus $\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
 
 
-\subsection{Types of options}
+\begin{mydef}
+ \textbf{An arbitrage opportunity}
+\end{mydef}
+
+\begin{prop}
+ 
+\end{prop}
+
+
+\section{Types of options}
 We start this section with definition of mentioned contingent claim.
 \begin{mydef}
  \label{def:cc_eu}
@@ -335,16 +410,15 @@ Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date
 \end{cases}
 \]
 \end{mydef}
-We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoff from up-and-out call option in three diffrent scenarios. 
-\begin{figure}
+We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoff from an up-and-out call option in three diffrent scenarios. 
+\begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.5]{images/barrier.pdf}
 \caption{We consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence our payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money }
 \label{fig:barrier}
 \end{figure}
 
-\FloatBarrier
-\subsection{Black-Scholes model}
+\section{Black-Scholes model}
 In this section we will recall famous Black-Scholes model, leading to a straightforward formula for picing European options. Here we are considering a market with only one stock $S$. The assumptions of that model, are following.
 
 \noindent \textbf{The underlying stock price follows a lognormal model.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE for option price is described by equation
@@ -368,7 +442,7 @@ Let us suppose we are constructing a portfolio consisting of short position in o
 \end{equation}
 We may ask how much the portfolio will change in a short period of time. We have
 \[ d\Pi = \Delta dS - dV  \]
-Note that we do not have to differentiate $\Delta$, because it does not change in an infinitezimal increment in time. To handle $dV$ we will use It\^{o}s lemma. Thus
+Note that we do not have to differentiate $\Delta$, because it does not change in an infinitesimal increment in time. To handle $dV$ we will use It\^{o}s lemma. Thus
 \[ d\Pi = \Delta dS - \frac{\partial V}{\partial S}dS - \frac{\partial V}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}dt  \]
 Risk in increment of portfolio is carriered by changes of stock price. By choosing
 \begin{equation}
@@ -397,10 +471,32 @@ V\textsuperscript{put} &= -N(-d_1)S + N(-d_2)K e^{-r(T-t)},\\
 d_1 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
 d_2 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}-\sigma\sqrt{T-t}.
 \end{align*}
+{\Large \color{red} Wskazac pozycje z dowodem}
 It is called \textbf{Black-Scholes formula}.
 
-\subsection{Risk-neutral pricing}
-\subsection{Pricing European options with Monte Carlo method}
+\section{Risk-neutral pricing}
+
+\begin{mydef}
+ martingale measure 
+\end{mydef}
+
+\begin{thm}[Fundemental theorem of asset pricing]
+ 
+\end{thm}
+
+\subsection{Change of the measure}
+
+\begin{thm}[Girsanov theorem]
+ 
+\end{thm}
+
+\begin{coll}
+ wzor dla naszej dynamiki
+\end{coll}
+
+
+
+\section[{Pricing European options with Monte Carlo method}]{Pricing European options with \\Monte Carlo method}
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/trajectories.pdf}
@@ -408,10 +504,8 @@ It is called \textbf{Black-Scholes formula}.
 \end{figure}
 
 
-
-\newpage
-\section{Least Squares Monte Carlo}
-\subsection{The idea of LSM}
+\chapter{Least Squares Monte Carlo}
+\section{The idea of LSM}
 \begin{figure}[h]
 \centering
  \includegraphics[scale=0.5]{images/LSMidea1.pdf}
