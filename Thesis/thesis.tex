@@ -25,14 +25,16 @@
   \vspace{1pc}%
   \Huge}
 
- 
+\setcounter{tocdepth}{1} %subsections won't appear in TOC
 
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{coll}[thm]{Colloraly}
+\newtheorem{lemma}[thm]{Lemma}
 
 \theoremstyle{definition}
 \newtheorem{mydef}{Definition}[section]
+\newtheorem{notation}[mydef]{Notation}
 \newtheorem{example}{Example}[section]
 
 \theoremstyle{remark}
@@ -46,6 +48,8 @@
 \def\Var{{\rm Var}\,}
 \def\E{{\mathbb{E}}\,}
 \def\P{{\mathbb{P}}\,}
+\def\Em{{\mathbb{E}^*}\,}
+\def\Pm{{\mathbb{P}}^*\,}
 \def\R{{\mathbb{R}}}
 \def\conv{\xrightarrow[n \rightarrow \infty]{}}
 \def\limn{\lim\limits_{n \rightarrow \infty} }
@@ -53,7 +57,7 @@
 \def\Xa{\bar{X}}
 \def\xia{\bar{\xi}}
 %opening
-\title{Pricing American and Exotic options using Least Squares Monte Carlo approach}
+\title{Pricing American and Exotic Options with the Least Squares Monte Carlo Approach}
 \author{Grzegorz Łoś}
 
 \pagestyle{fancy}
@@ -73,11 +77,11 @@
 \textbf{\large Uniwersytet Wrocławski\\
 Wydział Matematyki i Informatyki\\
 Instytut Matematyczny}\\
-\textit{\large specjalność: brak}\\
+\textit{\large specjalność: zastosowania}\\
 \vspace{4cm}
 \textbf{\textit{\large Grzegorz Łoś}\\
 \vspace{0.5cm}
-{\Large Pricing American and Exotic options using Least Squares Monte Carlo approach}}\\
+{\Large Pricing American and Exotic Options with the Least Squares Monte Carlo Approach}}\\
 \end{center}
 \vspace{3cm}
 {\hspace*{6.5cm}\large Praca magisterska\\
@@ -102,10 +106,10 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 
 \newpage
 
-\section*{\centering \begin{normalsize}Abstract\end{normalsize}}
+\section*{\begin{center}\begin{normalsize} Abstract \end{normalsize}\end{center}}
 \begin{quotation}
 \noindent 
-  Thesis presents a technique of option pricing known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discoverers Francis Longstaff and Eduardo Schwartz. In the first chapter some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded. Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
+  The thesis presents a technique of option pricing known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discoverers Francis Longstaff and Eduardo Schwartz. In the first chapter some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded. Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
 \end{quotation}
 
 \chapter{Preliminaries}
@@ -194,6 +198,7 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
 \end{itemize}
 
 \begin{mydef}
+\label{def:SDE}
  Let $\mu, \sigma \in C^1,\ \xi$ be $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
  \[dX_t = \mu(X_t)dt + \sigma(X_t) dW_t,\ X_0 = \xi\]
  if and only if
@@ -210,22 +215,40 @@ for all $t \in [0,T)$.
 where $\mu,\sigma \in \R$ is called a \textbf{geometic Brownian motion}.
 \end{mydef}
 
-\noindent Now we can formulate a version of It\^{o}'s lemma, which is commonly used in financial mathematics.
+\noindent Now we can formulate a version of It\^{o}'s lemma, which is widely used in financial mathematics.
 \begin{thm}[It\^{o}'s lemma]
-  Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $V:\ \R^2 \rightarrow \R,\ V \in C^2$. Then 
+ \label{thm:ito}
+  Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $F:\ \R^2 \rightarrow \R,\ F \in C^2$. Then 
   \begin{equation*}
-   V(S_t, t) = V(S_0, 0) + \int\limits_0^t \frac{\partial V}{\partial S}(S_r,r)dS_r + \int\limits_0^t \frac{\partial V}{\partial t}(S_r,r)dr + \frac{1}{2}\sigma^2 S_t^2 \int\limits_0^t \frac{\partial^2 V}{\partial S^2}(S_r,r)dr
+   F(S_t, t) = F(S_0, 0) + \int\limits_0^t \frac{\partial F}{\partial S}(S_r,r)dS_r + \int\limits_0^t \frac{\partial F}{\partial t}(S_r,r)dr + \frac{1}{2}\sigma^2 S_t^2 \int\limits_0^t \frac{\partial^2 F}{\partial S^2}(S_r,r)dr
   \end{equation*}
   or equivalently in SDE form
   \begin{equation}
    \label{eq:ito}
-   dV(S_t, t) = \frac{\partial V}{\partial S}(S_t,t)dS_t + \frac{\partial V}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 V}{\partial S^2}(S_t,t)dt   .
+   dF(S_t, t) = \frac{\partial F}{\partial S}(S_t,t)dS_t + \frac{\partial F}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 F}{\partial S^2}(S_t,t)dt   .
   \end{equation}  
 \end{thm}
 {\Large \color{red} Wskazac pozycje z dowodem}
 
 \noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient. Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
+Significance in financial mathematics of the next theorem results from a fact, that it allows us to move from real measure $\P$ to equivalent martingale measure $\Pm$.
+\begin{thm}[\bfseries Girsanov theorem]
+ \label{thm:girsanov}
+ Let $\bar{W}$ be a $d$-dimensional standard Wiener process on probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$ and let $\varphi$ be any $d$-dimensional adapted column vector process. Choose a fixed $T$ and define the process $L$ on $[0,T]$ by
+ \[ L_t = \exp\left\{ \int\limits_0^t \varphi_s \cdot d\bar{W}_s - \frac{1}{2}\int\limits_0^t ||\varphi_s||^2ds. \right\} \]
+ Assume that 
+ \[ \E^P[L_T] = 1, \]
+ and define the new probability measure $\mathbb{Q}$ on $\mathcal{F}_T$ by
+ \[ \frac{d\mathbb{Q}}{d\P} = L_T,\ \ \hbox{ on } \mathcal{F}_T. \]
+ Then $W$ given by
+ \[W_t = \bar{W}_t - \int\limits_0^t \varphi_s ds\]
+ is a standard Wiener process under $\mathbb{Q}$.
+\end{thm}
+\begin{remark}
+ Symbol $\cdot$ in definition of $L$ is the inner product of two vectors. 
+\end{remark}
+The proof of Girsanov theorem reader may find for example in \cite{bjork} (Theorem 11.3).
 
 \section{Elements of Monte Carlo theory}
 Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation. They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
@@ -310,13 +333,13 @@ The main field of interest of the financial mathematics is pricing so-called con
 \subsection{Notation}
 Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a \textbf{real measure}, in opposite to artificial \textbf{risk-neutral measure}, which will be later on. Elements of $\Omega$ are called \textbf{market scenarios}. Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as set of all events observable up to time $t$.
 
-We consider a market with $d+1$ assets, where each asset $S^{(i)} = (S^{(i)}_t)_{t=0}^T$ is modelled as a $\R_+$-valued stochastic process adapted to $(\mathcal{F}_t)_{t=0}^T$. The $0$\textsuperscript{th} asset is considered to be a riskless bond, what means that its value does not depend on a market scenario $\omega$ and is given by 
-\[S^{(0)}_t = e^{rt},\]
-where $r$ is riskless interest rate. By $S$ we will denote a $d$-dimensional vector of the prices of risky assets, i.e.
+We consider a market with $d+1$ assets, where each asset $S^{(i)} = (S^{(i)}_t)_{t=0}^T$ is modelled as a $\R_+$-valued stochastic process adapted to $(\mathcal{F}_t)_{t=0}^T$. The $0$\textsuperscript{th} asset is the money stored in a locally riskless bank account and is given by 
+\[S^{(0)}_t = \exp\left\{ \int\limits_0^t r(t)dt \right\},\]
+where $r(t)$ is a short term riskless interest rate at time $t$. In general $r(t)$ may also be a stochastic process, however often we will assume $r(t) \equiv r$ and then $S^{(0)}$ may also be regarded as a bond, paying $e^{rT}$ at time $T$. By $S$ we will denote a $d$-dimensional vector of prices of the risky assets, i.e.
 \begin{equation*}
  S_t = (S^{(1)}_t, S^{(2)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
 \end{equation*}
-We also introduce notation $\Sa$ for a $(d+1)$-dimensional vector of the prices of all assets, that is
+We also introduce notation $\Sa$ for a $(d+1)$-dimensional vector of prices of all assets, that is
 \begin{equation*}
  \Sa_t = (S^{(0)}_t, S_t) = (S^{(0)}_t, S^{(1)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
 \end{equation*}
@@ -339,7 +362,7 @@ Each $\xi^{(i)}_t$ has an interpretation of the quantity of shares of the $i$\te
 \[\xia_t \cdot \Sa_t = \sum\limits_{i=0}^d \xi^{(i)}_t S^{(i)}_t,\]
 where $\cdot$ is the inner product of two vectors.
 
-Assume that investor's portfolio is worth 101\$ today and a year ago it was worth 100\$. Did this investor really make a profit? If riskless interest rate equals 5\%, then investor would gain more if he put all his capital into bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
+Assume that investor's portfolio is worth 101\$ today and a year ago it was worth 100\$. Did the investor really make a profit? If riskless interest rate equals 5\%, then investor would gain more if he put all his capital into bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
 \begin{mydef}
  The \textbf{discounted value process} $V^{\xi} = (V^{\xi}_t)_{t=0}^T$ associated with a trading strategy $\xia$ is given by 
  \begin{equation*}
@@ -348,32 +371,60 @@ Assume that investor's portfolio is worth 101\$ today and a year ago it was wort
 \end{mydef}
 
 \subsection{Arbitrage opportunities}
-The value $V^{\xi}_0$ is the initial investment into the portfolio. Following definition introduces portfolios which do not receive cash flows from the ``outside world''. They are rearranged in such a way that purchases of new assets must be covered by sell of some other assets, so value of the portfolio before and after rearranging stays the same.
+The value $V^{\xi}_0$ is the initial investment into the portfolio. Following definition introduces portfolios which do not receive cash flows from the ``outside world'' after initialization. They are rearranged in such a way that purchases of new assets must be covered by selling some other assets, so value of the portfolio before and after rearranging stays the same.
 \begin{mydef}
  A dynamic trading strategy is called \textbf{self-financing} if and only if for every $0 \leq t \leq T$
  \[ \sum\limits_{i=0}^d d\xi^{(i)}_t (S^{(i)}_t + dS^{(i)}_t) = 0. \]
 \end{mydef}
-This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let's think that $dt$ is a very small, even infinitesimal, period of time. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $dS_t$. The portfolio needs a rearrangment -- $d\xia_t$ means changes of quantities of the held assets. Thus $\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
+This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let's think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $dS_t$. The portfolio needs a rearrangment -- $d\xia_t$ means changes of quantities of the held assets. Thus $\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
 
-
+From now on we will consider only those market models that are efficient in the sense that they are arbitrage-free.
 \begin{mydef}
- \textbf{An arbitrage opportunity}
+ An \textbf{arbitrage opportunity} is a self-financing portfolio $\xia$, such that
+ \begin{align*}
+  V^{\xi}_0 &= 0\\
+  \P(V^{\xi}_T \geq 0) &= 1\\
+  \P(V^{\xi}_T > 0 ) &> 0
+ \end{align*}
+ The market is \textbf{arbitrage-free} if it does not allow for arbitrage opportunities.
+\end{mydef}
+What does arbitrage opportunity mean in practice? Assume an investor entering the market without any money. He builds his portfolio by short sale of some assets and purchase of other assets for received money. Arbitrage opportunity is a situation when the investor at time $T$ can cover his short positions by sale of assets held long, and with positive probability he has some remaining cash. In the other words, he can make money without exposure to any downside risk. 
+
+Now we are moving to an important concept of martingule measure.
+\begin{mydef}
+ A probability measure $\Pm$ is a \textbf{martingale measure} if and only if the discounted price process $X$ is a $\Pm$-martingale, i.e. for all  $0 \leq s \leq t \leq T$
+ \begin{equation}
+  \label{eq:X-martingale}
+  \Em[X_t] < \infty \hbox{\ \ and\ \ } \Em[X_t | \mathcal{F}_s] = X_s
+ \end{equation}
 \end{mydef}
 
-\begin{prop}
- 
-\end{prop}
+\begin{remark}
+ Condition (\ref{eq:X-martingale}) is written for a vector $X$, hence for every $1 \leq i \leq d$
+  \begin{equation*}
+  \Em[X^{(i)}_t] < \infty \hbox{\ \ and\ \ } \Em[X^{(i)}_t | \mathcal{F}_s] = X^{(i)}_s
+ \end{equation*}
+\end{remark}
 
+Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mathcal{F}$ are equivalent if and only if $\forall A \in \mathcal{F}.\ \P(A)=0 \Leftrightarrow \Pm(A)=0$. Next theorem, known as \textbf{first fundamental theorem of asset pricing}, shows importance of martingale measures.
+\begin{thm}[\bfseries First FTAP]
+ \label{thm:fftap}
+ The following to statements are \emph{essentialy} equivalent:
+ \begin{enumerate}
+  \item The market model is arbitrage free.
+  \item There exists martingale measure $\Pm$ equivalent to $\P$.
+ \end{enumerate}
+\end{thm}
+Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentialy'', as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since trajectories can be simulated only in a finite number of points.
 
-\section{Types of options}
-We start this section with definition of mentioned contingent claim.
+\section{European contingent claims}
+We start this section with definition of a mentioned contingent claim.
 \begin{mydef}
  \label{def:cc_eu}
- \textbf{European contingent claim} is a non-negative random variable $V$ on $(\Omega, \mathcal{F}_T, \P)$. \textbf{Derivative} of underlying assets $S^{(0)}, S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
+ \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. \textbf{Derivative} of underlying assets $S^{(0)}, S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
 \end{mydef}
-European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can't take a random amount of monye from the buyer. What should be then the price at time $0$? It is main concern of financial mathematics.
+European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can't take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
-The most important type of derivatives are options.
 \begin{mydef}
  An \textbf{European call option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $K$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $K$.
  
@@ -382,15 +433,15 @@ The most important type of derivatives are options.
 From the definition
 \begin{equation}
  \label{eq:ecall}
- V\textsuperscript{call} = (S^{(i)}_T - K)_+
+ C\textsuperscript{call} = (S^{(i)}_T - K)_+
 \end{equation}
 \begin{equation}
  \label{eq:eput}
- V\textsuperscript{put} = (K - S^{(i)}_T )_+
+ C\textsuperscript{put} = (K - S^{(i)}_T )_+
 \end{equation}
 where $(x)_+ = \max(0,x)$.
 
-A popular modification of above vanilla options are \textbf{barrier options}. Their payoff depends not only on the stock price at maturity, but also on historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions
+A popular modification of above \textbf{vanilla options} are \textbf{barrier options}. Their payoff depends not only on the stock price at maturity, but also on historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions
 \begin{mydef}
 Payoff of \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $K$ and barrier $\bar{B}$, is
 \[ C^{\hbox{\scriptsize call}}_{\hbox{\scriptsize u\&i}} = 
@@ -413,13 +464,13 @@ Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date
 We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoff from an up-and-out call option in three diffrent scenarios. 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/barrier.pdf}
+ \includegraphics[scale=0.3]{images/barrier.pdf}
 \caption{We consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence our payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money }
 \label{fig:barrier}
 \end{figure}
 
 \section{Black-Scholes model}
-In this section we will recall famous Black-Scholes model, leading to a straightforward formula for picing European options. Here we are considering a market with only one stock $S$. The assumptions of that model, are following.
+In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options. Here we are considering a market with only one stock $S$ and a bond $B$. The assumptions of that model are following.
 
 \noindent \textbf{The underlying stock price follows a lognormal model.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE for option price is described by equation
 \begin{equation}
@@ -427,22 +478,33 @@ In this section we will recall famous Black-Scholes model, leading to a straight
  dS_t = \mu S_t dt + \sigma S_t dW_t. 
 \end{equation}
 
-\noindent \textbf{There exists constant risk-free interest rate $r$.} Investors may both, borrow and lend, any amount of cash at rate $r$.
+\noindent \textbf{There exists constant risk-free interest rate $r$.} In the other words, dynamics of $B$ is given by 
+\[ dB_t = rB_t dt. \]
+Investors may both, borrow and lend, any amount of cash at rate $r$.
 
 \noindent \textbf{It is possible to buy and sell any amount of stock.} It means that investors can even trade fractional numbers of stock, and short sell unbounded quantity of shares.
 
 \noindent \textbf{All transactions do not incur any additional costs.}
 
-\noindent \textbf{Market does not admit arbitrage opportunities.} A strict definition of arbitrage will be given in the section \textit{Risk-neutral pricing}. For now it is sufficient to know that the market is arbitrage-free when assets yielding identical cash flows have the same price and instruments with a known payoff in the future must be priced as its future payoff discounted at the risk-free rate.
+\noindent \textbf{The market does not admit arbitrage opportunities.}
 
-Let us suppose we are constructing a portfolio consisting of short position in one option and long position in $\Delta$ shares. Hence
+Suppose we are constructing a portfolio consisting of short position in one option and long position in $\Delta$ shares. 
+Let $\Pi$ be the process of value of portfolio ($\Pi_t$ is value at time $t$), and $V$ be the process of price of the option ($V_t$ is price at time $t$). We have to make one more assumption. 
+
+For some smooth function $V$ \textbf{the price process has the form:}
+\[ V_t = V(S_t, t). \]
+Note that symbol $V$ has an ambigous meaning -- in above formula left $V$ is price process and the right one is smooth function. However, as in many other literature, we do not bring in additional notation, since it does not lead to misunderstanding.
+
+Many authors forget to mention this last assumption, altough it is very important. Without it we could not use It\^{o}'s lemma.
+
+Equation of portfolio is given by
 \begin{equation}
  \label{eq:portfolio}
   \Pi = \Delta S - V 
 \end{equation}
 We may ask how much the portfolio will change in a short period of time. We have
 \[ d\Pi = \Delta dS - dV  \]
-Note that we do not have to differentiate $\Delta$, because it does not change in an infinitesimal increment in time. To handle $dV$ we will use It\^{o}s lemma. Thus
+Note that we do not have to differentiate $\Delta$, because it does not change in an infinitesimal increment of time. To handle $dV$ we will use It\^{o}s lemma. Thus
 \[ d\Pi = \Delta dS - \frac{\partial V}{\partial S}dS - \frac{\partial V}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}dt  \]
 Risk in increment of portfolio is carriered by changes of stock price. By choosing
 \begin{equation}
@@ -463,36 +525,170 @@ which after simple calculation gives
  \label{eq:BSeq}
  \frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + r\frac{\partial V}{\partial S} S - rV = 0.
 \end{equation}
-(\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about payoff off the option, thus this is a general equation. For European options it has straightforward solution.
+(\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about the payoff off the option, thus this is a general equation. For European options it has straightforward solution.
 
 \begin{align*}
-V\textsuperscript{call} &= N(d_1)S  - N(d_2)K e^{-r(T-t)},\\
-V\textsuperscript{put} &= -N(-d_1)S + N(-d_2)K e^{-r(T-t)},\\
-d_1 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
-d_2 &= \frac{\ln\left(\frac{S}{K}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}-\sigma\sqrt{T-t}.
+V_t\textsuperscript{call} &= \Phi[d_1(t)]S_t  - \Phi[d_2(t)]K e^{-r(T-t)},\\
+V_t\textsuperscript{put} &= -\Phi[-d_1(t)]S_t + \Phi[-d_2(t)]K e^{-r(T-t)},
 \end{align*}
+where
+\begin{align*}
+d_1(t) &= \frac{\ln\left(\frac{S_t}{K}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
+d_2(t) &= \frac{\ln\left(\frac{S_t}{K}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}(t)-\sigma\sqrt{T-t},\\
+\Phi & \hbox{ is distibution function of standard normal distribution. } 
+\end{align*}
+
 {\Large \color{red} Wskazac pozycje z dowodem}
 It is called \textbf{Black-Scholes formula}.
 
 \section{Risk-neutral pricing}
-
+Black-Scholes formula allows us to price only European vanilla options. In this section we present a general method of pricing European contingent claims. 
 \begin{mydef}
- martingale measure 
+ The discounted value of the contingent claim $C$ is given by
+ \begin{equation*}
+  H = \frac{C}{S^{(0)}_T}.
+ \end{equation*}
+ Random variable $H$ is called a \textbf{discounted claim}.
 \end{mydef}
 
-\begin{thm}[Fundemental theorem of asset pricing]
- 
+Values $C$ and $H$ correspond to the payoff of an instrument. We need notation to talk about its price.
+\begin{notation}
+ The (discounted) \textbf{price process} is denoted by $V_t$. 
+\end{notation}
+\begin{remark}
+ In section \textit{Black-Scholes model} value $V_t$ denoted price of the option at time $t$ (no discounting). From now on $V_t$ is price of the contingent claim at time $t$ discounted to time~$0$.
+\end{remark}
+
+Next theorem is the key to defining prices of contingent claims. But first we define a class of claims for which pricing is pretty straightforward. 
+\begin{mydef}
+ A contingent claim is called \textbf{attainable} if there exists a self-financing trading strategy $\xia$ whose portfolio coincides with $C$ at maturity, i.e.
+ \[ C = \xia \cdot \Sa_T. \]
+ Trading strategy $\xia$ is then called \textbf{replicating strategy} for $C$.
+\end{mydef}
+
+\begin{thm}
+ For every attainable discounted claim $H$ and for every equivalent martingale measure $\Pm$
+ \[ \Em [H] < \infty. \]
+ Moreover, for every replicating strategy $\xia$ its value process satisfies
+ \begin{equation}
+  V^\xi_t = \Em[H | \mathcal{F}_t] \hbox{ P-a.s., } 0 \leq t \leq T .
+ \end{equation}
 \end{thm}
+Since there is no $\xia$ in term $\Em[H | \mathcal{F}_t]$, so value $V^\xi_t$ does not depend on choice of $\xia$. Note also that
+\begin{equation*}
+ \Em[H | \mathcal{F}_t]  = \Em[\xia \cdot \Xa_T | \mathcal{F}_t]  = \xia \cdot \Xa_t
+\end{equation*}
+Thus, value $\Em[H | \mathcal{F}_t]$ does not depend on choice of $\Pm$. 
+Since attainable discounted claim $H$ and its replicating strategy $\xia$ have the same payoff at time $T$, thus no-arbitrage assumption induces
+\[ V_t = V^\xi_t,\ \ 0 \leq t \leq T. \]
+In particular
+\[ V_0 = V^\xi_0 = \Em[H].\] 
+
+The above theorem suggests how price processes should look in general.
+\begin{mydef}
+ The (discounted) price process of the discounted claim $H$ is given by
+ \begin{equation*}
+  V_t := \Em[H | \mathcal{F}_t].
+ \end{equation*}
+ Such $V$ is a $\Pm$-martingale.
+\end{mydef}
+For general claims process $V$ depends on choice of equivalent martingale measure. However, it may be proven that the market model consisting of following discounted assets $(X^{(0)}, X^{(0)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
 
 \subsection{Change of the measure}
+We have discussed how equivalent martingale measures can be used for option pricing, but so far we did not tell how to find them. For this purpose Girsanov theorem is very usefull.
 
-\begin{thm}[Girsanov theorem]
- 
-\end{thm}
+\begin{prop}
+\label{prop:measure_change}
+ Suppose that all risky assets on the market follow the geometric Brownian motion, that is for $i=1,2,\ldots,d$
+ \begin{equation}
+  \label{eq:dynamics_real}
+  dS^{(i)} = \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)},
+ \end{equation}
+ where each $\bar{W}^{(i)}$ is a Brownian motion under measure $\P$ and $corr(\bar{W}^{(i)}, \bar{W}^{(j)}) = \rho_{ij}$. For every vector $(\nu_1, \nu_2, \ldots, \nu_d)$ there exists equivalent probability measure $\mathbb{Q}$, such that the equation (\ref{eq:dynamics_real}) may be rewritten in the form
+  \begin{equation}
+  dS^{(i)} = \nu_i S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)},
+ \end{equation}
+ where each $W^{(i)}$ is a Brownian motion under equivalent measure $Q$ and\\ $corr^Q(W^{(i)}, W^{(j)}) = \rho_{ij}$.
+\end{prop}
+
+\begin{proof}
+ Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a correlation matrix. Cholesky's algorithm allows us to decompose $\Sigma$ to the form
+ \[ \Sigma = LL^T. \]
+ Hence, $\bar{W}$ may be written in the form
+ \[ \bar{W} = L \bar{V}, \]
+ where $\bar{V}$ is a standard $d$-dimensional Wiener process under measure $\P$. Let us apply Theorem \ref{thm:girsanov} (Girsanov theorem) with $\varphi = (\theta_1, \theta_2, \ldots, \theta_d)'$, where all $\theta_i$ are constant. It implies that
+ \[ V_t = \bar{V}_t - t\theta_i \]
+ is $d$-dimensional standard Wiener process under measure $\mathbb{Q}$. Thus
+ \begin{equation*}
+  \begin{split}
+   dS^{(i)} &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)} \\
+            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^d l_{ik} \bar{V}^{(k)}\right) \\
+            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} \left(\sum\limits_{k=1}^d l_{ik}\theta_i dt + l_{ik}d V^{(k)}\right) \\    
+            &= \left(\mu_i + \sigma_i \theta_i \sum\limits_{k=1}^d l_{ik} \right) S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^d l_{ik} V^{(k)}\right) \\    
+  \end{split}
+ \end{equation*}
+ By substituting
+ \begin{align*}
+  \theta_i &:= (\nu_i - \mu_i)/(\sigma_i \sum\limits_{k=1}^d l_{ik})\\
+  W &:= LV
+ \end{align*}
+ we get the thesis.
+\end{proof}
+
+Above propostion allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- martingale measure.
+\begin{lemma}
+ Let $S$ be a geometric Brownian motion, i.e.
+ \[ dS = \mu S dt + \sigma S dW. \]
+ Solution of above SDE is given by
+ \begin{equation}
+  \label{eq:gmb_sol}
+  S = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}
+ \end{equation}
+\end{lemma}
+\begin{proof}
+We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. We have
+ \begin{equation*}
+  \begin{split}
+   dF &= \frac{\partial F}{\partial S}dS + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\
+   &= \frac{\partial F}{\partial S}(\mu S dt + \sigma S dW) + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\    
+   &= \frac{1}{S}(\mu S dt + \sigma S dW) + 0dt - \frac{1}{2}\sigma^2 S^2 \frac{1}{S^2}dt \\   
+   &= (\mu - \frac{1}{2}\sigma^2) dt + \sigma dW
+  \end{split}.
+ \end{equation*}
+ From Definition \ref{def:SDE}
+ \begin{equation*}
+  \begin{split}
+  F(S_t,t) &= F_0 + \int\limits_0^t (\mu - \frac{1}{2}\sigma^2) ds + \int\limits_0^t \sigma dW_s\\
+  &= F_0 + (\mu - \frac{1}{2}\sigma^2)t + \int\limits_0^t \sigma W_t. 
+  \end{split}.
+ \end{equation*}
+ If we let $S_0 = e^{F_0}$ then
+ \[ S = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}. \] 
+\end{proof}
 
 \begin{coll}
- wzor dla naszej dynamiki
+ In real measure $\P$ the risky assets follow a geometric Brownian motion, as in equation (\ref{eq:dynamics_real}). Under equivalent martingale measure $\Pm$ the dynamics has the form
+ \begin{equation}
+  \label{eq:dynamics_neutral}
+  dS^{(i)} = r S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)}.
+ \end{equation}
 \end{coll}
+\begin{proof}
+ Proposition \ref{prop:measure_change} states that there exist equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
+ From (\ref{eq:gmb_sol})
+ \[ X_t = e^{-rt} S_t = S_0 e^{ \frac{1}{2}\sigma^2 t + \sigma W_t }. \]
+ Let $0 \leq s \leq t \leq T$. We have
+ \begin{equation*}
+  \begin{split}
+   \Em[X_t | \mathcal{F}_s] &= \Em[ S_0 e^{ \frac{1}{2}\sigma^2 t + \sigma W_t } | \mathcal{F}_s] \\
+       &= S_0 e^{\frac{1}{2}\sigma^2 t} \Em[ e^{  \sigma W_s} e^{ \sigma (W_t - W_s) } | \mathcal{F}_s] \\
+       &= S_0 e^{\frac{1}{2}\sigma^2 t + \sigma W_s} \Em[ e^{ \sigma (W_t - W_s) }] \\
+       &= S_0 e^{\frac{1}{2}\sigma^2 t + \sigma W_s}  e^{ -\frac{1}{2}\sigma^2(t-s) } \\
+       &= S_0 e^{\frac{1}{2}\sigma^2 s + \sigma W_s}.
+  \end{split}
+ \end{equation*}
+Hence $\Pm$ is an equivalent martingale measure.
+\end{proof}
 
 
 
@@ -519,6 +715,9 @@ It is called \textbf{Black-Scholes formula}.
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{\bfseries References}
+
+\bibitem{bjork}
+T. Bj\"{o}rk, \emph{Arbitrage Theory in Continuous Time}, Oxford University Press,  New York, 3rd edition, 2009
 
 \bibitem{follmer}
 H. F\"{o}llmer, A. Schied, \emph{Stochastic finance. An introduction in discrete time}, Walter de Gruyter, Berlin, 2nd edition, 2004
