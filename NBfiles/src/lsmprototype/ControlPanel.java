@@ -400,7 +400,7 @@ public class ControlPanel extends javax.swing.JPanel
             int type = (put.isSelected() ? Option.PUT : Option.CALL);
             double K = (Double) strike.getValue();
             if (euoption.isSelected())
-                return new EuOption(type, K, T);
+                return new EuExercise(type, K, T);
             else return new AmOption(type, K, T);
         }
     }

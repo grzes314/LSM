@@ -8,28 +8,10 @@ import static java.lang.Math.*;
  *
  * @author grzes
  */
-public class BSModel implements Model
+public class BSModel
 {
-    public BSModel(double S, double vol, double r)
-    {
-        this.S = S;
-        this.vol = vol;
-        this.r = r;
-    }
-    
     @Override
-    public PriceInfo price(Instr instr) throws WrongInstrException
-    {
-        EuOption opt;
-        try {
-            opt = (EuOption) instr;
-        } catch (ClassCastException ex) {
-            throw new WrongInstrException();
-        }
-        return price(opt);
-    }
-    
-    private PriceInfo price(EuOption opt)
+    public PriceInfo price(double S, double vol, double r)
     {
         double K = opt.getStrike();
         double T = opt.getTimeHorizon();
@@ -39,35 +21,6 @@ public class BSModel implements Model
         else return pricePut(K, T, d1, d2);
     }
 
-    public double getS()
-    {
-        return S;
-    }
-
-    public void setS(double S)
-    {
-        this.S = S;
-    }
-
-    public double getR()
-    {
-        return r;
-    }
-
-    public void setR(double r)
-    {
-        this.r = r;
-    }
-
-    public double getVol()
-    {
-        return vol;
-    }
-
-    public void setVol(double vol)
-    {
-        this.vol = vol;
-    }
 
     private PriceInfo priceCall(double K, double T, double d1, double d2)
     {
@@ -90,9 +43,5 @@ public class BSModel implements Model
                "r = " + r + "\n";                
     }
     
-    private double S;
-    private double vol;
-    private double r;
     RandomTools rt = new RandomTools();
-
 }

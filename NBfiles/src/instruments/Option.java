@@ -1,50 +1,120 @@
 
 package instruments;
 
+import trajectories.Scenario;
+import trajectories.Trajectory;
+
 /**
- *
- * @author grzes
+ * Option is a class extending Instrument to represent an american option.
+ * @author Grzegorz Los
  */
-public abstract class Option extends Instr
+public class Option implements Instr
 {
-    public Option(int type, double strike, double timeHorizon)
+    /**
+     * Constructor taking type of the option, its strike value, underlying name,
+     * and time support.
+     * @param type type of the option (call or put).
+     * @param strike strike value.
+     * @param ts time support.
+     */
+    public Option(int type, double strike, String underlying, TimeSupport ts)
     {
-        super(timeHorizon);
-        this.K = strike;
+        this.ts = ts;
         this.type = type;
+        this.K = strike;
+        this.underlying = underlying;
+        underlyingNr = null;
     }
-    
-    public double getStrike()
+
+    /**
+     * Constructor taking type of the option, its strike value, underlying
+     * number and time support.
+     * @param type type of the option (call or put).
+     * @param strike strike value.
+     * @param ts time support.
+     */
+    public Option(int type, double strike, int underlyingNr, TimeSupport ts)
     {
-        return K;
+        this.ts = ts;
+        this.type = type;
+        this.K = strike;
+        this.underlyingNr = underlyingNr;
+        underlying = null;
+    }
+
+    @Override
+    public boolean exAvail(Scenario s, int k)
+    {
+        return true;
+    }
+
+    @Override
+    public double payoff(Scenario s, int k)
+    {
+        Trajectory tr;
+        if (underlying == null) tr = s.getTr(underlyingNr);
+        else tr = s.getTr(underlying);
+        
+        if (type == CALL) return Math.max(0, tr.price(k) - K);
+        else return Math.max(0, K - tr.price(k));
+    }
+          
+    @Override
+    public String desc()
+    {
+        return "An option\n" +
+                "Type: " + (type == CALL ? "call" : "put") +
+                "\nStrike: " + K +
+                "\nExpiracy: " + ts.T;
     }
     
     @Override
-    public double payoff(double S, double t)
+    public String toString()
     {
-        if (type == CALL) return Math.max(0, S - K);
-        else return Math.max(0, K - S);
+        return "Option" + (type == CALL ? "Call" : "Put") + "@" + K;
     }
     
     @Override
-    public double intrisnicValue(double S)
+    public TimeSupport getTS()
     {
-        return payoff(S,0);
+        return ts;
     }
     
-    public int getType()
-    {
-        return type;
-    }
-     
-   /* public double intrisnicValue(double[] S, int t)
-    {
-        if (type == CALL) return Math.max(0, S[t] - K);
-        else return Math.max(0, K - S[t]);
-    }*/
+    /**
+     * Constant indicating call option.
+     */
+    public static final int CALL = 0;
     
-    public static final int CALL = 0, PUT = 1;
+    /**
+     * Constant indicating put option.
+     */
+    public static final int PUT = 1;
     
-    int type;
-    protected double K;
+    /**
+     * Type of the option.
+     */
+    public final int type;
+    
+    /**
+     * Strike value of the option.
+     */
+    public final double K;
+
+    /**
+     * Name of the underlying of the option. Note that only one of pair
+     * (underlying, underlyingNr) may be not null.
+     */
+    public final String underlying;
+    
+    /**
+     * Number of underlying of the option.
+     */
+    public final Integer underlyingNr;
+    
+    /**
+     * Time support for describing time horizon of the option and time 
+     * points in which it is considered.
+     */
+    public final TimeSupport ts;
+
 }

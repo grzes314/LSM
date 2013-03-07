@@ -1,29 +1,23 @@
 
 package instruments;
 
+import trajectories.Scenario;
+
 /**
  *
  * @author grzes
  */
-public class Obligation extends Instr
+public class Obligation implements Instr
 {
-
-    public Obligation(double timeHorizon)
+    public Obligation(TimeSupport ts)
     {
-        super(timeHorizon);
-    }
-
-    @Override
-    public double payoff(double S, double t)
-    {
-        if (t < T) return 0d;
-        else return 1d;
+        this.ts = ts;
     }
 
     @Override
     public String desc()
     {
-        return "Obligation paying 1 after" + T + " years";
+        return "Obligation paying 1 after" + ts.T + " years";
     }
     
     @Override
@@ -33,8 +27,29 @@ public class Obligation extends Instr
     }
 
     @Override
-    public double intrisnicValue(double S)
+    public boolean exAvail(Scenario s, int k)
     {
-        return 1;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public double payoff(Scenario s, int k)
+    {
+        if (k < ts.K) return 0d;
+        else return 1d;
+    }
+    
+    @Override
+    public TimeSupport getTS()
+    {
+        return ts;
+    }
+    
+    /**
+     * Time support for describing time horizon of the obligation and time 
+     * points in which it is considered.
+     */
+    private final TimeSupport ts;
+
+
 }
