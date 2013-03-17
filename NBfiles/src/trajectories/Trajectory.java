@@ -8,12 +8,6 @@ package trajectories;
 public interface Trajectory
 {    
     /**
-     * Returns time horizon of this trajectory.
-     * @return time horizon of this trajectory.
-     */
-    double getT();
-    
-    /**
      * Returns number of steps in this trajecotry. Let K = getK(). 
      * Numbers of steps are {0,1,...,K}. Step 0 corresponds to time 0,
      * step K corresponds to time T (time horizon). 

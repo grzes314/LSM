@@ -7,16 +7,30 @@ import trajectories.Scenario;
  * Base class for all financial instruments.
  * @author Grzegorz Los
  */
-public interface Instr
-{    
+abstract public class Instr
+{
+
+    public Instr(TimeSupport ts)
+    {
+        this.ts = ts;
+    }
+    
     /**
      * Exercies available. Answers if the instrument may be exercised
      * at time point number k, in given market scenario. 
      * @param s market scenario.
      * @param k number of time point.
      * @return true iff the instrument may be exercised.
+     * @throws RuntimeException if instruments and scenarios TimeSupports are
+     * not equal.
      */
-    abstract public boolean exAvail(Scenario s, int k);
+    public final boolean exAvail(Scenario s, int k)
+    {
+        if ( !ts.equals(s.getTS()) )
+            throw new RuntimeException("TimeSupports for Scenario and "
+                    + "Instrument have to be equal");
+        return exAvail_(s,k);
+    }
     
     /**
      * Payoff from the instrument that would be obtained, if instrument was
@@ -26,15 +40,36 @@ public interface Instr
      * @param k number of time point.
      * @return payoff from the instrument.
      */
-    abstract public double payoff(Scenario s, int k);
+    public double payoff(Scenario s, int k)
+    {
+        if (exAvail(s,k)) return payoff_(s,k);
+        else return 0;
+    }
     
     /**
      * Returns time support object which contains information about instruments
      * time horizon and number of timesteps in which it is considered.
      * @return time support object for this instrument. 
      */
-    abstract public TimeSupport getTS();
+    public TimeSupport getTS()
+    {
+        return ts;
+    }
 
+    /**
+     * Sets number of time points in which payoff may be considered.
+     * @param K number of time points.
+     */
+    public void setK(int K)
+    {
+        ts.setK(K);
+    }
+    
+    //TODO do wyrzucenia!
+    public double intrisnicValue(double x)
+    {
+        return 1.0;
+    }
     /**
      * Detailed description of the financial instrument.
      * @return string with description of the instrument.
@@ -43,4 +78,26 @@ public interface Instr
     
     @Override
     abstract public String toString();
+    
+    /**
+     * Main contents of the method exAvail().
+     * @param s market scenario.
+     * @param k number of time point.
+     * @return true iff the instrument may be exercised.
+     */
+    abstract protected boolean exAvail_(Scenario s, int k);
+    
+    /**
+     * Main content of the method payoff().
+     * @param s market scenario.
+     * @param k number of time point.
+     * @return payoff from the instrument.
+     */
+    abstract protected double payoff_(Scenario s, int k);
+        
+    /**
+     * Time support for describing time horizon of the instrumnet and time 
+     * points in which it is considered.
+     */
+    protected final TimeSupport ts;
 }

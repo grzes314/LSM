@@ -15,7 +15,7 @@ public class Approx
      * @return Approximating polinomial
      * @see http://aproks.republika.pl/#aproksymacja%20%C5%9Bredniokwadratowa
      */
-    public Polinomial approximate(Collection<Point> points, int m)
+    public Polynomial approximate(Collection<Point> points, int m)
     {
         //System.out.println("lets approximate");
        double[] s = new double[2*m+1];
@@ -42,12 +42,12 @@ public class Approx
         try {
            // print(uklad);
             double[] a = gauss(uklad, m + 1);
-            return new Polinomial(m, a);
+            return new Polynomial(m, a);
         } catch (Exception ex) {
             /*System.out.println(ex.getMessage());
             double[] b = new double[1];
             b[0] = 0;
-            return new Polinomial(0,b);*/
+            return new Polynomial(0,b);*/
             return approximate(points, m-1);
         }
     }

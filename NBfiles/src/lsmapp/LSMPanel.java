@@ -2,33 +2,69 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package lsmprototype;
+package lsmapp;
 
 import instruments.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import models.BSModel;
 import models.LSModel;
-import models.Model;
+import models.Progress;
 
 /**
  *
  * @author grzes
  */
-public class ControlPanel extends javax.swing.JPanel
+public class LSMPanel extends ModelPanel
 {
 
     /**
-     * Creates new form ControlPanel
+     * Creates new form LSMPanel
      */
-    public ControlPanel()
+    public LSMPanel()
     {
         initComponents();
-        computing.setVisible(false);
-        pcs = new PropertyChangeSupport(this);
-        
+        progressDesc.setVisible(false);        
     }
 
+    @Override
+    public LSModel getModel()
+    {
+        double v = (Double) volatility.getValue();
+        double r = (Double) rate.getValue();
+        double S = (Double) spot.getValue();
+        int N = (Integer) simulations.getValue();
+        int K = (Integer) steps.getValue();
+        int M = (Integer) degree.getValue();
+        return new LSModel(S,v,r,N,K,M);
+    }
+
+    @Override
+    protected void prepareForTask()
+    {
+        progressDesc.setText("Preparing...");
+        progressDesc.setVisible(true);
+        progressBar.setValue(0);
+        progressBar.setVisible(true);
+    }
+
+    @Override
+    protected PriceInfo calculate()
+    {
+        return getModel().price( getInstr() );
+    }
+
+    @Override
+    protected void progressUpdate(Progress pr)
+    {
+        progressDesc.setText(pr.desc);
+        progressBar.setValue(pr.percent);
+    }
+
+    @Override
+    protected void cleanAfterTask()
+    {
+        progressDesc.setVisible(false);
+        progressBar.setVisible(false);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,8 +96,6 @@ public class ControlPanel extends javax.swing.JPanel
         jLabel5 = new javax.swing.JLabel();
         years = new javax.swing.JSpinner();
         jPanel4 = new javax.swing.JPanel();
-        bs = new javax.swing.JRadioButton();
-        ls = new javax.swing.JRadioButton();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
@@ -69,7 +103,8 @@ public class ControlPanel extends javax.swing.JPanel
         steps = new javax.swing.JSpinner();
         simulations = new javax.swing.JSpinner();
         priceBttn = new javax.swing.JButton();
-        computing = new javax.swing.JLabel();
+        progressDesc = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Market and asset"));
 
@@ -216,13 +251,6 @@ public class ControlPanel extends javax.swing.JPanel
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Model"));
 
-        buttonGroup3.add(bs);
-        bs.setText("Black-Scoles");
-
-        buttonGroup3.add(ls);
-        ls.setSelected(true);
-        ls.setText("Longstaff-Schwartz");
-
         jLabel6.setText("Simulations:");
 
         jLabel7.setText("Steps:");
@@ -250,43 +278,36 @@ public class ControlPanel extends javax.swing.JPanel
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(bs)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(steps, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(0, 62, Short.MAX_VALUE))
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ls)
-                    .addComponent(jLabel6))
+                .addComponent(jLabel6)
+                .addGap(59, 59, 59)
+                .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(steps, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(75, 75, 75))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(bs)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ls)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(steps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
-                    .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         priceBttn.setText("Price!");
@@ -296,9 +317,12 @@ public class ControlPanel extends javax.swing.JPanel
             }
         });
 
-        computing.setFont(new java.awt.Font("Cantarell", 1, 15)); // NOI18N
-        computing.setForeground(new java.awt.Color(255, 0, 0));
-        computing.setText("COMPUTING PLEASE WAIT");
+        progressDesc.setFont(new java.awt.Font("Cantarell", 1, 15)); // NOI18N
+        progressDesc.setForeground(new java.awt.Color(255, 0, 0));
+        progressDesc.setText("Description");
+
+        progressBar.setValue(30);
+        progressBar.setStringPainted(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -312,12 +336,13 @@ public class ControlPanel extends javax.swing.JPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(91, 91, 91)
-                .addComponent(computing)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(priceBttn)
-                .addGap(33, 33, 33))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(200, 200, 200)
+                .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -327,31 +352,23 @@ public class ControlPanel extends javax.swing.JPanel
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(priceBttn)
-                    .addComponent(computing)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(progressDesc)
+                        .addGap(18, 18, 18)
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void priceBttnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_priceBttnActionPerformed
     {//GEN-HEADEREND:event_priceBttnActionPerformed
-        pcs.firePropertyChange("PriceClicked", false, true);
-    }
-
-    @Override
-    public void removePropertyChangeListener(PropertyChangeListener listener)
-    {
-        pcs.removePropertyChangeListener(listener);
-    }
-
-    @Override
-    public void addPropertyChangeListener(PropertyChangeListener listener)
-    {
-        pcs.addPropertyChangeListener(listener);
+        execute();
     }//GEN-LAST:event_priceBttnActionPerformed
 
     private void simulationsStateChanged(javax.swing.event.ChangeEvent evt)//GEN-FIRST:event_simulationsStateChanged
@@ -369,52 +386,33 @@ public class ControlPanel extends javax.swing.JPanel
     public void setPriceBttnEnabled(boolean on)
     {
         priceBttn.setEnabled(on);
-        computing.setVisible(!on);
+        progressDesc.setVisible(!on);
     }
     
-    public Model createModel()
-    {
-        double v = (Double) volatility.getValue();
-        double r = (Double) rate.getValue();
-        double S = (Double) spot.getValue();
-        if (bs.isSelected())
-        {
-            return new BSModel(S,v,r);
-        }
-        else
-        {
-            int N = (Integer) simulations.getValue();
-            int K = (Integer) steps.getValue();
-            int M = (Integer) degree.getValue();
-            return new LSModel(S,v,r,N,K,M);
-        }
-    }
-    
-    public Instr createInstr()
+    @Override
+    public Instr getInstr()
     {
         double T = (Double) years.getValue();
+        int K = (Integer) steps.getValue();
+        TimeSupport ts = new TimeSupport(T, K);
         if (obligation.isSelected())
-            return new Obligation(T);
+            return new Obligation(ts);
         else
         {
             int type = (put.isSelected() ? Option.PUT : Option.CALL);
-            double K = (Double) strike.getValue();
+            double E = (Double) strike.getValue();
             if (euoption.isSelected())
-                return new EuExercise(type, K, T);
-            else return new AmOption(type, K, T);
+                return new EuExercise( new Option(type, E, "noname", ts) );
+            else return new Option(type, E, "noname", ts);
         }
     }
     
-    private PropertyChangeSupport pcs;
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton amoption;
-    private javax.swing.JRadioButton bs;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.JRadioButton call;
-    private javax.swing.JLabel computing;
     private javax.swing.JSpinner degree;
     private javax.swing.JRadioButton euoption;
     private javax.swing.JLabel jLabel1;
@@ -429,9 +427,10 @@ public class ControlPanel extends javax.swing.JPanel
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JRadioButton ls;
     private javax.swing.JRadioButton obligation;
     private javax.swing.JButton priceBttn;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel progressDesc;
     private javax.swing.JRadioButton put;
     private javax.swing.JSpinner rate;
     private javax.swing.JSpinner simulations;
@@ -441,4 +440,5 @@ public class ControlPanel extends javax.swing.JPanel
     private javax.swing.JSpinner volatility;
     private javax.swing.JSpinner years;
     // End of variables declaration//GEN-END:variables
+
 }

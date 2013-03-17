@@ -8,6 +8,10 @@ package models;
  */
 public class BSParameters
 {
+    public BSParameters()
+    {
+    }
+    
     public BSParameters(double S, double vol, double r, double K, double T)
     {
         this.S = S;

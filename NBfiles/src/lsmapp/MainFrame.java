@@ -1,25 +1,19 @@
 
-package lsmprototype;
+package lsmapp;
 
-import approx.NoSolutionException;
-import approx.Polinomial;
-import instruments.AmOption;
+import approx.Polynomial;
 import instruments.Instr;
-import instruments.JustPrice;
+import instruments.Option;
 import instruments.PriceInfo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import models.LSModel;
-import models.Model;
-import models.WrongInstrException;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -40,99 +34,81 @@ public class MainFrame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
     
-    private JPanel createControls()
+    public static void main(String[] args)
     {
-        cp = new ControlPanel();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new MainFrame().setVisible(true);
+            }
+        });
+    }
+    
+    private Component createControls()
+    {
+        JTabbedPane pane = new JTabbedPane();
         PropertyChangeListener pcl = new PropertyChangeListener() {
-
             @Override
             public void propertyChange(PropertyChangeEvent evt)
             {
-                if (evt.getPropertyName().equalsIgnoreCase("PriceClicked"))
+                if (evt.getPropertyName().equalsIgnoreCase("new_results"))
                 {
-                    priceClicked();
+                    PriceInfo pi;
+                    try {
+                        pi = (PriceInfo) evt.getNewValue();
+                        showResults(pi);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(MainFrame.this,
+                                "Result of pricing is not PriceInfo object.",
+                                "Internal error", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         };
-        cp.addPropertyChangeListener(pcl);
-        return cp;
+        ModelPanel mp = new LSMPanel();
+        mp.addPropertyChangeListener(pcl);
+        pane.add(mp, "Longstaff-Schwartz");
+        
+        mp = new BSPanel();
+        mp.addPropertyChangeListener(pcl);        
+        pane.add(mp, "Black-Scholes");
+        
+        return pane;
     }
     
-    private void priceClicked()
+    private void showResults(PriceInfo pi)
     {
-        cp.setPriceBttnEnabled(false);
-        new SwingWorker<PriceInfo, Void>() {
-
-            @Override
-            protected PriceInfo doInBackground() throws Exception
-            {
-                m = createModel();
-                instr = createInstr();
-                try {
-                    return m.price(instr);
-                } catch (WrongInstrException ex) {
-                    JOptionPane.showMessageDialog(MainFrame.this,
-                            ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                    return new JustPrice(0.0);
-                }
-            }
-            
-            @Override
-            protected void done()
-            {
-                try {
-                    PriceInfo pi = get();
-                    showResults(pi, m, instr);
-                } catch (Exception ex) {
-                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                cp.setPriceBttnEnabled(true);
-            }
-            
-            Model m;
-            Instr instr;
-        }.execute();
-    }
-    
-    private Model createModel()
-    {
-        return cp.createModel();
-    }
-    
-    private Instr createInstr()
-    {
-        return cp.createInstr();
-    }
-    
-    private void showResults(PriceInfo pi, Model model, Instr instr)
-    {
+        Object model = pi.getModel();
+        Instr instr = pi.getInstr();
         if (model instanceof LSModel)
         {
-            showResultsLSM(pi, (LSModel) model, instr);
+            showResultsLSM(pi);
             return ;
         }
         JTextPane pane = new JTextPane();
         pane.setEditable(false);
         pane.setText(
-                model.desc() + "\n" + instr.desc() +
+                model + "\n" + instr.desc() +
                 "\n\nPrice: " + pi.getPrice() );
         tabs.addTab("" + instr, pane);
         tabs.setTabComponentAt(tabs.indexOfComponent(pane), new TabLabel(tabs));
     }
     
-    private void showResultsLSM(PriceInfo pi, LSModel model, Instr instr)
+    private void showResultsLSM(PriceInfo pi)
     {
+        LSModel model = (LSModel) pi.getModel();
+        Instr instr = pi.getInstr();
         JTabbedPane results = new JTabbedPane();
         
         JTextPane desc = new JTextPane();
         desc.setEditable(false);
         desc.setText(
-                model.desc() + "\n" + instr.desc() +
+                model + "\n" + instr.desc() +
                 "\n\nPrice: " + pi.getPrice() );
         results.addTab("Description", desc);
         
-        if (instr instanceof AmOption) {
-            results.addTab("Stopping", stoppingPlot(model, (AmOption) instr));
+        if (instr instanceof Option) {
+            results.addTab("Stopping", stoppingPlot(model, (Option) instr));
         }
         results.addTab("Regression", regressionView(model, instr));
         
@@ -142,9 +118,9 @@ public class MainFrame extends JFrame
                 new TabLabel(tabs));
     }
        
-    private Component stoppingPlot(LSModel model, AmOption opt)
+    private Component stoppingPlot(LSModel model, Option opt)
     {
-        if (opt.getType() == AmOption.CALL)
+        if (opt.getType() == Option.CALL)
             return new JLabel("It is always worth to not"
                     + " exercise american call option.");
         
@@ -163,12 +139,12 @@ public class MainFrame extends JFrame
         return panel;
     }
     
-    private PlotObject stoppingPlotPut(LSModel model, AmOption opt)
+    private PlotObject stoppingPlotPut(LSModel model, Option opt)
     {
         PlotObject po = new PlotObject("Stopping price", Color.RED,
                 PlotObject.Type.Lines);
         
-        Polinomial[] P = model.getEst();
+        Polynomial[] P = model.getEst();
         for (int i = 1; i < P.length; ++i)
         {
             double x0 = 0d;
@@ -188,7 +164,7 @@ public class MainFrame extends JFrame
 
     private Component regressionView(final LSModel model, final Instr instr)
     {
-        final Polinomial[] P = model.getEst();
+        final Polynomial[] P = model.getEst();
         
         final JPanel panel = new JPanel(new BorderLayout());
         final PlotPanel plot = new PlotPanel();        
@@ -230,7 +206,7 @@ public class MainFrame extends JFrame
         return panel;
     }
     
-    private void plotPolinomial(PlotObject po, double beg, double end, Polinomial P)
+    private void plotPolinomial(PlotObject po, double beg, double end, Polynomial P)
     {
         po.clear();
         int steps = 1000;
@@ -255,5 +231,4 @@ public class MainFrame extends JFrame
     }
 
     JTabbedPane tabs;
-    ControlPanel cp;
 }

@@ -7,7 +7,7 @@ import trajectories.Scenario;
  * Modficator class is a "Decorator" from the decorator pattern.
  * @author Grzegorz Los
  */
-public abstract class Modificator implements Instr
+public abstract class Modificator extends Instr
 {
     /**
      * Constructor takes an object to which new properties will be added.
@@ -15,20 +15,21 @@ public abstract class Modificator implements Instr
      */
     public Modificator(Instr wrapped)
     {
+        super(wrapped.ts);
         this.wrapped = wrapped;
     }
-    
-    @Override
-    public double payoff(Scenario s, int k)
-    {
-        if (exAvail(s,k)) return wrapped.payoff(s, k);
-        else return 0;
-    }    
 
+    /**
+     * By default payoff from modification is the same us from unmodified
+     * instrument, only the possibility of exercise is changed.
+     * @param s market scenario.
+     * @param k number of time point.
+     * @return payoff from the instrument.
+     */
     @Override
-    public TimeSupport getTS()
+    protected double payoff_(Scenario s, int k)
     {
-        return wrapped.getTS();
+        return wrapped.payoff_(s, k);
     }
     
     /**

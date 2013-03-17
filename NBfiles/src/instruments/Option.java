@@ -8,7 +8,7 @@ import trajectories.Trajectory;
  * Option is a class extending Instrument to represent an american option.
  * @author Grzegorz Los
  */
-public class Option implements Instr
+public class Option extends Instr
 {
     /**
      * Constructor taking type of the option, its strike value, underlying name,
@@ -19,7 +19,7 @@ public class Option implements Instr
      */
     public Option(int type, double strike, String underlying, TimeSupport ts)
     {
-        this.ts = ts;
+        super(ts);
         this.type = type;
         this.K = strike;
         this.underlying = underlying;
@@ -35,37 +35,20 @@ public class Option implements Instr
      */
     public Option(int type, double strike, int underlyingNr, TimeSupport ts)
     {
-        this.ts = ts;
+        super(ts);
         this.type = type;
         this.K = strike;
         this.underlyingNr = underlyingNr;
         underlying = null;
-    }
-
-    @Override
-    public boolean exAvail(Scenario s, int k)
-    {
-        return true;
-    }
-
-    @Override
-    public double payoff(Scenario s, int k)
-    {
-        Trajectory tr;
-        if (underlying == null) tr = s.getTr(underlyingNr);
-        else tr = s.getTr(underlying);
-        
-        if (type == CALL) return Math.max(0, tr.price(k) - K);
-        else return Math.max(0, K - tr.price(k));
-    }
-          
+    }    
+    
     @Override
     public String desc()
     {
         return "An option\n" +
                 "Type: " + (type == CALL ? "call" : "put") +
                 "\nStrike: " + K +
-                "\nExpiracy: " + ts.T;
+                "\nExpiracy: " + ts.getT();
     }
     
     @Override
@@ -79,7 +62,51 @@ public class Option implements Instr
     {
         return ts;
     }
+
+    public int getType()
+    {
+        return type;
+    }
+
+    public double getStrike()
+    {
+        return K;
+    }
+
+    public String getUnderlying()
+    {
+        return underlying;
+    }
+
+    public Integer getUnderlyingNr()
+    {
+        return underlyingNr;
+    }
     
+    @Override
+    public double intrisnicValue(double stockPrice)
+    {
+        if (type == CALL) return Math.max(0, stockPrice - K);
+        else return Math.max(0, K - stockPrice);        
+    }
+
+    @Override
+    protected boolean exAvail_(Scenario s, int k)
+    {
+        return true;
+    }
+
+    @Override
+    protected double payoff_(Scenario s, int k)
+    {
+        Trajectory tr;
+        if (underlying == null) tr = s.getTr(underlyingNr);
+        else tr = s.getTr(underlying);
+        
+        if (type == CALL) return Math.max(0, tr.price(k) - K);
+        else return Math.max(0, K - tr.price(k));
+    }
+      
     /**
      * Constant indicating call option.
      */
@@ -110,11 +137,4 @@ public class Option implements Instr
      * Number of underlying of the option.
      */
     public final Integer underlyingNr;
-    
-    /**
-     * Time support for describing time horizon of the option and time 
-     * points in which it is considered.
-     */
-    public final TimeSupport ts;
-
 }

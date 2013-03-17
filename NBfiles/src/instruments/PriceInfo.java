@@ -8,4 +8,6 @@ package instruments;
 public interface PriceInfo
 {
     double getPrice();
+    Object getModel();
+    Instr getInstr();
 }

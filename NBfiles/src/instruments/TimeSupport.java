@@ -38,7 +38,9 @@ public class TimeSupport
     {
         if (nr < 0 || nr > K)
             throw new IllegalArgumentException("TimeSupport.nrToTime: nr=" + nr);
-        return nr*dt;
+        if (nr == K) //to avoid numerical errors
+            return T;
+        else return nr*dt;
     }
     
     /**
@@ -46,14 +48,66 @@ public class TimeSupport
      * @param t time in years.
      * @return number of corresponding time point.
      */
-    int timeToNr(double t)
+    public int timeToNr(double t)
     {
         if (t < 0 || t > T)
             throw new IllegalArgumentException("TimeSupport.timeToNr: t=" + t);
         return (int) Math.round(t/dt);
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TimeSupport other = (TimeSupport) obj;
+        if (Double.doubleToLongBits(this.T) != Double.doubleToLongBits(other.T)) {
+            return false;
+        }
+        if (this.K != other.K) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (int)(T * 1500450271) + K*18409199;
+    }
+
+    public int getK()
+    {
+        return K;
+    }
+
+    public void setK(int K)
+    {
+        this.K = K;
+        dt = T/K;
+    }
+
+    public double getT()
+    {
+        return T;
+    }
+
+    public void setT(double T)
+    {
+        this.T = T;
+        dt = T/K;
+    }
+
+    public double getDt()
+    {
+        return dt;
+    }
     
-    public final double T;
-    public final int K;
-    public final double dt;
+    private double T;
+    private int K;
+    private double dt;
 }

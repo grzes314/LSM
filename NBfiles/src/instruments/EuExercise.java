@@ -32,8 +32,8 @@ public class EuExercise extends Modificator
     }
     
     @Override
-    public boolean exAvail(Scenario s, int k)
+    protected boolean exAvail_(Scenario s, int k)
     {
-        return wrapped.getTS().K == k;
+        return wrapped.getTS().getK() == k;
     }
 }

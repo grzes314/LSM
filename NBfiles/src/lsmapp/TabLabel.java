@@ -1,5 +1,5 @@
 
-package lsmprototype;
+package lsmapp;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

@@ -1,6 +1,8 @@
 
 package trajectories;
 
+import instruments.TimeSupport;
+
 /**
  * Interface for classes representing market scenarios. The market scenario
  * is a set of trajectories of all assets in the market.
@@ -21,4 +23,12 @@ public interface Scenario
      * @return trajectory of the asset specified by given name.
      */
     Trajectory getTr(String name);
+    
+    /**
+     * Returns TimeSupport object indicating in which points trajectories
+     * are simulated.
+     * @return TimeSupport object indicating in which points trajectories
+     * are simulated.
+     */
+    TimeSupport getTS();
 }

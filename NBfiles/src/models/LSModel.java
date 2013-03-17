@@ -3,21 +3,25 @@ package models;
 
 import approx.Approx;
 import approx.Point;
-import approx.Polinomial;
+import approx.Polynomial;
 import instruments.Instr;
-import instruments.JustPrice;
 import instruments.PriceInfo;
+import instruments.SimplePriceInfo;
+import instruments.TimeSupport;
 import static java.lang.Math.exp;
-import static java.lang.Math.sqrt;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import trajectories.OneTrGenerator;
+import trajectories.Scenario;
 
 
 /**
  *
  * @author grzes
  */
-public class LSModel implements Model
+public class LSModel implements ProgressObservable
 {
 
     public LSModel(double S, double vol, double r, int N, int K, int M) 
@@ -31,7 +35,7 @@ public class LSModel implements Model
     }
     
     @Override
-    public String desc()
+    public String toString()
     {
         return "LONGSTAFF-SCWARTZ MODEL\n" +
                "S = "+ S + "\n" +
@@ -102,49 +106,47 @@ public class LSModel implements Model
         this.vol = vol;
     }
 
-    public Polinomial[] getEst()
+    public Polynomial[] getEst()
     {
         return est;
     }
     
-    
-    @Override
-    public PriceInfo price(Instr instr) throws WrongInstrException
+    public PriceInfo price(Instr instr)
     {        
-        dt = instr.getTimeHorizon() / K;
-        dr = r * dt;
-        dvol = vol * sqrt(dt);
-        T = instr.getTimeHorizon();
-        est = new Polinomial[K];
+        est = new Polynomial[K];
+        OneTrGenerator gen = new OneTrGenerator(S, r, vol, instr.getTS());
+        Scenario[] paths = gen.generate(N);
         
-        double paths[][] = generatePaths();
         CF[] bestCF = bestCFlows(paths, instr);
-        double mean = getMean(bestCF);
-        return new JustPrice(mean);
+        double mean = getMean(bestCF, instr.getTS());
+        return new SimplePriceInfo(mean, this, instr);
+    }
+        
+    @Override
+    public void addObserver(ProgressObserver ob)
+    {
+        observers.add(ob);
     }
 
-    private double[][] generatePaths()
+    @Override
+    public void removeObserver(ProgressObserver ob)
     {
-        double[][] paths = new double[N][K+1];
-        for (int i = 0; i < N; ++i)
-        {
-            paths[i][0] = S;
-            for (int j = 1; j <= K; ++j)
-            {
-                paths[i][j] = paths[i][j-1]*exp(
-                        dvol*rt.nextGaussian() + dr - dvol*dvol/2);
-            }
-        }
-        return paths;
+        observers.remove(ob);
     }
-        
-    private CF[] bestCFlows(double[][] paths, Instr instr)
+
+    @Override
+    public void notifyObservers(Progress pr)
+    {
+        for (ProgressObserver ob: observers)
+            ob.update(pr);
+    }
+    
+    private CF[] bestCFlows(Scenario[] paths, Instr instr)
     {
         CF[] res = new CF[N];
         for (int i = 0; i < N; ++i)
         {
-            res[i] = new CF( instr.payoff(paths[i][K],
-                                    instr.getTimeHorizon() ), K);
+            res[i] = new CF( instr.payoff(paths[i], K), K );
         }
         for (int j = K-1; j > 0; --j)
         {
@@ -155,69 +157,66 @@ public class LSModel implements Model
         return res;
     }
     
-    private void updateBestCFlows(double[][] paths, Instr instr,
-            CF[] bestCF, Polinomial p, int j)
+    private void updateBestCFlows(Scenario[] paths, Instr instr,
+            CF[] bestCF, Polynomial p, int j)
     {
         for (int i = 0; i < N; ++i)
         {
-            double expected = p.value(paths[i][j]);
-            double payoff = instr.payoff(paths[i][j], timeAt(j));
+            double expected = p.value(paths[i].getTr(1).price(j));
+            double payoff = instr.payoff(paths[i], j);
             if (payoff > 0 && payoff > expected)
                 bestCF[i] = new CF(payoff, j);
         }
     }
     
-    private Collection<Point> prepareRegression(double[][] paths,
+    private Collection<Point> prepareRegression(Scenario[] paths,
                 CF[] bestCF, int j, Instr instr)
     {
         ArrayList<Point> points = new ArrayList<>();
+        double dr = r * instr.getTS().getT() / instr.getTS().getK();
         for (int i = 0; i < N; ++i)
         {
             double val = bestCF[i].x * exp((j-bestCF[i].t)*dr);
-            if (instr.payoff(paths[i][j], timeAt(j)) > 0)
+            if (instr.payoff(paths[i], j) > 0)
             {
-                points.add(new Point(paths[i][j], val));                
+                points.add(new Point(paths[i].getTr(1).price(j), val));                
             }
         }
         return points;
     }
     
-    private Polinomial regress(Collection<Point> points)
+    private Polynomial regress(Collection<Point> points)
     {      
         if (points.isEmpty())
-            return new Polinomial(0.0);
+            return new Polynomial(0.0);
         else 
         {
             Approx a = new Approx();  
-            Polinomial p = a.approximate(points, Math.min(M, points.size()));
+            Polynomial p = a.approximate(points, Math.min(M, points.size()));
             return p;
         }
     }
     
-    private double getMean(CF[] bestCF)
+    private double getMean(CF[] bestCF, TimeSupport ts)
     {
         double sum = 0;
+        double dr = r * ts.getT() / ts.getK();
         for (int i = 0; i < N; ++i)
             sum += bestCF[i].x * exp((-bestCF[i].t)*dr);
         return sum / N;
-    }
-    
-    private double timeAt(int k)
-    {
-        return (double)k / K * T;
     }
 
     private double S;
     private double vol;
     private double r;
-    private double dt;
-    private double dvol;
-    private double dr;
-    private double T;
+    
     private int N, K, M;
-    RandomTools rt = new RandomTools();
-    private Polinomial[] est;
+    private RandomTools rt = new RandomTools();
+    private Polynomial[] est;
+
+    private List<ProgressObserver> observers = new LinkedList<>();
 }
+
 class CF
 {
 

@@ -1,41 +1,77 @@
 
 package models;
 
-import instruments.*;
 import static java.lang.Math.*;
 
 /**
- *
- * @author grzes
+ * Class for pricing options with BS Formula.
+ * @author Grzegrorz Los
  */
-public class BSModel
+public class BSModel implements ProgressObservable
 {
-    @Override
-    public PriceInfo price(double S, double vol, double r)
+    public BSModel()
     {
-        double K = opt.getStrike();
-        double T = opt.getTimeHorizon();
+    }
+
+    public BSModel(double S, double vol, double r)
+    {
+        this.S = S;
+        this.vol = vol;
+        this.r = r;
+    }
+
+    public double getS()
+    {
+        return S;
+    }
+
+    public void setS(double S)
+    {
+        if (S <= 0)
+            throw new WrongParamException("S = " + S);
+        this.S = S;
+    }
+
+    public double getR()
+    {
+        return r;
+    }
+
+    public void setR(double r)
+    {
+        if (r < -1)
+            throw new WrongParamException("r = " + r);
+        this.r = r;
+    }
+
+    public double getVol()
+    {
+        return vol;
+    }
+
+    public void setVol(double vol)
+    {
+        if (vol <= 0)
+            throw new WrongParamException("vol = " + vol);
+        this.vol = vol;
+    }
+
+    public double priceCall(double K, double T)
+    {
         double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
         double d2 = d1 - vol * sqrt(T);
-        if (opt.getType() == Option.CALL) return priceCall(K, T, d1, d2);
-        else return pricePut(K, T, d1, d2);
-    }
-
-
-    private PriceInfo priceCall(double K, double T, double d1, double d2)
-    {
-        return new JustPrice(
-                S*rt.cndf(d1) - K*exp(-r*T)*rt.cndf(d2) );
+        return S*rt.cndf(d1) - K*exp(-r*T)*rt.cndf(d2) ;
     }
     
-    private PriceInfo pricePut(double K, double T, double d1, double d2)
+    public double pricePut(double K, double T)
     {
-        return new JustPrice(
-                K*exp(-r*T)*rt.cndf(-d2)- S*rt.cndf(-d1));
+        double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
+        double d2 = d1 - vol * sqrt(T);
+        return K*exp(-r*T)*rt.cndf(-d2)- S*rt.cndf(-d1);
     }
     
     @Override
-    public String desc()
+    public String toString()
     {
         return "BLACK-SCHOLES MODEL\n" +
                "S = "+ S + "\n" +
@@ -43,5 +79,13 @@ public class BSModel
                "r = " + r + "\n";                
     }
     
-    RandomTools rt = new RandomTools();
+    @Override
+    public void addObserver(ProgressObserver ob) {}
+    @Override
+    public void removeObserver(ProgressObserver ob) {}
+    @Override
+    public void notifyObservers(Progress pr) {}
+    
+    private RandomTools rt = new RandomTools();
+    double S, vol, r;
 }
