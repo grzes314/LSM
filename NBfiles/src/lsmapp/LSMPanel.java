@@ -21,7 +21,8 @@ public class LSMPanel extends ModelPanel
     public LSMPanel()
     {
         initComponents();
-        progressDesc.setVisible(false);        
+        progressDesc.setVisible(false);
+        progressBar.setVisible(false);
     }
 
     @Override
@@ -33,7 +34,8 @@ public class LSMPanel extends ModelPanel
         int N = (Integer) simulations.getValue();
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
-        return new LSModel(S,v,r,N,K,M);
+        model = new LSModel(S,v,r,N,K,M);
+        return model;
     }
 
     @Override
@@ -43,12 +45,13 @@ public class LSMPanel extends ModelPanel
         progressDesc.setVisible(true);
         progressBar.setValue(0);
         progressBar.setVisible(true);
+        priceBttn.setEnabled(false);
     }
 
     @Override
     protected PriceInfo calculate()
     {
-        return getModel().price( getInstr() );
+        return model.price( getInstr() );
     }
 
     @Override
@@ -63,7 +66,10 @@ public class LSMPanel extends ModelPanel
     {
         progressDesc.setVisible(false);
         progressBar.setVisible(false);
+        priceBttn.setEnabled(true);
     }
+    
+    private LSModel model;
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -105,6 +111,7 @@ public class LSMPanel extends ModelPanel
         priceBttn = new javax.swing.JButton();
         progressDesc = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
+        jLabel9 = new javax.swing.JLabel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Market and asset"));
 
@@ -324,6 +331,10 @@ public class LSMPanel extends ModelPanel
         progressBar.setValue(30);
         progressBar.setStringPainted(true);
 
+        jLabel9.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("Least Squares Monte Carlo");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -340,14 +351,15 @@ public class LSMPanel extends ModelPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(200, 200, 200)
-                .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(28, 28, 28))
+                .addGap(228, 228, 228)
+                .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(jLabel9)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -423,6 +435,7 @@ public class LSMPanel extends ModelPanel
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

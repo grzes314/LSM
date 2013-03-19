@@ -115,6 +115,14 @@ public class LSModel implements ProgressObservable
     {        
         est = new Polynomial[K];
         OneTrGenerator gen = new OneTrGenerator(S, r, vol, instr.getTS());
+        gen.addObserver( new ProgressObserver() {
+            @Override
+            public void update(Progress pr)
+            {
+                notifyObservers(pr);
+            }
+        } );
+        
         Scenario[] paths = gen.generate(N);
         
         CF[] bestCF = bestCFlows(paths, instr);
@@ -153,6 +161,8 @@ public class LSModel implements ProgressObservable
             Collection<Point> points = prepareRegression(paths, res, j, instr);
             est[j] = regress(points);
             updateBestCFlows(paths, instr, res, est[j], j);
+            
+            notifyObservers(new Progress("Regressing", (int)((K-j)*100/K)));
         }        
         return res;
     }

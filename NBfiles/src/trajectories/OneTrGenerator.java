@@ -4,13 +4,13 @@ package trajectories;
 import instruments.TimeSupport;
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
-import models.RandomTools;
+import models.*;
 
 /**
  *
  * @author Grzegorz Los
  */
-public class OneTrGenerator implements Generator
+public class OneTrGenerator implements Generator, ProgressObservable
 {
 
     public OneTrGenerator(double S, double m, double vol, TimeSupport ts)
@@ -20,7 +20,7 @@ public class OneTrGenerator implements Generator
         this.vol = vol;
         this.ts = ts;
         
-        dm = m * dm;
+        dm = m * ts.getDt();
         dvol = vol * sqrt(ts.getDt());
     }
 
@@ -31,6 +31,9 @@ public class OneTrGenerator implements Generator
         for (int i = 0; i < n; ++i)
         {
             res[i] = generate();
+            if (i % 100 == 0)
+                notifyObservers( new Progress( "Generating trajectories",
+                                               (int)((double)i/n*100) ));
         }
         return res;
     }
@@ -53,7 +56,27 @@ public class OneTrGenerator implements Generator
         return new OneTrScenario(ts,tr);        
     }
 
-    double S, m, vol, dm, dvol;
-    TimeSupport ts;
-    RandomTools rt = new RandomTools();
+    @Override
+    public void removeObserver(ProgressObserver ob)
+    {
+        os.removeObserver(ob);
+    }
+
+    @Override
+    public void notifyObservers(Progress pr)
+    {
+        os.notifyObservers(pr);
+    }
+
+    @Override
+    public void addObserver(ProgressObserver ob)
+    {
+        os.addObserver(ob);
+    }
+
+    
+    private double S, m, vol, dm, dvol;
+    private TimeSupport ts;
+    private RandomTools rt = new RandomTools();
+    private ObservableSupport os = new ObservableSupport();
 }

@@ -73,6 +73,10 @@ public class MainFrame extends JFrame
         mp.addPropertyChangeListener(pcl);        
         pane.add(mp, "Black-Scholes");
         
+        mp = new FDPanel();
+        mp.addPropertyChangeListener(pcl);        
+        pane.add(mp, "Finite Difference");
+        
         return pane;
     }
     
@@ -110,14 +114,14 @@ public class MainFrame extends JFrame
         if (instr instanceof Option) {
             results.addTab("Stopping", stoppingPlot(model, (Option) instr));
         }
-        results.addTab("Regression", regressionView(model, instr));
+        results.addTab("Regression", regressionViewLSM(model, instr));
         
         
         tabs.addTab("" + instr, results);
         tabs.setTabComponentAt(tabs.indexOfComponent(results),
                 new TabLabel(tabs));
     }
-       
+    
     private Component stoppingPlot(LSModel model, Option opt)
     {
         if (opt.getType() == Option.CALL)
@@ -162,7 +166,7 @@ public class MainFrame extends JFrame
         return po;
     }
 
-    private Component regressionView(final LSModel model, final Instr instr)
+    private Component regressionViewLSM(final LSModel model, final Instr instr)
     {
         final Polynomial[] P = model.getEst();
         
@@ -229,6 +233,6 @@ public class MainFrame extends JFrame
             po.addPoint( new PlotPoint(x, instr.intrisnicValue(x)) );
         }
     }
-
+    
     JTabbedPane tabs;
 }

@@ -22,7 +22,7 @@ public class EuExercise extends Modificator
     @Override
     public String desc()
     {
-        return wrapped.desc() + "European exercise";
+        return wrapped.desc() + "\nEuropean exercise";
     }
     
     @Override
