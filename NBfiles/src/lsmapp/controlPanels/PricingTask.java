@@ -1,14 +1,16 @@
 
-package models;
+package lsmapp.controlPanels;
 
-import instruments.PriceInfo;
 import javax.swing.SwingWorker;
+import models.Progress;
+import models.ProgressObservable;
+import models.ProgressObserver;
 
 /**
  *
  * @author Grzegorz Los
  */
-abstract public class PricingTask extends SwingWorker<PriceInfo, Progress>
+abstract public class PricingTask extends SwingWorker<Double, Progress>
   implements ProgressObserver
 {
     public PricingTask(ProgressObservable observable)

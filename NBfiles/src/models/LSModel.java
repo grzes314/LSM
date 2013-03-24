@@ -5,8 +5,6 @@ import approx.Approx;
 import approx.Point;
 import approx.Polynomial;
 import instruments.Instr;
-import instruments.PriceInfo;
-import instruments.SimplePriceInfo;
 import instruments.TimeSupport;
 import static java.lang.Math.exp;
 import java.util.ArrayList;
@@ -111,7 +109,7 @@ public class LSModel implements ProgressObservable
         return est;
     }
     
-    public PriceInfo price(Instr instr)
+    public double price(Instr instr)
     {        
         est = new Polynomial[K];
         OneTrGenerator gen = new OneTrGenerator(S, r, vol, instr.getTS());
@@ -127,7 +125,7 @@ public class LSModel implements ProgressObservable
         
         CF[] bestCF = bestCFlows(paths, instr);
         double mean = getMean(bestCF, instr.getTS());
-        return new SimplePriceInfo(mean, this, instr);
+        return mean;
     }
         
     @Override

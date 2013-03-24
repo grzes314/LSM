@@ -1,80 +1,109 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package lsmapp;
 
-import instruments.*;
-import models.BSModel;
+package lsmapp.controlPanels;
+
+import instruments.EuExercise;
+import instruments.Instr;
+import instruments.Option;
+import instruments.TimeSupport;
+import models.FDModel;
 import models.Progress;
 import models.ProgressObservable;
 
 /**
  *
- * @author Grzegorz Los
+ * @author grzes
  */
-public class BSPanel extends ModelPanel
-{
-    /**
-     * Creates new form ControlPanel
-     */
-    public BSPanel()
+public class FDPanel extends ModelPanel
+{    
+    public FDPanel()
     {
         initComponents();
-        
+        progressDesc.setVisible(false);    
+        progressBar.setVisible(false);
     }
     
-    public double getPrice()
+    @Override
+    public FDModel getModel()
     {
-        double K = (Double) strike.getValue();
-        double T = (Double) years.getValue();
-        if (put.isSelected())
-            return model.pricePut(K, T);
-        else return model.priceCall(K, T);
+        return model;
     }
-    
+
     @Override
     public Instr getInstr()
     {
-        double T = (Double) years.getValue();
-        TimeSupport ts = new TimeSupport(T, 1);
-        int type = (put.isSelected() ? Option.PUT : Option.CALL);
-        double E = (Double) strike.getValue();
-        return new EuExercise( new Option(type, E, "noname", ts) ); 
+        return instr;
     }
-
-    @Override
-    protected void prepareForTask() {
-        priceBttn.setEnabled(false);
-    }
-
-    @Override
-    protected PriceInfo calculate()
+ 
+    public void setPriceBttnEnabled(boolean on)
     {
-        return new SimplePriceInfo(getPrice(), model, getInstr());
+        priceBttn.setEnabled(on);
+        progressDesc.setVisible(!on);
     }
 
-    @Override
-    protected void progressUpdate(Progress pr) {}
 
     @Override
-    protected void cleanAfterTask() {
-        priceBttn.setEnabled(true);
-    }
-    
-    @Override
-    public ProgressObservable getModel()
+    protected FDModel createModel()
     {
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new BSModel(S,v,r);
+        int I = (Integer) priceSteps.getValue();
+        int K = (Integer) timeSteps.getValue();
+        model = new FDModel(S, v, r, 3*S, I, K);
         return model;
     }
-
-
     
-    private BSModel model;
+    @Override
+    protected Instr createInstr()
+    {
+        double T = (Double) years.getValue();
+        int K = (Integer) timeSteps.getValue();
+        TimeSupport ts = new TimeSupport(T, K);
+        int type = (put.isSelected() ? Option.PUT : Option.CALL);
+        double E = (Double) strike.getValue();
+        if (euoption.isSelected())
+            instr = new EuExercise( new Option(type, E, "noname", ts) );
+        else instr = new Option(type, E, "noname", ts);
+        return instr;
+    }
+    
+    @Override
+    protected void prepareForTask()
+    {
+        progressDesc.setText("Preparing...");
+        progressDesc.setVisible(true);
+        progressBar.setValue(0);
+        progressBar.setVisible(true);
+        priceBttn.setEnabled(false);
+    }
+
+    @Override
+    protected double calculate()
+    {
+        double T = (Double) years.getValue();
+        boolean isCall = call.isSelected();
+        double E = (Double) strike.getValue();
+        boolean isAm = amoption.isSelected();
+        return model.price(E, T, isCall, isAm);
+    }
+
+    @Override
+    protected void progressUpdate(Progress pr)
+    {
+        progressDesc.setText(pr.desc);
+        progressBar.setValue(pr.percent);
+    }
+
+    @Override
+    protected void cleanAfterTask()
+    {
+        progressDesc.setVisible(false);
+        progressBar.setVisible(false);
+        priceBttn.setEnabled(true);
+    }
+    
+    private FDModel model;
+    private Instr instr;
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -95,6 +124,9 @@ public class BSPanel extends ModelPanel
         spot = new javax.swing.JSpinner();
         jLabel4 = new javax.swing.JLabel();
         rate = new javax.swing.JSpinner();
+        jPanel2 = new javax.swing.JPanel();
+        euoption = new javax.swing.JRadioButton();
+        amoption = new javax.swing.JRadioButton();
         jPanel3 = new javax.swing.JPanel();
         put = new javax.swing.JRadioButton();
         call = new javax.swing.JRadioButton();
@@ -102,8 +134,15 @@ public class BSPanel extends ModelPanel
         strike = new javax.swing.JSpinner();
         jLabel5 = new javax.swing.JLabel();
         years = new javax.swing.JSpinner();
-        priceBttn = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        timeSteps = new javax.swing.JSpinner();
+        priceSteps = new javax.swing.JSpinner();
+        priceBttn = new javax.swing.JButton();
+        progressDesc = new javax.swing.JLabel();
+        progressBar = new javax.swing.JProgressBar();
+        jLabel9 = new javax.swing.JLabel();
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Market and asset"));
 
@@ -134,7 +173,7 @@ public class BSPanel extends ModelPanel
                     .addComponent(volatility)
                     .addComponent(spot)
                     .addComponent(rate, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(70, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,7 +190,35 @@ public class BSPanel extends ModelPanel
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(rate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(122, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Instrument"));
+
+        buttonGroup1.add(euoption);
+        euoption.setText("European Option");
+
+        buttonGroup1.add(amoption);
+        amoption.setSelected(true);
+        amoption.setText("American Option");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(euoption)
+                    .addComponent(amoption))
+                .addGap(0, 136, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(euoption)
+                .addGap(18, 18, 18)
+                .addComponent(amoption)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Option Parameters"));
@@ -195,7 +262,7 @@ public class BSPanel extends ModelPanel
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(years, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -214,6 +281,43 @@ public class BSPanel extends ModelPanel
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Model"));
+
+        jLabel6.setText("Price steps");
+
+        jLabel7.setText("Time steps");
+
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000000), Integer.valueOf(100), null, Integer.valueOf(1000)));
+
+        priceSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000), Integer.valueOf(10), null, Integer.valueOf(100)));
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel7))
+                .addGap(59, 59, 59)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(timeSteps, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
+                    .addComponent(priceSteps))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(priceSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(timeSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(38, 38, 38))
+        );
+
         priceBttn.setText("Price!");
         priceBttn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -221,34 +325,57 @@ public class BSPanel extends ModelPanel
             }
         });
 
-        jLabel6.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel6.setText("Black-Scholes model");
+        progressDesc.setFont(new java.awt.Font("Cantarell", 1, 15)); // NOI18N
+        progressDesc.setForeground(new java.awt.Color(255, 0, 0));
+        progressDesc.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        progressDesc.setText("Description");
+
+        progressBar.setValue(30);
+        progressBar.setStringPainted(true);
+
+        jLabel9.setFont(new java.awt.Font("Cantarell", 1, 24)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("Finite Difference");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(91, 473, Short.MAX_VALUE)
-                .addComponent(priceBttn)
-                .addGap(33, 33, 33))
-            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))
+                .addGap(228, 228, 228)
+                .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(priceBttn))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(progressDesc)
+                        .addGap(18, 18, 18)
+                        .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -256,27 +383,37 @@ public class BSPanel extends ModelPanel
     {//GEN-HEADEREND:event_priceBttnActionPerformed
         execute();
     }//GEN-LAST:event_priceBttnActionPerformed
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton amoption;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.ButtonGroup buttonGroup3;
     private javax.swing.JRadioButton call;
+    private javax.swing.JRadioButton euoption;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JButton priceBttn;
+    private javax.swing.JSpinner priceSteps;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JLabel progressDesc;
     private javax.swing.JRadioButton put;
     private javax.swing.JSpinner rate;
     private javax.swing.JSpinner spot;
     private javax.swing.JSpinner strike;
+    private javax.swing.JSpinner timeSteps;
     private javax.swing.JSpinner volatility;
     private javax.swing.JSpinner years;
     // End of variables declaration//GEN-END:variables
-
 }

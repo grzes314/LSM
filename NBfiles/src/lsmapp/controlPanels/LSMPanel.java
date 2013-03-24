@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package lsmapp;
+package lsmapp.controlPanels;
 
 import instruments.*;
 import models.LSModel;
@@ -14,10 +14,6 @@ import models.Progress;
  */
 public class LSMPanel extends ModelPanel
 {
-
-    /**
-     * Creates new form LSMPanel
-     */
     public LSMPanel()
     {
         initComponents();
@@ -25,8 +21,26 @@ public class LSMPanel extends ModelPanel
         progressBar.setVisible(false);
     }
 
+    public void setPriceBttnEnabled(boolean on)
+    {
+        priceBttn.setEnabled(on);
+        progressDesc.setVisible(!on);
+    }
+    
     @Override
     public LSModel getModel()
+    {
+        return model;
+    }
+    
+    @Override
+    public Instr getInstr()
+    {
+        return instr;
+    }
+    
+    @Override
+    protected LSModel createModel()
     {
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
@@ -38,6 +52,26 @@ public class LSMPanel extends ModelPanel
         return model;
     }
 
+    
+    @Override
+    protected Instr createInstr()
+    {
+        double T = (Double) years.getValue();
+        int K = (Integer) steps.getValue();
+        TimeSupport ts = new TimeSupport(T, K);
+        if (obligation.isSelected())
+            instr = new Obligation(ts);
+        else
+        {
+            int type = (put.isSelected() ? Option.PUT : Option.CALL);
+            double E = (Double) strike.getValue();
+            if (euoption.isSelected())
+                instr = new EuExercise( new Option(type, E, "noname", ts) );
+            else instr = new Option(type, E, "noname", ts);
+        }
+        return instr;
+    }
+    
     @Override
     protected void prepareForTask()
     {
@@ -49,9 +83,9 @@ public class LSMPanel extends ModelPanel
     }
 
     @Override
-    protected PriceInfo calculate()
+    protected double calculate()
     {
-        return model.price( getInstr() );
+        return model.price( instr );
     }
 
     @Override
@@ -70,6 +104,7 @@ public class LSMPanel extends ModelPanel
     }
     
     private LSModel model;
+    private Instr instr;
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -142,7 +177,7 @@ public class LSMPanel extends ModelPanel
                     .addComponent(volatility)
                     .addComponent(spot)
                     .addComponent(rate, javax.swing.GroupLayout.DEFAULT_SIZE, 72, Short.MAX_VALUE))
-                .addContainerGap(51, Short.MAX_VALUE))
+                .addContainerGap(79, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -285,21 +320,20 @@ public class LSMPanel extends ModelPanel
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
-                .addComponent(jLabel6)
-                .addGap(59, 59, 59)
-                .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(steps, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(75, 75, 75))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7))
+                        .addGap(59, 59, 59)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(steps, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -340,7 +374,7 @@ public class LSMPanel extends ModelPanel
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -350,7 +384,7 @@ public class LSMPanel extends ModelPanel
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE))
                 .addGap(228, 228, 228)
                 .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -360,11 +394,11 @@ public class LSMPanel extends ModelPanel
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel9)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
@@ -374,7 +408,7 @@ public class LSMPanel extends ModelPanel
                         .addGap(18, 18, 18)
                         .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -395,29 +429,6 @@ public class LSMPanel extends ModelPanel
             degree.setValue((Integer) simulations.getValue());
     }//GEN-LAST:event_degreeStateChanged
 
-    public void setPriceBttnEnabled(boolean on)
-    {
-        priceBttn.setEnabled(on);
-        progressDesc.setVisible(!on);
-    }
-    
-    @Override
-    public Instr getInstr()
-    {
-        double T = (Double) years.getValue();
-        int K = (Integer) steps.getValue();
-        TimeSupport ts = new TimeSupport(T, K);
-        if (obligation.isSelected())
-            return new Obligation(ts);
-        else
-        {
-            int type = (put.isSelected() ? Option.PUT : Option.CALL);
-            double E = (Double) strike.getValue();
-            if (euoption.isSelected())
-                return new EuExercise( new Option(type, E, "noname", ts) );
-            else return new Option(type, E, "noname", ts);
-        }
-    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton amoption;
