@@ -42,6 +42,8 @@ public class PlotPanel extends JPanel
     public void paint(Graphics gr)
     {
         super.paint(gr);
+        if (!pobjects.isEmpty())
+            markAxes(gr);
         for (PlotObject po: pobjects)
         {
             gr.setColor(po.getColor());
@@ -78,8 +80,6 @@ public class PlotPanel extends JPanel
                 }
             }
         }
-        if (!pobjects.isEmpty())
-            markAxes(gr);
     }
 
     public void addPlotObject(PlotObject po)
@@ -100,6 +100,15 @@ public class PlotPanel extends JPanel
         minY = minY();
         maxX = maxX();
         maxY = maxY();
+        
+        if (minX == Double.POSITIVE_INFINITY || minX == Double.NaN) minX = -1;
+        if (minX == Double.NEGATIVE_INFINITY) minX = -1000;
+        if (minY == Double.POSITIVE_INFINITY || minY == Double.NaN) minY = -1;
+        if (minY == Double.NEGATIVE_INFINITY) minY = -1000;
+        if (maxX == Double.NEGATIVE_INFINITY || maxX == Double.NaN) maxX = 1;
+        if (maxX == Double.POSITIVE_INFINITY) maxX = 1000;
+        if (maxY == Double.NEGATIVE_INFINITY || maxY == Double.NaN) maxY = 1;
+        if (maxY == Double.POSITIVE_INFINITY) maxY = 1000;
     }
 
     public JPanel getLegend()
@@ -315,7 +324,7 @@ public class PlotPanel extends JPanel
 
     private void markAxes(Graphics gr)
     {
-        gr.setColor(Color.BLACK);
+        gr.setColor(Color.LIGHT_GRAY);
         int h = getSize().height;
         int w = getSize().width;
         double W = (maxX - minX)*1.1;
@@ -361,18 +370,29 @@ public class PlotPanel extends JPanel
 
     private double getInterval(double l)
     {
-        if (l > 1.0)
+        double interval = 0.1;
+        if (l >= 1.0)
         {
-            for (double inter = 0.1; ; inter *= 10)
-                if (10*inter >= l)
-                    if (5*inter >= l) return inter/2;
-                    else return inter;
+            for (int i = 0; l / interval > 10; ++i)
+            {
+                if (i % 3 == 0) interval *= 2;
+                else if (i % 3 == 1) interval *= 2.5;
+                else interval *= 2;
+            }
         }
-        else
+        else if (l >= 10e-4)
         {
-            for (double inter = 0.1; ; inter /= 10)
-                if (10*inter < l) return inter;
+            interval = 10e-6;
+            for (int i = 0; l / interval > 10; ++i)
+            {
+                if (i % 3 == 0) interval *= 2;
+                else if (i % 3 == 1) interval *= 2.5;
+                else interval *= 2;
+            }
+            
         }
+        else interval = 10e-6;
+        return interval;
     }
 
 
