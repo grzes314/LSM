@@ -10,4 +10,15 @@
 *.aux
 *.log
 *.backup
+*.pdf
+*.toc
+Thesis/EoSA.txt
 
+# i do not know what does the one below #
+*~
+
+
+# not source directories #
+/NBFiles/nbproject/
+/NBfiles/build/
+/NBfiles/dist/
