@@ -5,11 +5,144 @@ import static java.lang.Math.exp;
 import static java.lang.Math.max;
 
 /**
- *
+ * Implementation of finite diffrence method.
  * @author Grzegorz Los
  */
 public class FDModel implements ProgressObservable
-{  
+{
+    /**
+     * Class representing a subset of a grid used in finite diffrence.
+     */
+    public static class Grid
+    {
+        public Grid(int I, int K, double T, double border)
+        {
+            this.I = I;
+            this.K = K;
+            ourI = Math.min(I,1000);
+            ourK = Math.min(K,100);
+            this.T = T;
+            this.border = border;
+            V = new double[ourK+1][ourI+1];
+            S = new double[ourI+1];
+            for (int i = 0; i <= ourI; ++i)
+                S[i] = (double)i / ourI * border; 
+            
+            stopping = new double[ourK+1]; 
+        }
+        
+        /**
+         * Converts time index of grid to time point. 
+         * @param k index.
+         * @return time point.
+         */
+        public double timeAt(int k)
+        {
+            return (double)k / ourK * T;
+        }
+        
+        /**
+         * Converts asset price index of grid to real value.
+         * @param i index.
+         * @return asset price.
+         */
+        public double assetPriceAt(int i)
+        {
+            return S[i];
+        }
+        
+        public double[][] getOptionPrices()
+        {
+            return V;
+        }
+
+        public double[] getStopping()
+        {
+            return stopping;
+        }
+        
+        /**
+         * For some k's will fill one columnn of a grid.
+         * @param k Time index from finite diffrence method, 0 <= k <= K.
+         * @param col Column with prices 
+         */
+        public void fill(int k, double[] col, double stoppingPrice)
+        {
+            if ( (long)k * ourK % K == 0)
+            {
+                int t = (int)( (long)k * ourK / K );
+                for (int i = 0; i <= ourI; ++i)
+                {
+                    int j = (int) ((long)i*I/ourI);
+                    V[t][i] = col[j];
+                }
+                stopping[t] = stoppingPrice;
+            }
+        }
+            
+        private double payoff(double assetPrice, double strike, boolean call)
+        {
+            if (call) return Math.max(assetPrice - strike, 0);
+            else return Math.max(strike - assetPrice, 0);
+        }
+    
+       /**
+        * Number of asset steps in method.
+        */
+        private int I;
+
+       /**
+        * Number of time steps in method.
+        */
+        private int K;   
+        
+       /**
+        * Number of asset steps in method.
+        */
+        private int ourI;
+
+       /**
+        * Number of time steps in method.
+        */
+        private int ourK;    
+        
+       /**
+        * Option's expiration time.
+        */
+        private double T;    
+        
+        /**
+         * Asset price at maximum level of the grid.
+         */
+        private double border;    
+        
+        /**
+         * The grid.
+         */
+        private double V[][];
+        
+       /**
+        * Asset prices at grid points.
+        */
+        private double S[];
+        
+        /**
+         * Array of asset prices with minimal (for call option) or maximal
+         * (for put option) for which it is worth to exercise the option.
+         */
+        private double[] stopping;
+    }
+    
+    /**
+     * Constructor of the model. Takes only arguments related to market and
+     * an underlying asset.
+     * @param S Spot price for which option value is calculated.
+     * @param vol Assets volatility.
+     * @param r Interest rate.
+     * @param border Asset price at maximum level of the grid;
+     * @param I Number of steps at the asset price axis.
+     * @param K Number of steps at the time axis.
+     */
     public FDModel(double S, double vol, double r, double border, int I, int K)
     {
         this.S0 = S;
@@ -61,18 +194,38 @@ public class FDModel implements ProgressObservable
         this.vol = vol;
     }
 
+    public double getBorder()
+    {
+        return border;
+    }
+
+    public Grid getLastGrid()
+    {
+        return grid;
+    }
+
+    /**
+     * Method pricing an option. As  arguments takes only option parameters.
+     * Values related to asset or market are parameters of the model and 
+     * can be set in constructor or by setters.
+     * @param strike Strike value of the option.
+     * @param T Option's expiration time.
+     * @param call Is it a call option?
+     * @param american Is it an american option?
+     * @return 
+     */
     public double price(double strike, double T, boolean call, boolean american)
     {
         this.strike = strike;
         this.T = T;
         setAuxVars();
+        grid = new Grid(I, K, T, border);
         fillLast(call);
         for (int k = K-1; k >= 0; --k)
         {
-            fillPrev(k, call);
-            if (american)
-                maybeExercise(k, call);
-            notifyObservers(new Progress("Filling grid", (int)(100*(K-k)/K)));
+            fillPrev(k, call, american);
+            if (k % 100 == 0)
+              notifyObservers(new Progress("Filling grid", (int)(100*(K-k)/K)));
         }
         return result();
     }
@@ -129,20 +282,21 @@ public class FDModel implements ProgressObservable
     {
         for (int i = 0; i <= I; ++i)
             V[K%2][i] = (call ? max(0, S[i]-strike) : max(0, strike-S[i]));
+        grid.fill(K, V[K%2], strike);
     }
     
     private void fillBorder(int k, boolean call)
     {
         if (call) {
             V[k%2][0] = 0;
-            V[k%2][I] = border - strike*exp(-r*k*dt);
+            V[k%2][I] = border - strike*exp(-r*(K-k)*dt);
         } else {
-            V[k%2][0] = strike*exp(-r*k*dt);
+            V[k%2][0] = strike*exp(-r*(K-k)*dt);
             V[k%2][I] = 0;            
         }
     }    
     
-    private void fillPrev(int k, boolean call)
+    private void fillPrev(int k, boolean call, boolean american)
     {
         fillBorder(k, call);
         int curr = k%2, last = (k+1)%2;
@@ -151,17 +305,31 @@ public class FDModel implements ProgressObservable
             V[curr][i] = A[i]*V[last][i-1] + 
                     (1 + B[i])*V[last][i] + C[i]*V[last][i+1];
         }
+        if (american)
+        {
+            double stop = maybeExercise(k, call);
+            grid.fill(k, V[curr], stop);
+        }
+        else grid.fill(k, V[curr], strike);
     }
     
-    private void maybeExercise(int k, boolean call)
+    private double maybeExercise(int k, boolean call)
     {
-        for (int i = 1; i < I; ++i)
+        double stop = (call ? Double.POSITIVE_INFINITY : 0);
+        for (int i = 0; i <= I; ++i)
         {
             if (call && S[i] - strike > V[k%2][i])
+            {
                 V[k%2][i] = S[i] - strike;
+                if (stop > S[i]) stop = S[i];
+            }
             if (!call && strike - S[i] > V[k%2][i])
+            {
                 V[k%2][i] = strike - S[i];
+                if (stop < S[i]) stop = S[i];
+            }
         }
+        return stop;
     }
     
     private double result()
@@ -171,8 +339,67 @@ public class FDModel implements ProgressObservable
         return (1-x)*V[0][i] + x*V[0][i+1];
     }
 
-    private double S0, border, vol, r, strike, T;
-    private int I,K;
-    private double V[][], dS, dt, S[], A[], B[], C[];
+    /**
+     * Spot price for which option value is calculated.
+     */
+    private double S0;
+    
+    /**
+     * Asset price at maximum level of the grid;
+     */
+    private double border;
+    
+    /**
+     * Assets volatility.
+     */
+    private double  vol;
+    
+    /**
+     * Interest rate.
+     */
+    private double r;
+    
+    /**
+     * Strike value of the option.
+     */
+    private double strike;
+    
+    /**
+     * Option's expiration time.
+     */
+    private double T;
+    
+    /**
+     * Number of asset steps.
+     */
+    private int I;
+    
+    /**
+     * Number of time steps.
+     */
+    private int K;
+    
+    /**
+     * Asset prices at grid points.
+     */
+    private double S[];
+    
+    /**
+     * Array of size 2 x (I+1). Holds value of the option from previous time step
+     * and allows to fill in values of current time step.
+     */
+    private double V[][];
+    
+    /**
+     * Grid from last pricing.
+     */
+    private Grid grid;
+    
+    /*
+     * Values and arrays auxiliary for pricing. 
+     */
+    private double dS, dt, A[], B[], C[];
+    
+    
     private ObservableSupport os = new ObservableSupport();
 }

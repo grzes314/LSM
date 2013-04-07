@@ -384,14 +384,14 @@
         <Component class="javax.swing.JSpinner" name="timeSteps">
           <Properties>
             <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-              <SpinnerModel initial="1000000" minimum="100" numberType="java.lang.Integer" stepSize="1000" type="number"/>
+              <SpinnerModel initial="10000" minimum="100" numberType="java.lang.Integer" stepSize="1000" type="number"/>
             </Property>
           </Properties>
         </Component>
         <Component class="javax.swing.JSpinner" name="priceSteps">
           <Properties>
             <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
-              <SpinnerModel initial="1000" minimum="10" numberType="java.lang.Integer" stepSize="100" type="number"/>
+              <SpinnerModel initial="200" minimum="10" numberType="java.lang.Integer" stepSize="100" type="number"/>
             </Property>
           </Properties>
         </Component>

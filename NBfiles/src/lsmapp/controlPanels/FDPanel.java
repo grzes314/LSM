@@ -287,9 +287,9 @@ public class FDPanel extends ModelPanel
 
         jLabel7.setText("Time steps");
 
-        timeSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000000), Integer.valueOf(100), null, Integer.valueOf(1000)));
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(10000), Integer.valueOf(100), null, Integer.valueOf(1000)));
 
-        priceSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000), Integer.valueOf(10), null, Integer.valueOf(100)));
+        priceSteps.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(200), Integer.valueOf(10), null, Integer.valueOf(100)));
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
