@@ -65,11 +65,7 @@ abstract public class Instr
         ts.setK(K);
     }
     
-    //TODO do wyrzucenia!
-    public double intrisnicValue(double x)
-    {
-        return 1.0;
-    }
+    public abstract double intrisnicValue(double x);
     /**
      * Detailed description of the financial instrument.
      * @return string with description of the instrument.
@@ -78,6 +74,13 @@ abstract public class Instr
     
     @Override
     abstract public String toString();
+    
+    /**
+     * Function usefull in determining the type of this instrument,
+     * @param str
+     * @return 
+     */
+    abstract public boolean areYou(String str);
     
     /**
      * Main contents of the method exAvail().

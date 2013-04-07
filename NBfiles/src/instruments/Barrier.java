@@ -96,6 +96,22 @@ public class Barrier extends Modificator
         else return underlying;        
     }
     
+    @Override
+    public boolean areYou(String str)
+    {
+        if (str.equalsIgnoreCase("barrier"))
+            return true;
+        else if (str.equalsIgnoreCase("up-and-out"))
+            return (knock == KNOCK_OUT && from == FROM_UP);
+        else if (str.equalsIgnoreCase("up-and-in"))
+            return (knock == KNOCK_IN && from == FROM_UP);
+        else if (str.equalsIgnoreCase("down-and-out"))
+            return (knock == KNOCK_OUT && from == FROM_DOWN);
+        else if (str.equalsIgnoreCase("down-and-in")) 
+            return (knock == KNOCK_IN && from == FROM_DOWN);
+        else return wrapped.areYou(str);
+    }
+
     /**
      * Constant indicating that barrier is knock-in.
      */

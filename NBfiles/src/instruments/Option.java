@@ -106,6 +106,20 @@ public class Option extends Instr
         if (type == CALL) return Math.max(0, tr.price(k) - K);
         else return Math.max(0, K - tr.price(k));
     }
+
+    @Override
+    public boolean areYou(String str)
+    {
+        if (str.equalsIgnoreCase("option"))
+            return true;
+        else if (str.equalsIgnoreCase("american"))
+            return true;
+        if (str.equalsIgnoreCase("call"))
+            return type == CALL;
+        if (str.equalsIgnoreCase("put"))
+            return type == PUT;
+        else return false;
+    }
       
     /**
      * Constant indicating call option.

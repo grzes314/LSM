@@ -44,4 +44,18 @@ public class Obligation extends Instr
     {
         return 1;
     }
+
+    @Override
+    public double intrisnicValue(double x)
+    {
+        return 1.0;
+    }
+    
+    @Override
+    public boolean areYou(String str)
+    {
+        if (str.equalsIgnoreCase("obligation"))
+            return true;
+        else return false;
+    }    
 }

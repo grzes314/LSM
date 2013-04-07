@@ -32,6 +32,12 @@ public abstract class Modificator extends Instr
         return wrapped.payoff_(s, k);
     }
     
+    @Override
+    public double intrisnicValue(double x)
+    {
+        return wrapped.intrisnicValue(x);
+    }
+    
     /**
      * Wrapped instrument.
      */

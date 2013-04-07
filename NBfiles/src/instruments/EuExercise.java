@@ -36,4 +36,12 @@ public class EuExercise extends Modificator
     {
         return wrapped.getTS().getK() == k;
     }
+
+    @Override
+    public boolean areYou(String str)
+    {
+        if (str.equalsIgnoreCase("european")) return true;
+        else if (str.equalsIgnoreCase("american")) return false;
+        else return wrapped.areYou(str);
+    }
 }
