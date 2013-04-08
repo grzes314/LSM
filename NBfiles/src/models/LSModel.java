@@ -35,7 +35,7 @@ public class LSModel implements ProgressObservable
     @Override
     public String toString()
     {
-        return "LONGSTAFF-SCWARTZ MODEL\n" +
+        return "LONGSTAFF-SCHWARTZ MODEL\n" +
                "S = "+ S + "\n" +
                "vol = " + vol + "\n" +
                "r = " + r + "\n" +             

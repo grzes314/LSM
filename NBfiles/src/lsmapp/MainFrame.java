@@ -11,9 +11,11 @@ import javax.swing.JTabbedPane;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.LSMPanel;
+import lsmapp.controlPanels.MCPanel;
 import lsmapp.resultPanels.BS2GUI;
 import lsmapp.resultPanels.FD2GUI;
 import lsmapp.resultPanels.LSM2GUI;
+import lsmapp.resultPanels.MC2GUI;
 
 /**
  *
@@ -79,6 +81,10 @@ public class MainFrame extends JFrame
         FDPanel fdp = new FDPanel();
         fdp.setResultHandler(new FD2GUI(this, fdp));     
         panel.addChoice(fdp, "Finite Difference");
+        
+        MCPanel mcp = new  MCPanel();
+        mcp.setResultHandler(new MC2GUI(this, mcp));     
+        panel.addChoice(mcp, "Monte Carlo");
         
         return panel;
     }

@@ -16,8 +16,6 @@ public class OneTrGenerator implements Generator, ProgressObservable
     public OneTrGenerator(double S, double m, double vol, TimeSupport ts)
     {
         this.S = S;
-        this.m = m;
-        this.vol = vol;
         this.ts = ts;
         
         dm = m * ts.getDt();
@@ -41,7 +39,15 @@ public class OneTrGenerator implements Generator, ProgressObservable
     @Override
     public Anthitetic[] generateAnthi(int n)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        Anthitetic[] res = new Anthitetic[n];
+        for (int i = 0; i < n; ++i)
+        {
+            res[i] = generateAnthi();
+            if (i % 100 == 0)
+                notifyObservers( new Progress( "Generating trajectories",
+                                               (int)((double)i/n*100) ));
+        }
+        return res;
     }
 
     private Scenario generate()
@@ -53,7 +59,27 @@ public class OneTrGenerator implements Generator, ProgressObservable
             tr.set(j, tr.price(j-1)*exp(
                     dvol*rt.nextGaussian() + dm - dvol*dvol/2) );
         }
+        tr.setReady();
         return new OneTrScenario(ts,tr);        
+    }
+    
+    private Anthitetic generateAnthi()
+    {
+        SimpleTrajectory pos = new SimpleTrajectory(ts.getK());
+        SimpleTrajectory neg = new SimpleTrajectory(ts.getK());
+        pos.set(0, S);
+        neg.set(0, S);
+        for (int j = 1; j <= ts.getK(); ++j)
+        {
+            double N = rt.nextGaussian();
+            pos.set(j, pos.price(j-1)*exp(
+                    dvol*N + dm - dvol*dvol/2) );
+            neg.set(j, neg.price(j-1)*exp(
+                    dvol*(-N) + dm - dvol*dvol/2) );
+        }
+        pos.setReady();
+        neg.setReady();
+        return new Anthitetic(new OneTrScenario(ts,pos), new OneTrScenario(ts,neg));        
     }
 
     @Override
@@ -75,7 +101,7 @@ public class OneTrGenerator implements Generator, ProgressObservable
     }
 
     
-    private double S, m, vol, dm, dvol;
+    private double S, dm, dvol;
     private TimeSupport ts;
     private RandomTools rt = new RandomTools();
     private ObservableSupport os = new ObservableSupport();

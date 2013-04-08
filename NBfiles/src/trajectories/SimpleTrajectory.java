@@ -9,6 +9,7 @@ public class SimpleTrajectory implements Trajectory
 {
     public SimpleTrajectory(int K)
     {
+        this.K = K;
         prices = new double[K+1];
         stepMin = new int[K+1];
         stepMax = new int[K+1];

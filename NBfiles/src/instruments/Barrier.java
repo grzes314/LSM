@@ -75,8 +75,7 @@ public class Barrier extends Modificator
     @Override
     public String toString()
     {
-        return wrapped.toString() + barrierType() + ": " +
-                assetName() + ", level=" + level;
+        return wrapped.toString() + barrierType();
     }
     
     private String barrierType()
