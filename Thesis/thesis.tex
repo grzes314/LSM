@@ -202,21 +202,44 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  \end{equation*}
 \end{example}
 
-\noindent Before we move to SDE's and It\^{o}'s lemma, let us do a notation remark. Let $X$ be a square integrable process and $Z$ be a process with respect to which we can integrate ($Z$ may be a Brownian motion, a martingale, or in general even a semimartingale).
+The breakthrough allowing financial mathematics to devolop was discovery of It\^{o} integral, named after Japanese mathematician Kiyoshi It\^{o}. We will not discuss constructon of such integral, what is done for example in \cite{latala}. Instead we will provide some intuition about its meaning. It\^{o} integral of $X=(X)_{t=0}^T$ with respect to Wiener process $W=(W)_{t=0}^T$ is a stochastic process
+\[ \left( \int_0^{t} X_s dW_s \right)_{t = 0}^T, \]
+where
+\begin{equation}
+ \label{eq:ito_integral}
+  \int_0^{t} X_s dW_s = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n X_{t_{i-1}} (W_{t_i} - W_{t_{i-1}}).
+\end{equation}
+As we can see the above definition is similar to the Stieltjes integral definition, which is defined for $g$ of bounded variation on finite intervals and continous $f$, as
+\[  \int_0^{t} f(s) dg(s) = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n f(t_{i-1}) (g(t_i) - g(t_{i-1})). \]
+However, on almost all trajectories $W$ has unbounded variation on finite intervals. In order to give sense to equation (\ref{eq:ito_integral}), the limit has to be taken in $L_2$.
+
+\begin{remark} Note that
 \begin{itemize}
- \item $\int\limits_0^t X_s ds$ is a ``standard'' Riemann integral. The integrated function is random, but for fixed $\omega$ we can use Riemann's theory to integrate it.
- \item $\int\limits_0^t X_s dZ_s$ denotes isometric It\^{o} integral.
+ \item to integrate $\int\limits_0^t X_s ds$ we need only ``standard'' Riemann theory. The integrand is random, hence $\int\limits_0^t X_s ds$ is a function $\omega \mapsto \int\limits_0^t X_s(\omega) ds$ and the last term is a Riemann integral.
+ \item $\int\limits_0^t X_s dW_s$ denotes stochastic integral, thus its calculation requires It\^{o} theory.
 \end{itemize}
+\end{remark}
+
 
 \begin{mydef}
 \label{def:SDE}
  Let $\mu, \sigma \in C^1,\ \xi$ be $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
- \[dX_t = \mu(X_t)dt + \sigma(X_t) dW_t,\ X_0 = \xi\]
+ \begin{equation*}
+ \begin{split}
+   dX_t &= \mu(X_t)dt + \sigma(X_t) dW_t,\\
+   X_0 &= \xi  
+ \end{split}  
+ \end{equation*}
  if and only if
  \[X_t = \xi + \int\limits_0^t \mu(X_s)ds + \int\limits_0^t\sigma(X_s) dW_s\]
 for all $t \in [0,T)$.
 \end{mydef}
+\begin{remark}
+ Sometimes indices are omitted and SDE is written in the form
+\end{remark}
+\[ dX = \mu(X)dt + \sigma(X) dW. \]
 
+Next definition presents one of the most important type of processes, used to model asset movements in markets.
 \begin{mydef}
  A stochastic process $S$ given by SDE
  \begin{equation}
@@ -226,7 +249,7 @@ for all $t \in [0,T)$.
 where $\mu,\sigma \in \R$ is called a \textbf{geometic Brownian motion}.
 \end{mydef}
 
-\noindent Now we can formulate a version of It\^{o}'s lemma, which is widely used in financial mathematics.
+Now we can formulate a version of It\^{o}'s lemma, which is widely used in financial mathematics.
 \begin{thm}[It\^{o}'s lemma]
  \label{thm:ito}
   Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $F:\ \R^2 \rightarrow \R,\ F \in C^2$. Then 
@@ -243,7 +266,38 @@ where $\mu,\sigma \in \R$ is called a \textbf{geometic Brownian motion}.
 
 \noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient. Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
-Significance in financial mathematics of the next theorem results from a fact, that it allows us to move from real measure $\P$ to equivalent martingale measure $\Pm$.
+It\^{o}'s lemma is a very powerfull tool, indispensable in Black-Scholes theory. We will show how it can be used to solve equation (\ref{eq:gbm}).
+\begin{lemma}
+\label{lemma:solution_dynamics}
+ Let $S$ be a geometric Brownian motion, as in (\ref{eq:gbm}).
+ Solution of its SDE is given by
+ \begin{equation}
+  \label{eq:gmb_sol}
+  S_t = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}.
+ \end{equation}
+\end{lemma}
+\begin{proof}
+We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. We have
+ \begin{equation*}
+  \begin{split}
+   dF &= \frac{\partial F}{\partial S}dS + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\
+   &= \frac{\partial F}{\partial S}(\mu S dt + \sigma S dW) + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\    
+   &= \frac{1}{S}(\mu S dt + \sigma S dW) + 0dt - \frac{1}{2}\sigma^2 S^2 \frac{1}{S^2}dt \\   
+   &= (\mu - \frac{1}{2}\sigma^2) dt + \sigma dW
+  \end{split}.
+ \end{equation*}
+ From Definition \ref{def:SDE}
+ \begin{equation*}
+  \begin{split}
+  F(S_t,t) &= F_0 + \int\limits_0^t (\mu - \frac{1}{2}\sigma^2) ds + \int\limits_0^t \sigma dW_s\\
+  &= F_0 + (\mu - \frac{1}{2}\sigma^2)t + \int\limits_0^t \sigma W_t. 
+  \end{split}.
+ \end{equation*}
+ By substituting $S_0 = e^{F_0}$, we get
+ \[ S = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}. \] 
+\end{proof}
+
+Significance in the financial mathematics of the last theorem in this section derives from the fact, that it allows us to move from real measure $\P$ to equivalent martingale measure $\Pm$.
 \begin{thm}[\bfseries Girsanov theorem]
  \label{thm:girsanov}
  Let $\bar{W}$ be a $d$-dimensional standard Wiener process on probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$ and let $\varphi$ be any $d$-dimensional adapted column vector process. Choose a fixed $T$ and define the process $L$ on $[0,T]$ by
@@ -318,6 +372,8 @@ instead of $\sigma$, what allows to replace $\sigma$ by $\hat{\sigma}$ in above 
  \end{equation}
 \end{thm}
 \noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulation. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
+
+Unfortunatly equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with smallest possible variance. In next sections two methods of variance reduction are discussed.
 
 The confidence level $\alpha$, which appears in (\ref{eq:error}) in quantile function, is not essential when comparing two estimators. Hence we introduce 
 \begin{mydef}
@@ -409,7 +465,7 @@ To compare presented Monte Carlo methods let us calculate value of $I = \int_0^1
    \CV[n] &= \frac{1}{n} \sum\limits_{i=1}^{n} \left( g(U_i) + c(U_i - \frac{1}{2}) \right),
   \end{split}
  \end{equation*}
-where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. Table \ref{tab:MCcompare} shows results of estimation.
+where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. The results of comparision of all presented methods are gathered in Table \ref{tab:MCcompare} and Figures \ref{fig:boxMC}, \ref{fig:convergenceMC}.
 
 \begin{table}[h]
 \centering
@@ -426,7 +482,24 @@ where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are 
 1000000& 1.71796 & 0.00035 & 1.71831 & 0.00006 & 1.71829 & 0.00006 \\ \hline 
 \end{tabular}  
 \end{table}
+
+\begin{figure}[h]
+\centering
+ \includegraphics[scale=0.4]{images/boxMonteCarlo.pdf}
+\caption{For each method 10000 simulations where run 100 times. Hence each method gave 100 estimations of $\int_0^1 e^x dx$. Small points indicate obtained values. As usually in box plots, the lower and upper edges of the boxes are first and third quartiles  }
+\label{fig:boxMC}
+\end{figure}
+
+\begin{figure}
+\centering
+ \includegraphics[scale=0.4]{images/convergenceMC.pdf}
+\caption{Comparision of speed of convergence }
+\label{fig:convergenceMC}
+\end{figure}
+
 We see that in this case antithetic and control variates methods gave approximatly equal results, while crude Monte Carlo is far behind them. When performing one million simulations (in case of CMC two millions) standard error turned out 50 times smaller in AV and CV than in CMC. It means that results from the first two methods are more than one digit more accurate.
+
+Box plot from figure \ref{fig:boxMC} shows that variance of the crude Monte Carlo estimator is greater than in two other methods. In practice it means, that if we run simulations with AV estimator or CV estimator, then every time we would obtain more or less equal result. For CMC discrepancy between the results would be much bigger. Figure \ref{fig:convergenceMC} explains that fact -- speed of convergence of CMC is definitely lower than two other methods.
 
 In order to realize why AV and CV methods result with so similar accuracy, look at (\ref{eq:VarAV}) and (\ref{eq:VarCV}). In AV method variance is reduced by a coefficient
 \[ \frac{1 + \Corr(e^U, e^{1-U})}{2} \approx \frac{1 - 0.968}{2} = 0.0162, \]
@@ -479,6 +552,12 @@ what brings us to conclusion that the efficiency of both algorithms is comparabl
 
 \paragraph{Correlated normal random values.} Above methods allow us to generate independent random variables. In the real world, however, we notice dependencies between observed phenomenons. For example movements of the prices of the market assets are usually correlated. When the market is in a boom cycle, then all the prices are increasing; inversly, if the recession comes, all of the prices are falling. In order to model such values we must be able to generate correlated random variables.
 
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.4]{images/normalCorrelated.pdf}
+\caption{Graphical illustration of dependency between normal correlated random variables. In the upper left corner $\varrho = -0.8$, upper right: $\varrho = -0.4$, lower left: $\varrho = 0$ (independent variables), lower right: $\varrho = 0.4$}
+\end{figure}
+
 Let's begin with two standard normal random variables with correlation $\varrho$. We want to obtain $Z_1, Z_2 \sim \mathcal{N}(0,1)$ such that $\Corr(Z_1, Z_2) = \varrho$.  For now we only can generate independent $Z_1$ and $Z_2$, i.e. $\Corr(Z_1, Z_2) = 0$. On the other hand $\Cov(Z_1, Z_1) = 1$. Here rises the idea that there exists $Z_3$, such that $\Corr(Z_1, Z_3) = \varrho$, of the form $Z_3 = a Z_1 + b Z_2$. It should come from standard normal distribution, thus
 \[ 1 = \Var(Z_3) = \Var( a Z_1) +  \Var(b Z_2) = a^2 + b^2 \]
 Moreover
@@ -523,8 +602,6 @@ It turns out that above theorem can be generalized for higher dimensions. That e
  \item Using previously shown method generate vector $N$ of independent random variables with standard normal distribution.
  \item Return $\mu + LN$.
 \end{enumerate}
-
-
 
 
 \chapter{Basics of option pricing}
@@ -766,7 +843,7 @@ Next theorem is the key to defining prices of contingent claims. But first we de
 \begin{mydef}
  A contingent claim is called \textbf{attainable} if there exists a self-financing trading strategy $\xia$ whose portfolio coincides with $C$ at maturity, i.e.
  \[ C = \xia \cdot \Sa_T. \]
- Trading strategy $\xia$ is then called \textbf{replicating strategy} for $C$.
+ The trading strategy $\xia$ is then called the \textbf{replicating strategy} for $C$.
 \end{mydef}
 
 \begin{thm}
@@ -777,7 +854,7 @@ Next theorem is the key to defining prices of contingent claims. But first we de
   V^\xi_t = \Em[H | \mathcal{F}_t] \hbox{ P-a.s., } 0 \leq t \leq T .
  \end{equation}
 \end{thm}
-Prove of this theorem reader may find in \cite{follmer}.
+Proof of this theorem reader may find in \cite{follmer}.
 
 Since there is no $\xia$ in term $\Em[H | \mathcal{F}_t]$, so value $V^\xi_t$ does not depend on choice of $\xia$. Note also that
 \begin{equation*}
@@ -805,7 +882,7 @@ The above theorem suggests how price processes should look in general.
  \end{equation*}
  Such $V$ is a $\Pm$-martingale.
 \end{mydef}
-For general claims process $V$ depends on choice of equivalent martingale measure. However, it may be proven that the market model consisting of following discounted assets $(X^{(0)}, X^{(0)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
+For general claims process $V$ depends on choice of an equivalent martingale measure. However, it may be proven that the market model consisting of the discounted assets $(X^{(0)}, X^{(1)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
 
 \subsection{Change of the measure}
 We have discussed how equivalent martingale measures can be used for option pricing, but so far we did not tell how to find them. For this purpose Girsanov theorem is very usefull.
@@ -848,37 +925,7 @@ We have discussed how equivalent martingale measures can be used for option pric
  we get the thesis.
 \end{proof}
 
-Above propostion allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- martingale measure.
-\begin{lemma}
-\label{lemma:solution_dynamics}
- Let $S$ be a geometric Brownian motion, i.e.
- \[ dS = \mu S dt + \sigma S dW. \]
- Solution of above SDE is given by
- \begin{equation}
-  \label{eq:gmb_sol}
-  S_t = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}
- \end{equation}
-\end{lemma}
-\begin{proof}
-We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. We have
- \begin{equation*}
-  \begin{split}
-   dF &= \frac{\partial F}{\partial S}dS + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\
-   &= \frac{\partial F}{\partial S}(\mu S dt + \sigma S dW) + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\    
-   &= \frac{1}{S}(\mu S dt + \sigma S dW) + 0dt - \frac{1}{2}\sigma^2 S^2 \frac{1}{S^2}dt \\   
-   &= (\mu - \frac{1}{2}\sigma^2) dt + \sigma dW
-  \end{split}.
- \end{equation*}
- From Definition \ref{def:SDE}
- \begin{equation*}
-  \begin{split}
-  F(S_t,t) &= F_0 + \int\limits_0^t (\mu - \frac{1}{2}\sigma^2) ds + \int\limits_0^t \sigma dW_s\\
-  &= F_0 + (\mu - \frac{1}{2}\sigma^2)t + \int\limits_0^t \sigma W_t. 
-  \end{split}.
- \end{equation*}
- If we let $S_0 = e^{F_0}$ then
- \[ S = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}. \] 
-\end{proof}
+Above propostion allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- the martingale measure.
 
 \begin{coro}
 \label{coro:rn-dynamics}
@@ -907,49 +954,49 @@ Hence $\Pm$ is an equivalent martingale measure.
 
 
 \chapter[{Pricing European options with Monte Carlo method}]{Pricing European options with \\Monte Carlo method}
-The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value can not be derived analitically. Thus other methods must be used. The most popular are finite diffrence, binomial trees and Monte Carlo. In this thesis only the last one is presented.
+The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value can not be derived analitically. Thus, other methods must be used. The most popular are finite diffrence, binomial trees and Monte Carlo. In this thesis only the last one is presented.
 
 \section{Pricing vanilla options}
 \label{sec:pricing_vanilla}
 
-In order to use Monte Carlo method in option pricing we need to involve theory presented in section \ref{sec:risk-neutral}. We will use notation as in that section, for example $H$ is random variable denoting payoff from the option, discounted to time 0, and its value at time 0 equals $V_0$. In sections \ref{sec:pricing_vanilla} and \ref{sec:pricing_complicated} we will assume that only instruments traded in the market are $S^{(0)}$ -- a riskless bank account, and risky $S = S^{(1)}$.
+In order to use the Monte Carlo method in option pricing, we need to involve the theory presented in the section \ref{sec:risk-neutral}. First we will focus on the case, when the only instruments traded in the market are $B = S^{(0)}$ -- a riskless bank account, and a risky asset $S = S^{(1)}$.
 
 From Corollary \ref{coro:price_mth} we have
 \begin{equation}
  \label{eq:price_for_MC}
  V_0 = \Em[H].% = \Em[\frac{C}{S^{(0)}_T}] = e^{-rT} \Em[C].
 \end{equation}
-By comparision with (\ref{eq:EY}) we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulation. Note, however, that expectaion is taken under risk-neutral measure. Hence, also the asset price must be generated under risk-neutral measure. Corollary \ref{coro:rn-dynamics} describes its dynamics:
+By comparision with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. Note, however, that expectaion is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{coro:rn-dynamics} describes its dynamics:
 \[ dS = rSdt + \sigma S dW. \]
-Lemma \ref{lemma:solution_dynamics} gives solution to above SDE:
+Lemma \ref{lemma:solution_dynamics} gives the solution to above SDE:
 \begin{equation}
  \label{eq:vanilla_St}
  S_t = S_0 \exp\left\{ (r - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}.
 \end{equation}
-In case of vanilla options only the value at the end of the trajectory is important, i.e. at maturity time $T$. Thus we need
+In case of vanilla options only the value at the end of the trajectory is important, i.e. at maturity time $T$. Thus, we need
 \begin{equation}
 \label{eq:vanilla_ST}
  S_T = S_0 \exp\left\{ (r - \frac{1}{2}\sigma^2)T + \sigma W_T \right\},
 \end{equation}
-where, from properties of Wiener process, $W_T \sim \mathcal{N}(0,T)$. Value of $S_T$ depends on $W_T$, hence we can write $S_T = S_T(W_T)$.
+where, from properties of the Wiener process, $W_T \sim \mathcal{N}(0,T)$. Value of $S_T$ depends on $W_T$, hence it is justified to write $S_T = S_T(W_T)$.
 
-Let $H = g(S_T)$ and $E$ be strike price. For instance, if $H$ is a call option $g(x) = (x - E)_+$, and if $H$ is put $g(x) = (E - x)_+$, but in fact $H$ might be any claim whose payoff depends only on $S_T$. Since $S_T$ is also a function of some $Z \sim \mathcal{N}(0,T)$, thus $H = f(Z)$, for some $f$. By $Z_i, i = 1,2,...$, we will denote replications of $Z$.
-Crude Monte Carlo estrimator has the form:
+Let $H = g(S_T)$ and $E$ be the strike price. For instance, if $H$ is a call option $g(x) = (x - E)_+$, and if $H$ is a put $g(x) = (E - x)_+$, but in fact $H$ might be any claim, whose payoff depends only on $S_T$. Since $S_T$ is also a function of some $Z \sim \mathcal{N}(0,T)$, thus actually $H = g(S_T(Z)) =: f(Z)$, for $f = g \circ S_T$. By $Z_i, i = 1,2,...$, we will denote replications of $Z$.
+The crude Monte Carlo estimator has the form:
 \begin{equation}
  \label{eq:vanilla_CMC}
  \CMCa[H, 2n] = \frac{1}{2n}\sum\limits_{i=1}^{2n} f(Z_i).
 \end{equation}
-We will also use antithetic variates, where antithetic variable to $f(Z_i)$ will be  $f(-Z_i)$. 
+We will also use antithetic variates, where an antithetic variable to $f(Z_i)$ will be  $f(-Z_i)$. 
 \begin{equation}
  \label{eq:vanilla_AV}
  \AVa[H, n] = \frac{1}{n}\sum\limits_{i=1}^{n} \frac{f(Z_i) + f(-Z_i)}{2}.
 \end{equation}
-To use control variates method recall that $S_0 = \Em[S_T]$.
+To use the control variates method, recall that $S_0 = \Em[S_T]$. It implies that we can take $S_T$ as a control variate, hence
 \begin{equation}
  \label{eq:vanilla_CV}
  \CVa[H, n] = \frac{1}{n}\sum\limits_{i=1}^{n} \left( f(Z_i) + c (S_T(Z_i) - S_0) \right),
 \end{equation}
-where $c$ is a value calculated from equation (\ref{eq:CVc}).
+where $c$ is a value calculated as in equation (\ref{eq:CVc}).
 \begin{example}
 To get a grip on using above estimators in practice, we will present how exactly looks an algorithm for pricing call options with antithetic variates method. Argument of the algorithm is \texttt{n} -- number of simulations. \medskip \\
 \texttt{
