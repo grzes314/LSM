@@ -38,9 +38,8 @@ testNormalGenerators <- function(n)
 
 boxMuller <- function(n)
 {
-  m <- ceiling(n/2)
-  U1 <- runif(m)
-  U2 <- runif(m)
+  U1 <- runif(n)
+  U2 <- runif(n)
   roots <- sqrt( -2 * log(U1) )
   N1 <- roots * cos(2 * pi * U2)
   N2 <- roots * sin(2 * pi * U2)
@@ -49,15 +48,25 @@ boxMuller <- function(n)
 
 polarRejection <- function(n)
 {
-  U <- runif(2)
-  V <- 2*U - 1
-  W <- sum(V^2)
-  if (W > 1)
-    return (polarRejection())
+  V1 <- 2*runif(1.5*n) - 1
+  V2 <- 2*runif(1.5*n) - 1
+  W <- V1^2 + V2^2
+  hit <- which(W <= 1)
+  V1 <- (V1[hit])[1:n]
+  V2 <- (V2[hit])[1:n]
+  W <- (W[hit])[1:n]
   root <- sqrt( -2 * log(W) / W )
-  N1 <- root * V[1]
-  N2 <- root * V[2]
-  list(fst = N1, snd = N2)
+  N1 <- root * V1
+  N2 <- root * V2
+  c(N1, N2)
+}
+
+testNormalGenerators <- function(n)
+{
+  bm <- system.time( boxMuller(n) )
+  pr <- system.time( polarRejection(n) )
+  print(paste("Box-Muller:", round(bm[1], 2), "seconds."))
+  print(paste("Polar rejection method:", round(pr[1], 2), "seconds."))
 }
 
 ################################################################################
