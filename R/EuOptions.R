@@ -210,7 +210,7 @@ funForCV_barrier <- function(rynek, opcja, K, payoff)
   function(n)
   {
     res <- sapply(1:n, function(foo) {
-      tr <- trajectory(rynek, T, K)
+      tr <- trajectory(rynek, opcja$T, K)
       c( payoff(tr), payoffVanilla(rynek$r, opcja)(tr) )
     })
     list( Y = res[1,], X = res[2,] )

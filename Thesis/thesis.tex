@@ -70,6 +70,9 @@
 \def\AVa[#1, #2]{\hat{#1}^{\hbox{\tiny AV}}_{#2}}
 \def\CVa[#1, #2]{\hat{#1}^{\hbox{\tiny CV}}_{#2}}
 
+\definecolor{comment}{RGB}{96,96,192}
+
+
 %opening
 \title{Pricing American and Exotic Options using the Least Squares Monte Carlo Approach}
 \author{Grzegorz Łoś}
@@ -1309,7 +1312,8 @@ Table \ref{tab:barrier2} and Figure \ref{fig:barrier2} present results of pricin
  \label{tab:barrier2}
 \begin{tabular} {|r |c |c |c |c |c |c |}  
  \hline 
-  n & CMC.est & CMC.se & AV.est & AV.se & CV.est & CV.se \\ \hline \hline 
+  & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
+  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
 1000   & 1.33 & 0.138 & 1.38 & 0.135 & 1.37 & 0.152 \\ \hline 
 10000  & 1.29 & 0.043 & 1.31 & 0.043 & 1.31 & 0.049 \\ \hline 
 100000 & 1.38 & 0.014 & 1.36 & 0.014 & 1.36 & 0.016 \\ \hline 
@@ -1330,7 +1334,7 @@ In the case of put@100 with down-and-in barrier 70, barrier is set very low; hit
 
 At the end of this section, it is worth to mention, that there exist analitical formulas for prices of European barrier options, see \cite{wilmott}, chapter 23.
 
-\begin{figure}
+\begin{figure}[!h]
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/chart3dCallUaO.png}
 \caption{Value of an European option call option with up-and-out barrier as a function of strike and barrier values.}
@@ -1338,39 +1342,156 @@ At the end of this section, it is worth to mention, that there exist analitical 
 \end{figure}
 
 \section{Pricing multiasset instruments}
-Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to take into account correlation between the assets. 
+Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlation between the assets. Let
+\[ \Sigma = \left( \varrho_{ij} \right)_{i,j=1}^d \]
+be the matrix describing correlation between risky assets (recall that by that we understand the correlation between Wiener processes appearing in assets dynymics). Equation (\ref{eq:priceChange}) holds for every asset, i.e.
+\begin{equation}
+ \label{eq:priceChangeMulti}
+  S^{(i)}_{t + {\Delta} t} = S^{(i)}_t \exp\left\{ (r - \frac{1}{2}\sigma_i^2)\Delta t + \sigma_i \sqrt{\Delta t} Z_i \right\}\ \ (i = 1,2,\ldots,d),
+\end{equation}
+where each $Z_i$ is standard normal. However, we have to take into account correlation between variables $Z_i$. To be precise $Z \sim \mathcal{N}(0, \Sigma)$.
 
-
+Equation (\ref{eq:priceChangeMulti}) is the key to genarating multiasset scenarios. Its usage is shown in Algorithm \ref{alg:multi-tr}, which creates two antithetic scenarios of market evolution. Figure \ref{fig:corrPaths} illustrates trajectories of prices of correlated assets.
 
 \begin{algorithm}
  \begin{algorithmic}[1]
-  %\Comment{ $S_0$ and $\sigma$ are now tables, for example $\sigma[3]$ is the volatility of third asset.}
-  \Function{Trajectory}{$S_0$, $\sigma$, $r$, $T$, $K$}
-  \State S $\gets$ tow dimensional array \Comment{ S[i,k] is the price of i-th asset at k-th time point. }
+  \Function{MultiTrajectory}{$S_0$, $\sigma$, $r$, $\Sigma$, $T$, $K$}
+  
+  \Comment{{\color{comment} $S_0$ and $\sigma$ are now arrays, for example $\sigma[3]$ is the volatility of the third asset}}
+  \State $S \gets$ two dimensional array \Comment{{\color{comment} S[i,k] is the price of i-th asset at k-th time point}}
+  \State $S^\star \gets$ two dimensional array \Comment{{\color{comment} antithetic scenario}}
+  \State $L \gets$ Cholesky decomposition of $\Sigma$ \Comment{{\color{comment} $\Sigma = LL'$}}
   \For{$i=1$ {\bf to} $d$}
-    \State S[i,0] $\gets S_0[i]$
+    \State $S[i,0] \gets S_0[i]$
+    \State $S^\star[i,0] \gets S_0[i]$
   \EndFor
   \State $dt \gets T/K$
-  \For{$i=1$ {\bf to} $K$}
-    \State $Z \gets$ generate standard normal
-    \State pos[$i$] $\gets$ pos[$i-1$] $\cdot \exp\left\{ (r - \frac{1}{2}\sigma^2) dt + \sigma \sqrt{dt} Z \right\}$
-    \State neg[$i$] $\gets$ neg[$i-1$] $\cdot \exp\left\{ (r - \frac{1}{2}\sigma^2) dt - \sigma \sqrt{dt} Z \right\}$
+  \For{$k=1$ {\bf to} $K$}
+    \State $Z \gets$ array of $d$ independent standard normal variates
+    \State $Z \gets LZ$ \Comment{{\color{comment} now $Z$ is a sample from $\mathcal{N}(0, \Sigma)$ distribution}}
+    \For{$i=1$ {\bf to} $d$}
+      \State $S[i, k] \gets S[i, k-1] \cdot \exp\left\{ (r - \frac{1}{2}\sigma[i]^2) dt + \sigma[i] \sqrt{dt} Z[i] \right\}$
+      \State $S^\star[i, k] \gets S^\star[i, k-1] \cdot \exp\left\{ (r - \frac{1}{2}\sigma[i]^2) dt - \sigma[i] \sqrt{dt} Z[i] \right\}$
+    \EndFor
   \EndFor
-  \State \Return (pos, neg)
+  \State \Return $(S, S^\star)$
   \EndFunction
  \end{algorithmic}
- \caption{Generating antithetic trajectories.}
+ \caption{Generating multiasset trajectories.}
  \label{alg:multi-tr}
 \end{algorithm}
 
+\begin{figure}
+\centering
+ \includegraphics[scale=0.75]{images/PricingEuropean/correlatedPaths.pdf}
+\caption{Price trajectories of correlated assets.Correlation between red and green equals 0.8, between red and blue -0.8, and between green and blue also -0.8.}
+\label{fig:corrPaths}
+\end{figure}
+
+\begin{remark}
+ If the payoff depends only on the assets values at the end of the path, then there is no need to generate whole trajectories. It is sufficient to generate asset prices only at the expiry, using equations
+ \[ S^{(i)}_T = S^{(i)}_0 \exp\left\{ (r - \frac{1}{2}\sigma_i^2)T + \sigma_i \sqrt{T} Z_i \right\} \ \ (i = 1,2,\ldots,d),\]
+  where  $Z \sim \mathcal{N}(0, \Sigma)$. We do not have to write a new algorithm to do that, we can use function 
+   \Call{MultiTrajectory}{}
+ with $K=1$.
+
+\end{remark}
+
+While having a method for scenario generation, valuation of the multiasset options is pretty straightforward. For example we write a procedure for pricing basket put options using AV method. The basket is described by an array $\eta$, where $\eta[i]$ means how many units of asset $i$-th asset are contained in a basket.
+
+\begin{algorithm}
+ \begin{algorithmic}[1]
+  \Function{PriceBasketPutAV}{$n$, $S_0$, $\sigma$, $r$, $\Sigma$, $T$, $\eta$, $E$}
+  \State  $sum \gets sum\_sq \gets 0$
+  \For{$j=1$ {\bf to} $n$}
+    \State $(S, S^\star) \gets$ \Call{MultiTrajectory}{$S_0$, $\sigma$, $r$, $\Sigma$, $T$, $1$}
+    \State $H \gets \frac{1}{2}\exp\{-rT\} ($ \Call{BasketPutPayoff}{$S$, $\eta$, $E$, $1$} +\\ 
+    \hspace{132pt} \Call{BasketPutPayoff}{$S^\star$, $\eta$, $E$, $1$} $)$
+  \EndFor
+  \State $var \gets (sum\_sq - sum \cdot sum/n) / (n-1)$
+  \State $se \gets \sqrt{var / n}$
+  \State $price \gets sum / n$
+  \State \Return $(price, var, se)$
+  \EndFunction
+  \\
+  \Function{BasketPutPayoff}{$S$, $\eta$, $E$, $K$}
+    \State sum $\gets 0$
+    \For{$i=1$ {\bf to} $d$}
+      \State sum $\gets$ sum + $\eta[i]\cdot S[i, K]$
+    \EndFor
+    \State \Return $\max(E - sum, 0)$
+  \EndFunction
+ \end{algorithmic}
+ \caption{Pricing basket put option.}
+ \label{alg:priceBasketPutAV}
+\end{algorithm}
+
+
+In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. However, modifications of options and their payoffs are only bounded by investors imagination (and by some integrability assumptions, but it is hard bo believe that investors can invent a claim which would not be sufficiently integrable).
+It should be clear how to modify Algorithm \ref{alg:priceBasketPutAV} to price options with any arbitrary payoff, even path-dependent. This is the main adventage of Monte Carlo methods in option pricing -- flexibility, which can not be provided by finite diffrence or binomial trees.
+
+We used described technique to price basket vanilla call option. We took following parameters:
+\begin{equation}
+\label{eq:EuBasketParams}
+ \begin{split}
+  d &= 3,\ S_0 = (10, 50, 100)\\
+  r &= 0.05,\ \sigma = (0.4, 0.2, 0.3),\\ 
+  \Sigma &= \left( \begin{array}{rrr}
+            1 & 0.8 & -0.8\\
+            0.8 & 1 & -0.8\\
+            -0.8 & -0.8 & 1
+           \end{array} \right)\\
+  E &= 90,\ \eta = (10, -2, 1),\ T=1
+ \end{split}
+\end{equation}
+Such contract gives its owner right to change at expiration date 2 shares of the second asset and amount of money $E$ for 10 shares of the first asset and one of the third. The results are gathered in Table \ref{tab:EuBasket} and Figure \ref{fig:EuBasket}. In CV method value of the basket at the expiry was used as the control variate. From section \ref{sec:risk-neutral} we know its expectation: $\Em[\eta \cdot S_T] = \eta \cdot S_0$. 
+CV method gave the most accurate prices.
+
+\begin{table}
+\centering
+ \caption{Results of pricing basket option described in equations (\ref{eq:EuBasketParams}). }
+ \label{tab:EuBasket}
+\begin{tabular} {|r |c |c |c |c |c |c |}  
+ \hline 
+  & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
+  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+1000   & 18.91 & 0.507 & 19.90 & 0.444 & 19.85 & 0.241 \\ \hline 
+10000  & 19.66 & 0.165 & 19.84 & 0.143 & 19.73 & 0.077 \\ \hline 
+100000 & 19.65 & 0.052 & 19.68 & 0.045 & 19.70 & 0.024 \\ \hline 
+\end{tabular}
+\end{table}  
+\begin{figure}
+\centering
+ \includegraphics[scale=0.5]{images/PricingEuropean/boxBasket.pdf}
+ \includegraphics[scale=0.5]{images/PricingEuropean/convergenceBasket.pdf}
+\caption{Accuracy of pricing basket option described in equations (\ref{eq:EuBasketParams}).}
+\label{fig:EuBasket}
+\end{figure}
+
+% Generating price trajectories of many assets is usefull not only for pricing exotic options. Consider a portfolio consisting of two call options with the same expiration time $T=1$ but same strike $E=100$ but with two diffrent underlyings. For example we may assume that market parameters are following:
+% \begin{equation*}
+%  \begin{split}
+%   d &= 2,\ S_0 = (100, 100)\\
+%   r &= 0.05,\ \sigma = (0.2, 0.2),\\ 
+%   \Sigma &= \left( \begin{array}{rrr}
+%             1   & 0.9\\
+%             0.9 &   1
+%            \end{array} \right)
+%  \end{split}
+% \end{equation*}
+% Each option taken into account seperatly is worth 10.45 by virtue of Black-Scholes formula. Thus it seems that value of whole portfolio is 20.90. However, we may see the portfolio as an exotic derivative with payoff
+% \[ (S^{(1)}_T - E)_+ + (S^{(2)}_T - E)_+. \]
+% Using pricing tools presented in this section we obtain diffrent value of such instrument: .
+
 \chapter{Least Squares Monte Carlo}
-\section{The idea of LSM}
-%\paragraph{Problems with Monte Carlo method for american options.}
+\section{American contingent claims}
 \begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.5]{images/LSMIdea/LSMidea1.pdf}
 \caption{To co chcemy}
 \end{figure}
+\section{The idea of LSM}
+%\paragraph{Problems with Monte Carlo method for american options.}
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/LSMIdea/LSMidea2.pdf}
