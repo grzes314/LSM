@@ -215,9 +215,9 @@ where
  \label{eq:ito_integral}
   \int_0^{t} X_s dW_s = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n X_{t_{i-1}} (W_{t_i} - W_{t_{i-1}}).
 \end{equation}
-As we can see the above definition is similar to the Stieltjes integral definition, which is defined for $g$ of bounded variation on finite intervals and continous $f$, as
+As we can see the above definition is similar to the Stieltjes integral definition, which is defined for $g$ with locally bounded variation, and continous $f$, as
 \[  \int_0^{t} f(s) dg(s) = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n f(t_{i-1}) (g(t_i) - g(t_{i-1})). \]
-However, on almost all trajectories $W$ has unbounded variation on finite intervals. In order to give sense to equation (\ref{eq:ito_integral}), the limit has to be taken in $L_2$.
+However, on almost all trajectories $W$ has locally unbounded variation. In order to give sense to equation (\ref{eq:ito_integral}), the limit has to be taken in $L_2$.
 
 \begin{remark} Note that
 \begin{itemize}
@@ -268,21 +268,20 @@ Now we can formulate a version of It\^{o}'s lemma, which is widely used in finan
    dF(S_t, t) = \frac{\partial F}{\partial S}(S_t,t)dS_t + \frac{\partial F}{\partial t}(S_t,t)dt + \frac{1}{2}\sigma^2 S_t^2 \frac{\partial^2 F}{\partial S^2}(S_t,t)dt   .
   \end{equation}  
 \end{thm}
-{\Large \color{red} Wskazac pozycje z dowodem}
 
 \noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient.
 Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
 It\^{o}'s lemma is a very powerfull tool, indispensable in Black-Scholes theory. We will show how it can be used to solve equation (\ref{eq:gbm}).
-\begin{lemma}
-\label{lemma:solution_dynamics}
+\begin{prop}
+\label{prop:solution_dynamics}
  Let $S$ be a geometric Brownian motion, as in (\ref{eq:gbm}).
  Solution of its SDE is given by
  \begin{equation}
   \label{eq:gmb_sol}
   S_t = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}.
  \end{equation}
-\end{lemma}
+\end{prop}
 \begin{proof}
 We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. We have
  \begin{equation*}
@@ -304,7 +303,32 @@ We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. 
  \[ S = S_0 \exp\left\{ (\mu - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}. \] 
 \end{proof}
 
-Significance in the financial mathematics of the last theorem in this section derives from the fact, that it allows us to move from real measure $\P$ to equivalent martingale measure $\Pm$.
+So far, we have discussed only one dimensional stochastic processes. However, often we have to take into account several assets at once, thus we need mathematical tools to describe multidimensional cases.
+\begin{mydef}
+ Process $W$ is called \textbf{$d$-dimensional standard Wiener process} if it is a vector process (its values are in $\mathbb{R}^d$) of the form
+ \[ W = \left[ \begin{array}{c}
+         W^{(1)}\\
+         W^{(2)}\\
+         \vdots\\
+         W^{(d)}
+        \end{array} \right],\]
+where all components are independent Wiener processes.
+\end{mydef}
+Movements of asset prices usually can not be regarded as independent. We need notation to describe dependency between processes.
+\begin{mydef}
+ We say that Wiener processes $W$ and $V$ are correlated and have correlation $\varrho$, what we denote by
+ \[ \Corr(W, V) = \varrho, \]
+ if and only if
+ \[ \Corr(W_1, V_1) = \varrho. \]
+\end{mydef}
+\begin{remark}
+ It is easy to notice that $\Corr(W_1, V_1) = \varrho$ if and only if for all $t > 0$, $\Corr(W_t, V_t) = \varrho$.
+\end{remark}
+\begin{mydef}
+ The process $W$ is called \textbf{$d$-dimensional correlated Wiener process} with correlation matrix $\Sigma = (\varrho_{ij})_{i,j=1}^d$, if and only if $W = [W^{(1)},W^{(2)},\ldots,W^{(d)}]'$, where for each $i,j$, $\Corr(W^{(i)}, W^{(j)}) = \varrho_{ij}$.   
+\end{mydef}
+
+We end this section with the Girsanov theorem, whose significance in the financial mathematics arises from the fact, that it allows us to move from the real measure $\P$ to an equivalent martingale measure $\Pm$. In the literature exist many versions of this theorem. The one presented here comes from \cite{bjork}, there reader may also finde the proof.
 \begin{thm}[\bfseries Girsanov theorem]
  \label{thm:girsanov}
  Let $\bar{W}$ be a $d$-dimensional standard Wiener process on probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$ and let $\varphi$ be any $d$-dimensional adapted column vector process.
@@ -321,7 +345,6 @@ Significance in the financial mathematics of the last theorem in this section de
 \begin{remark}
  Symbol $\cdot$ in definition of $L$ is the inner product of two vectors. 
 \end{remark}
-The proof of Girsanov theorem reader may find for example in \cite{bjork} (Theorem 11.3).
 
 \section{Elements of Monte Carlo theory}
 Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation.
@@ -482,7 +505,7 @@ To compare presented Monte Carlo methods let us calculate value of $I = \int_0^1
  \end{equation*}
 where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. The results of comparision of all presented methods are gathered in Table \ref{tab:MCcompare} and Figures \ref{fig:boxMC}, \ref{fig:convergenceMC}.
 
-\begin{table}[h]
+\begin{table}
 \centering
  \caption{Results of calculating $\int_0^1 e^x dx$ by simulation.}
  \label{tab:MCcompare}
@@ -498,7 +521,7 @@ where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are 
 \end{tabular}  
 \end{table}
 
-\begin{figure}[!ht]
+\begin{figure}
 \centering
  \includegraphics[scale=0.4]{images/Preliminaries/boxMonteCarlo.pdf}
 \caption{For each method 10000 simulations were run 100 times. Hence each method gave 100 estimations of $\int_0^1 e^x dx$. Small points indicate obtained values. As usually in box plots, the lower and upper edges of the boxes are first and third quartiles.  }
@@ -737,40 +760,40 @@ We start this section with definition of a mentioned contingent claim.
  \label{def:cc_eu}
  \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. \textbf{Derivative} of underlying assets $S^{(0)}, S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
 \end{mydef}
-European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can't take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
+European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can not take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
 \begin{mydef}
- An \textbf{European call option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $K$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $K$.
+ An \textbf{European call option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $E$.
  
- An \textbf{European put option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $K$ gives it's owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for a fixed price $K$.
+ An \textbf{European put option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for a fixed price $E$.
 \end{mydef}
 From the definition
 \begin{equation}
  \label{eq:ecall}
- C\textsuperscript{call} = (S^{(i)}_T - K)_+
+ C\textsuperscript{call} = (S^{(i)}_T - E)_+
 \end{equation}
 \begin{equation}
  \label{eq:eput}
- C\textsuperscript{put} = (K - S^{(i)}_T )_+
+ C\textsuperscript{put} = (E - S^{(i)}_T )_+
 \end{equation}
 where $(x)_+ = \max(0,x)$.
 
-A popular modification of above \textbf{vanilla options} are \textbf{barrier options}. Their payoff depends not only on the stock price at maturity, but also on historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions
+Options defined above are also called \textbf{vanilla options}, while derivatives with additional features are called \textbf{exotic options}. \textbf{Barrier options} may serve for example. Their payoff depends not only on the stock price at the maturity, but also on the historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions
 \begin{mydef}
-Payoff of \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $K$ and barrier $\bar{B}$, is
+Payoff of \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\bar{B}$, equals
 \[ C^{\hbox{\scriptsize call}}_{\hbox{\scriptsize u\&i}} = 
 \begin{cases}
- (S^{(i)}_T - K)_+    & \hbox{if } \sup\limits_{0 \leq t \leq T} S^{(i)}_t \geq \bar{B}\\
+ (S^{(i)}_T - E)_+    & \hbox{if } \sup\limits_{0 \leq t \leq T} S^{(i)}_t \geq \bar{B}\\
  0                    & \hbox{otherwise.}
 \end{cases}
 \]
 \end{mydef}
 Payoff of knock-out option is zeroed when barrier is reached.
 \begin{mydef}
-Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date $T$, strike price $K$ and barrier $\underline{B}$, is
+Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\underline{B}$, equals
 \[ C^{\hbox{\scriptsize put}}_{\hbox{\scriptsize d\&o}} = 
 \begin{cases}
- (K - S^{(i)}_T)_+    & \hbox{if } \inf\limits_{0 \leq t \leq T} S^{(i)}_t \leq \underline{B}\\
+ (E - S^{(i)}_T)_+    & \hbox{if } \inf\limits_{0 \leq t \leq T} S^{(i)}_t \leq \underline{B}\\
  0                    & \hbox{otherwise.}
 \end{cases}
 \]
@@ -782,6 +805,42 @@ We have eight types of barrier options, as every one is call or put, up or down,
 \caption{We consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money. }
 \label{fig:barrier}
 \end{figure}
+
+Another modification of the vanilla options are the \textbf{Asian options}. Their payoff depends on an average price of the asset during options lifetime.
+\begin{mydef}
+ Payoffs of Asian call and put options on asset $S^{(i)}$ with exercise date $T$ and strike price $E$, are given by
+\begin{align*}
+ C^{\text{call}}_{\text{asian}} &= (\bar{S}^{(i)}_T - E)_+, \\
+ C^{\text{put}}_{\text{asian}} &= (E - \bar{S}^{(i)}_T)_+, \\
+\end{align*}
+\end{mydef}
+\noindent where
+\[ \bar{S}^{(i)}_T = \frac{1}{K} \sum\limits_{j=0}^K S^{(i)}_{j\cdot T/K}, \]
+for some $K$. 
+
+So far we presented only options on one asset. Multiasset options are also in usage, for example \textbf{basket options} are options on value $\eta \cdot S$. Vector $\eta$ describes quantity of shares of the assets contained in a basket. The basket call option gives us right to buy whole set of assets for the specified price, and the basket put allows us to sell it.
+\begin{mydef}
+ Payoffs of basket call and put options on basket $\eta$ with exercise date $T$ and strike price $E$, are given by
+\begin{align*}
+ C^{\text{call}}_{\eta} &= (\eta \cdot S_T - E)_+, \\
+ C^{\text{put}}_{\eta} &= (E - \eta \cdot S_T)_+, \\
+\end{align*}
+\end{mydef}
+
+\paragraph{Why do we need derivatives in the first place?}
+The well known anecdote claims that the first man who used derivatives was Tales of Miletus. His extraordinary skills allowed him to predict that the olive harvest next year will be large. During the winter, when nobody needed olive presses, he reserved them for summer. During the season demand for olive presses increased and Tales rented them for a good price. After all, it turned out that he earned much more then paid for the reservation. From this story appears the first reason to use options: they give opportunity to make money on accurate predictions.
+
+Second, and probably more important reason of option usage, is possibility to hedge against unconvienient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If it peaks, he can exercise the options. Either way he wins.
+
+Both stories give an idea why people may want to enter such contracts. In the real live, however, it is not always that clear what
+
+\paragraph{What is the purpose of exotic options?}
+Altering the rules of ``typical'' payoffs may be caused by many reasons. The seller of a call option puts himself into a risk, induced by the fact, that his maximum loss is unbounded. Thus, he may be interested in entering only contracts with up-and-out barrier, which prevents too large payoffs. The buyer of the call option may want to hedge himself against high prices.
+He may purchase cheaper version of the option, with down-and-out  barrier -- maybe if the asset price is low, he does not need any extra hedge. Asian options may be a good choice for risk-averse investors, because they are less sensitive to changes in the underlying price, especially in the time close to the maturity.
+
+Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off. It may seem that the derivatives are artificial tools, created by people living only in the theoretical, mathematical models. Some exotic options may be really complicated and at the first glance no one can tell what was the motivation of entering such contract.
+However, it is worth to remember, that many of the derivative contracts are designed by investors, economist or producers, and they correspond to their real needs. Mathematical models lend a hand in pricing such contracts.
+
 
 \section{Black-Scholes model}
 In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options. Here we are considering a market with only one stock $S$ and a bond $B$. The assumptions of that model are following.
@@ -907,71 +966,73 @@ Let $H$ be a discounted contingent claim and $V$ be its price process. Then
  V_0 = \Em[H].
 \end{equation}
 \end{coro}
-\noindent This equation tells us that \textbf{value of the option is an expactaion of its payoff} (under the risk-neutral measure).
+\noindent This equation tells us that \textbf{value of the option is an expectation of its payoff} (under the risk-neutral measure).
 
 The above theorem suggests how price processes should look in general.
 \begin{mydef}
  The (discounted) price process of the discounted claim $H$ is given by
  \begin{equation*}
-  V_t \gets \Em[H | \mathcal{F}_t].
+  V_t = \Em[H | \mathcal{F}_t].
  \end{equation*}
  Such $V$ is a $\Pm$-martingale.
 \end{mydef}
-For general claims process $V$ depends on choice of an equivalent martingale measure. However, it may be proven that the market model consisting of the discounted assets $(X^{(0)}, X^{(1)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
+For general claims process $V$ depends on the choice of an equivalent martingale measure. However, it may be proven that the market model consisting of the discounted assets $(X^{(0)}, X^{(1)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
 
-\subsection{Change of the measure}
-We have discussed how equivalent martingale measures can be used for option pricing, but so far we did not tell how to find them. For this purpose Girsanov theorem is very usefull.
+\subsection*{Change of the measure}
+We have discussed how equivalent martingale measures can be used for option pricing, but so far we did not tell how to find them. It is difficult to find in literature suitable theorem, which would exactly match our needs, thus we have to prove some facts ourselves.
 
-\begin{prop}
-\label{prop:measure_change}
- Suppose that all risky assets on the market follow the geometric Brownian motion, that is for $i=1,2,\ldots,d$
+\begin{lemma}
+\label{lemma:measure_change}
+ Suppose that $S$ is a $d$-dimensional stochastic process, where each $S^{(i)}$ follows the geometric Brownian motion, that is
  \begin{equation}
   \label{eq:dynamics_real}
-  dS^{(i)} = \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)},
+  dS^{(i)} = \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)},\ \ \ (i=1,2,\ldots,d)
  \end{equation}
- where each $\bar{W}^{(i)}$ is a Brownian motion under measure $\P$ and $corr(\bar{W}^{(i)}, \bar{W}^{(j)}) = \rho_{ij}$. For every vector $(\nu_1, \nu_2, \ldots, \nu_d)$ there exists equivalent probability measure $\mathbb{Q}$, such that the equation (\ref{eq:dynamics_real}) may be rewritten in the form
+ where each $\bar{W}^{(i)}$ is a Brownian motion under measure $\P$ and $\Corr(\bar{W}^{(i)}, \bar{W}^{(j)}) = \rho_{ij}$. For every vector $(\nu_1, \nu_2, \ldots, \nu_d)$ there exists equivalent probability measure $\mathbb{Q}$, such that the equation (\ref{eq:dynamics_real}) may be rewritten in the form
   \begin{equation}
-  dS^{(i)} = \nu_i S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)},
+  dS^{(i)} = \nu_i S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)},\ \ \ (i=1,2,\ldots,d)
  \end{equation}
- where each $W^{(i)}$ is a Brownian motion under equivalent measure $Q$ and\\ $corr^Q(W^{(i)}, W^{(j)}) = \rho_{ij}$.
-\end{prop}
+ where each $W^{(i)}$ is a Brownian motion under equivalent measure $Q$ and\\ $\Corr^Q(W^{(i)}, W^{(j)}) = \rho_{ij}$.
+\end{lemma}
 
 \begin{proof}
- Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a correlation matrix. Cholesky's algorithm allows us to decompose $\Sigma$ to the form
- \[ \Sigma = LL^T. \]
- Hence, $\bar{W}$ may be written in the form
+ Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a covariance matrix (which in this case is the same as correlation matrix). Cholesky's algorithm allows us to decompose $\Sigma$ to the form
+ \[ \Sigma = LL^T, \]
+ where $L$ is lower traingular matrix. Hence, $\bar{W}$ may be written in the form
  \[ \bar{W} = L \bar{V}, \]
  where $\bar{V}$ is a standard $d$-dimensional Wiener process under measure $\P$. Let us apply Theorem \ref{thm:girsanov} (Girsanov theorem) with $\varphi = (\theta_1, \theta_2, \ldots, \theta_d)'$, where all $\theta_i$ are constant. It implies that
- \[ V_t = \bar{V}_t - t\theta_i \]
- is $d$-dimensional standard Wiener process under measure $\mathbb{Q}$. Thus
+ \[ V_t = \bar{V}_t - t\theta \]
+ is $d$-dimensional standard Wiener process under measure $\mathbb{Q}$, which is defined as
+ \[\frac{d\mathbb{Q}}{d\P} = \exp\left\{ \sum\limits_{i=1}^d \theta_i \bar{W}^{(i)}_T - \frac{T}{2} ||\theta||^2 \right\}.\] Thus
  \begin{equation*}
   \begin{split}
    dS^{(i)} &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)} \\
-            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^d l_{ik} \bar{V}^{(k)}\right) \\
-            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} \left(\sum\limits_{k=1}^d l_{ik}\theta_i dt + l_{ik}d V^{(k)}\right) \\    
-            &= \left(\mu_i + \sigma_i \theta_i \sum\limits_{k=1}^d l_{ik} \right) S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^d l_{ik} V^{(k)}\right) \\    
+            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^i l_{ik} \bar{V}^{(k)}\right) \\
+            &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^i \bigl[ l_{ik}\theta_k t + l_{ik} V^{(k)} \bigr] \right) \\    
+            &= \left[ \mu_i + \sigma_i \sum\limits_{k=1}^i l_{ik}\theta_k \right] S^{(i)}dt + d\sum\limits_{k=1}^i l_{ik} V^{(k)} \\      
   \end{split}
  \end{equation*}
  By substituting
  \begin{align*}
-  \theta_i &\gets (\nu_i - \mu_i)/(\sigma_i \sum\limits_{k=1}^d l_{ik})\\
-  W &\gets LV
+  \theta_1 &:= \frac{\nu_1 - \mu_1}{\sigma_1 l_{11}}\\
+  \theta_i &:= \frac{\nu_i - \mu_i - \sigma_i \sum\limits_{k=1}^{i-1} l_{ik}\theta_k}{\sigma_il_{ii}}\ \ \ (i=2,3,\ldots,d)\\
+         W &:= LV
  \end{align*}
  we get the thesis.
 \end{proof}
 
-Above propostion allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- the martingale measure.
+Above lemma allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- the martingale measure.
 
-\begin{coro}
-\label{coro:rn-dynamics}
+\begin{prop}
+\label{prop:rn-dynamics}
  In real measure $\P$ the risky assets follow a geometric Brownian motion, as in equation (\ref{eq:dynamics_real}). Under equivalent martingale measure $\Pm$ the dynamics has the form
  \begin{equation}
   \label{eq:dynamics_neutral}
   dS^{(i)} = r S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)}.
  \end{equation}
-\end{coro}
+\end{prop}
 \begin{proof}
- Proposition \ref{prop:measure_change} states that there exist equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
+ Lemma \ref{lemma:measure_change} states that there exist equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
  From (\ref{eq:gmb_sol})
  \[ X_t = e^{-rt} S_t = S_0 e^{ \frac{1}{2}\sigma^2 t + \sigma W_t }. \]
  Let $0 \leq s \leq t \leq T$. We have
@@ -986,6 +1047,8 @@ Above propostion allows us to describe vector of price processes in terms of som
  \end{equation*}
 Hence $\Pm$ is an equivalent martingale measure.
 \end{proof}
+
+Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucial meaning in our applications. They allow us to generate trajectories of the asset prices under the risk-neutral measure, which is essential in the Monte Carlo pricing.
 
 
 \chapter[{Pricing European options with Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
@@ -1002,9 +1065,9 @@ From Corollary \ref{coro:price_mth} we have
  \label{eq:price_for_MC}
  V_0 = \Em[H].% = \Em[\frac{C}{S^{(0)}_T}] = e^{-rT} \Em[C].
 \end{equation}
-By comparision with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. To calculate options price we have to replicate its payoff many times and take an average. Note, however, that expectaion is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{coro:rn-dynamics} describes its dynamics:
+By comparision with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. To calculate options price we have to replicate its payoff many times and take an average. Note, however, that expectaion is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{prop:rn-dynamics} describes its dynamics:
 \[ dS = rSdt + \sigma S dW. \]
-Lemma \ref{lemma:solution_dynamics} gives the solution to above SDE:
+Lemma \ref{prop:solution_dynamics} gives the solution to above SDE:
 \begin{equation}
  \label{eq:vanilla_St}
  S_t = S_0 \exp\left\{ (r - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}.
@@ -1190,7 +1253,7 @@ We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and o
  
 \begin{algorithm}
  \begin{algorithmic}[1]
-  \Function{priceAsianCallAV}{$n$, $S_0$, $\sigma$, $r$, $T$, $E$, $K$}
+  \Function{PriceAsianCallAV}{$n$, $S_0$, $\sigma$, $r$, $T$, $E$, $K$}
     \State  $sum \gets sum\_sq \gets 0$
     \For{$i=1$ {\bf to} $n$}
       \State (pos,neg) $\gets$ \Call{Trajectory}{$S_0$, $\sigma$, $r$, $T$, $K$}
@@ -1275,6 +1338,30 @@ At the end of this section, it is worth to mention, that there exist analitical 
 \end{figure}
 
 \section{Pricing multiasset instruments}
+Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to take into account correlation between the assets. 
+
+
+
+\begin{algorithm}
+ \begin{algorithmic}[1]
+  %\Comment{ $S_0$ and $\sigma$ are now tables, for example $\sigma[3]$ is the volatility of third asset.}
+  \Function{Trajectory}{$S_0$, $\sigma$, $r$, $T$, $K$}
+  \State S $\gets$ tow dimensional array \Comment{ S[i,k] is the price of i-th asset at k-th time point. }
+  \For{$i=1$ {\bf to} $d$}
+    \State S[i,0] $\gets S_0[i]$
+  \EndFor
+  \State $dt \gets T/K$
+  \For{$i=1$ {\bf to} $K$}
+    \State $Z \gets$ generate standard normal
+    \State pos[$i$] $\gets$ pos[$i-1$] $\cdot \exp\left\{ (r - \frac{1}{2}\sigma^2) dt + \sigma \sqrt{dt} Z \right\}$
+    \State neg[$i$] $\gets$ neg[$i-1$] $\cdot \exp\left\{ (r - \frac{1}{2}\sigma^2) dt - \sigma \sqrt{dt} Z \right\}$
+  \EndFor
+  \State \Return (pos, neg)
+  \EndFunction
+ \end{algorithmic}
+ \caption{Generating antithetic trajectories.}
+ \label{alg:multi-tr}
+\end{algorithm}
 
 \chapter{Least Squares Monte Carlo}
 \section{The idea of LSM}
