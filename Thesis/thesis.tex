@@ -50,8 +50,8 @@
 %   {\refstepcounter{example} \par\medskip\noindent \textbf{Example~\arabic{example}.}  }
 %   {\begin{flushright}$\square$\end{flushright}}
   
-\def\Var{{\rm Var}\,}
-\def\E{{\mathbb{E}}\,}
+\def\Var{{\rm Var}}
+\def\E{{\mathbb{E}}}
 \def\P{{\mathbb{P}}\,}
 \def\Cov{{\hbox{Cov}}}
 \def\Corr{{\hbox{Corr}}}
@@ -715,7 +715,7 @@ The value $V^{\xi}_0$ is the initial investment into the portfolio. Following de
  \[ \sum\limits_{i=0}^d d\xi^{(i)}_t (S^{(i)}_t + dS^{(i)}_t) = 0. \]
 \end{mydef}
 This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let's think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $dS_t$. The portfolio needs a rearrangment -- $d\xia_t$ means changes of quantities of the held assets.
-Thus $\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
+Thus $d\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
 
 From now on we will consider only those market models that are efficient in the sense that they are arbitrage-free.
 \begin{mydef}
@@ -727,7 +727,7 @@ From now on we will consider only those market models that are efficient in the 
  \end{align*}
  The market is \textbf{arbitrage-free} if it does not allow for arbitrage opportunities.
 \end{mydef}
-What does arbitrage opportunity mean in practice? Assume an investor entering the market without any money. He builds his portfolio by short sale of some assets and purchase of other assets for received money. Arbitrage opportunity is a situation when the investor at time $T$ can cover his short positions by sale of assets held long, and with positive probability he has some remaining cash.
+What does arbitrage opportunity mean in practice? Assume an investor entering the market without any capital. He builds his portfolio by short sale of some assets and purchase of other assets for received money. Arbitrage opportunity is a situation when the investor at time $T$ can cover his short positions by sale of assets held long, and with positive probability he has some remaining cash.
 In the other words, he can make money without exposure to any downside risk. 
 
 Now we are moving to an important concept of martingule measure.
@@ -740,7 +740,7 @@ Now we are moving to an important concept of martingule measure.
 \end{mydef}
 
 \begin{remark}
- Condition (\ref{eq:X-martingale}) is written for a vector $X$, hence for every $1 \leq i \leq d$
+ Condition (\ref{eq:X-martingale}) is written for a vector process $X$, hence for every $1 \leq i \leq d$
   \begin{equation*}
   \Em[X^{(i)}_t] < \infty \hbox{\ \ and\ \ } \Em[X^{(i)}_t | \mathcal{F}_s] = X^{(i)}_s
  \end{equation*}
@@ -755,7 +755,7 @@ Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mat
   \item There exists martingale measure $\Pm$ equivalent to $\P$.
  \end{enumerate}
 \end{thm}
-Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentialy'', as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since trajectories can be simulated only in a finite number of points.
+Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentialy'', as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since in Monte Carlo methods price trajectories are simulated only in a finite number of points.
 
 \section{European contingent claims}
 We start this section with definition of a mentioned contingent claim.
@@ -766,9 +766,9 @@ We start this section with definition of a mentioned contingent claim.
 European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can not take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
 \begin{mydef}
- An \textbf{European call option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $E$.
+ An \textbf{European call option} on the asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $E$.
  
- An \textbf{European put option} on asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for a fixed price $E$.
+ An \textbf{European put option} on the asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for a fixed price $E$.
 \end{mydef}
 From the definition
 \begin{equation}
@@ -781,9 +781,9 @@ From the definition
 \end{equation}
 where $(x)_+ = \max(0,x)$.
 
-Options defined above are also called \textbf{vanilla options}, while derivatives with additional features are called \textbf{exotic options}. \textbf{Barrier options} may serve for example. Their payoff depends not only on the stock price at the maturity, but also on the historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions
+Options defined above are also called \textbf{vanilla options}, while derivatives with additional features are called \textbf{exotic options}. \textbf{Barrier options} may serve as an example. Their payoff depends not only on the stock price at the maturity, but also on the historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions.
 \begin{mydef}
-Payoff of \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\bar{B}$, equals
+The payoff of the \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\bar{B}$, equals
 \[ C^{\hbox{\scriptsize call}}_{\hbox{\scriptsize u\&i}} = 
 \begin{cases}
  (S^{(i)}_T - E)_+    & \hbox{if } \sup\limits_{0 \leq t \leq T} S^{(i)}_t \geq \bar{B}\\
@@ -791,9 +791,9 @@ Payoff of \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $
 \end{cases}
 \]
 \end{mydef}
-Payoff of knock-out option is zeroed when barrier is reached.
+\noindent The payoff of the knock-out option is zeroed when barrier is hit.
 \begin{mydef}
-Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\underline{B}$, equals
+The payoff of the \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\underline{B}$, equals
 \[ C^{\hbox{\scriptsize put}}_{\hbox{\scriptsize d\&o}} = 
 \begin{cases}
  (E - S^{(i)}_T)_+    & \hbox{if } \inf\limits_{0 \leq t \leq T} S^{(i)}_t \leq \underline{B}\\
@@ -801,11 +801,11 @@ Payoff of \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date
 \end{cases}
 \]
 \end{mydef}
-We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoff from an up-and-out call option in three diffrent scenarios. 
+We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on the barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoffs from an up-and-out call option in three diffrent scenarios. 
 \begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.3]{images/BasicsOfOptionPricing/barrier.pdf}
-\caption{We consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money. }
+\caption{Consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past the barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money. }
 \label{fig:barrier}
 \end{figure}
 
@@ -833,89 +833,200 @@ So far we presented only options on one asset. Multiasset options are also in us
 \paragraph{Why do we need derivatives in the first place?}
 The well known anecdote claims that the first man who used derivatives was Tales of Miletus. His extraordinary skills allowed him to predict that the olive harvest next year will be large. During the winter, when nobody needed olive presses, he reserved them for summer. During the season demand for olive presses increased and Tales rented them for a good price. After all, it turned out that he earned much more then paid for the reservation. From this story appears the first reason to use options: they give opportunity to make money on accurate predictions.
 
-Second, and probably more important reason of option usage, is possibility to hedge against unconvienient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If it peaks, he can exercise the options. Either way he wins.
+Second, and probably more important reason of option usage, is possibility to hedge against unconvienient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If asset price peaks, he can exercise the options. Either way he wins.
 
-Both stories give an idea why people may want to enter such contracts. In the real live, however, it is not always that clear what
 
 \paragraph{What is the purpose of exotic options?}
 Altering the rules of ``typical'' payoffs may be caused by many reasons. The seller of a call option puts himself into a risk, induced by the fact, that his maximum loss is unbounded. Thus, he may be interested in entering only contracts with up-and-out barrier, which prevents too large payoffs. The buyer of the call option may want to hedge himself against high prices.
 He may purchase cheaper version of the option, with down-and-out  barrier -- maybe if the asset price is low, he does not need any extra hedge. Asian options may be a good choice for risk-averse investors, because they are less sensitive to changes in the underlying price, especially in the time close to the maturity.
 
-Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off. It may seem that the derivatives are artificial tools, created by people living only in the theoretical, mathematical models. Some exotic options may be really complicated and at the first glance no one can tell what was the motivation of entering such contract.
-However, it is worth to remember, that many of the derivative contracts are designed by investors, economist or producers, and they correspond to their real needs. Mathematical models lend a hand in pricing such contracts.
+Described stories show that derivatives idea comes up in a natural way. In both stories there was an exchange of money for some goods. In the real live, however, situation is not always that clear. Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off.
+It may seem that the derivatives are artificial tools, created by people living only in the theoretical, mathematical models. Some exotic options may be really complicated and at the first glance no one can tell what was the motivation of entering such contract. However, it is worth to remember, that many of the derivative contracts are designed by investors, economist or producers, and they correspond to their real needs. Mathematical models lend a hand in pricing such contracts.
 
 
 \section{Black-Scholes model}
-In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options. Here we are considering a market with only one stock $S$ and a bond $B$. The assumptions of that model are following.
+In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options. At first we discuss a case when $d=1$, i.e. the model has only one risky asset and a bond. For convenience we will write $S$ instead of $S^{(1)}$, and $B$ instead of $S^{(0)}$. We will use this convention every time when considering a market with one risky asset.
 
-\noindent \textbf{The underlying stock price follows a lognormal model.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE for option price is described by equation
+The assumptions are following:
+\begin{enumerate}
+  \item[BS1.] \textbf{The market does not admit arbitrage opportunities.}
+
+ \item[BS2.] \textbf{The stock price of the underlying follows a geometric brownian motion.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE of the option price is described by equation
 \begin{equation}
- \label{eq:stockDynamics}
+ \label{eq:BS_dynamics}
  dS_t = \mu S_t dt + \sigma S_t dW_t. 
 \end{equation}
-
-\noindent \textbf{There exists constant risk-free interest rate $r$.} In the other words, dynamics of $B$ is given by 
+ 
+  \item[BS3.] \textbf{There exists constant risk-free interest rate $r$.} In the other words, dynamics of $B$ is given by 
 \[ dB_t = rB_t dt. \]
-Investors may both, borrow and lend, any amount of cash at rate $r$.
+Investors may both, borrow and lend, any amount of money at rate $r$.
 
-\noindent \textbf{It is possible to buy and sell any amount of stock.} It means that investors can even trade fractional numbers of stock, and short sell unbounded quantity of shares.
+  \item[BS4.] \textbf{It is possible to buy and sell any amount of stock.} It means that investors can even trade fractional numbers of stock, and sell short unbounded quantity of shares.
 
-\noindent \textbf{All transactions do not incur any additional costs.}
+  \item[BS5.] \textbf{All transactions do not incur any additional costs.}
 
-\noindent \textbf{The market does not admit arbitrage opportunities.}
+  \item[BS6.] \textbf{The underlying does not pay a dividend.}
+  
+  \item[BS7.] We have to make one additional assumption on the options value. Many authors forget to mention it, altough it is required for It\^{o}'s lemma. Let $F$ be the process of the price of the option\footnotemark.
+  \textbf{For some smooth function $\varphi$ the price process has the form:}
+    \begin{equation}
+    \label{eq:PriceProcessForm}
+    F_t = \varphi(S_t, t).
+    \end{equation}
+This assumption looks entirely natural, but it can not be concluded from what we discussed so far. It must be taken as an axiom.
+\end{enumerate}
+\footnotetext{$F_t$ is the value of the option quoted at time $t$ (not discounted to time 0). The discounted price process is in this thesis denoted by letter $V$. }
 
-Suppose we are constructing a portfolio consisting of short position in one option and long position in $\Delta$ shares. 
-Let $\Pi$ be the process of value of portfolio ($\Pi_t$ is value at time $t$), and $V$ be the process of price of the option ($V_t$ is price at time $t$). We have to make one more assumption. 
+Instead of (\ref{eq:PriceProcessForm}) we will write $F_t = F(S_t, t)$. Then $F$ has an ambigous meaning -- left $F$ denotes the price process and the right one is some function. However, as in many other literature, we will identify them, since it does not lead to misunderstanding.
 
-For some smooth function $V$ \textbf{the price process has the form:}
-\[ V_t = V(S_t, t). \]
-Note that symbol $V$ has an ambigous meaning -- in above formula left $V$ is price process and the right one is smooth function. However, as in many other literature, we do not bring in additional notation, since it does not lead to misunderstanding.
-
-Many authors forget to mention this last assumption, altough it is very important. Without it we could not use It\^{o}'s lemma.
-
-Equation of portfolio is given by
+Suppose we are constructing a portfolio consisting of a short position in one option and a long position in $\Delta$ shares. Let $\Pi$ be the value process of the portfolio. Equation of portfolio is given by
 \begin{equation}
  \label{eq:portfolio}
-  \Pi = \Delta S - V 
+  \Pi = \Delta S - F 
 \end{equation}
-We may ask how much the portfolio will change in a short period of time. We have
-\[ d\Pi = \Delta dS - dV  \]
-Note that we do not have to differentiate $\Delta$, because it does not change in an infinitesimal increment of time. To handle $dV$ we will use It\^{o}s lemma. Thus
-\[ d\Pi = \Delta dS - \frac{\partial V}{\partial S}dS - \frac{\partial V}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2}dt  \]
-Risk in increment of portfolio is carriered by changes of stock price. By choosing
+We analyze how much the portfolio will change in a short period of time. We have
+\[ d\Pi = \Delta dS - dF  \]
+Note that we do not have to differentiate $\Delta$, because it is constant in an infinitesimal increment of time. To handle $dV$ we will use It\^{o}s lemma. Thus
+\[ d\Pi = \Delta dS - \frac{\partial F}{\partial S}dS - \frac{\partial F}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt  \]
+The risk in an increment of the portfolio is carriered by changes of the stock price. By choosing
 \begin{equation}
  \label{eq:delta}
- \Delta = \frac{\partial V}{\partial S}
+ \Delta = \frac{\partial F}{\partial S}
 \end{equation}
-we get rid off uncertainity. Now we have
+we get rid off the uncertainity. Now we have
 \begin{equation}
   \label{eq:portfolio_inc}
- d\Pi = -(\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2})dt.
+ d\Pi = -(\frac{\partial F}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2})dt.
 \end{equation}
-Increment of $\Pi$ does not depend on any risky asset, hence no-arbitrage assumption induces
+The increment of $\Pi$ does not depend on any risky asset, hence no-arbitrage assumption induces
 \[ d\Pi = r\Pi dt. \]
 After substituting (\ref{eq:portfolio}), (\ref{eq:delta}) and (\ref{eq:portfolio_inc}) into above equation, we obtain
-\[ -(\frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2})dt = r(\frac{\partial V}{\partial S} S - V)dt, \]
+\[ -(\frac{\partial F}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2})dt = r(\frac{\partial F}{\partial S} S - F)dt, \]
 which after simple calculation gives
 \begin{equation}
  \label{eq:BSeq}
- \frac{\partial V}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 V}{\partial S^2} + r\frac{\partial V}{\partial S} S - rV = 0.
+ \frac{\partial F}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2} + r\frac{\partial F}{\partial S} S - rF = 0.
 \end{equation}
-(\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about the payoff off the option, thus this is a general equation. For European options it has straightforward solution.
-
-\begin{align*}
-V_t\textsuperscript{call} &= \Phi[d_1(t)]S_t  - \Phi[d_2(t)]K e^{-r(T-t)},\\
-V_t\textsuperscript{put} &= -\Phi[-d_1(t)]S_t + \Phi[-d_2(t)]K e^{-r(T-t)},
-\end{align*}
+Formula (\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about the payoff off the option, thus this is a general equation. For European options it has straightforward solution, known as \textbf{Black-Scholes formula}.
+\begin{prop}
+\label{prop:BSFormula}
+Prices of the European call and put options with time to expiration $T$, strike price $E$ and the underlying dynamics given by (\ref{eq:BS_dynamics}) are given by the following equations:
+\begin{equation*}
+  \begin{split}
+    F_t\textsuperscript{call} &= S_t \Phi\bigl( d_1(t) \bigr) - e^{-r(T-t)} E \Phi\bigl(d_2(t) \bigr),\\
+    F_t\textsuperscript{put} &= -S_t \Phi\bigl(-d_1(t) \bigr) + e^{-r(T-t)} E \Phi\bigl(-d_2(t) \bigr), 
+  \end{split}
+\end{equation*}
 where
 \begin{align*}
-d_1(t) &= \frac{\ln\left(\frac{S_t}{K}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
-d_2(t) &= \frac{\ln\left(\frac{S_t}{K}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}(t)-\sigma\sqrt{T-t},\\
-\Phi & \hbox{ is distibution function of standard normal distribution. } 
+d_1(t) &= \frac{\ln\left(\frac{S_t}{E}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
+d_2(t) &= \frac{\ln\left(\frac{S_t}{E}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}(t)-\sigma\sqrt{T-t},\\
+\Phi & \hbox{ is the distibution function of the standard normal distribution. } 
 \end{align*}
+\end{prop}
+We prove this proposition at the end of the section \ref{sec:risk-neutral}, using the risk-neutral measure.
 
-{\Large \color{red} Wskazac pozycje z dowodem}
-It is called \textbf{Black-Scholes formula}.
+\paragraph{Multiasset model.}
+All above assumptions move instantly to the market model with many assets, maybe with little edition:
+\begin{enumerate}
+ \item[BS2.] \textbf{Stock prices of all risky assets follow a geometric brownian motion.} Each risky asset $S^{(i)}$ has constant drift $\mu_i$ and volatility $\sigma_i$. In symbolic form:
+\begin{equation}
+ \label{eq:BS_multi_dynamics}
+ dS^{(i)}_t = \mu S^{(i)}_t dt + \sigma S^{(i)}_t dW^{(i)}_t\ \ \ \ (i=1,2,\ldots,d). 
+\end{equation}
+  \item[BS3.]  The dynamics of $S^{(0)}$ is given by 
+\[ dS^{(0)}_t = rS^{(0)}_t dt. \]
+\end{enumerate}
+  
+The movements of the asset prices are not independent.
+\begin{mydef}
+ We say that the correlation between two risky assets $S^{(i)}$ and $S^{(j)}$ equals $\varrho_{ij}$ if and only if $\Corr(W^{(i)}, W^{(j)}) = \varrho_{ij}$.
+\end{mydef}
+In the other words by the correlation of two assets we understand the correlation between corresponding Wiener processes, appearing in their dynamics. A matrix of the correlation between all risky processes will be denoted by $\Sigma$,
+\begin{equation*}
+ \Sigma = \left( \begin{array}{cccc}
+           \varrho_{11} & \varrho_{12} & \cdots & \varrho_{1d} \\
+           \varrho_{21} & \varrho_{22} & \cdots & \varrho_{2d} \\
+           \vdots & \vdots & \ddots & \vdots \\
+           \varrho_{d1} & \varrho_{d2} & \cdots & \varrho_{dd} \\
+          \end{array} \right)
+\end{equation*}
+
+\textbf{The assumptions described in this section will hold true to the rest of the thesis.}
+
+\section{Model calibration}
+By looking at the previous section we can specify a set of values by which the model is parameterised:
+\begin{itemize}
+ \item drifts $\mu_1, \mu_2, \ldots, \mu_d$,
+ \item volatilities $\sigma_1, \sigma_2, \ldots, \sigma_d$,
+ \item correlation $\Sigma$,
+ \item riskless interest rate $r$.
+\end{itemize}
+While calibrating a model it is conveniet to assume that today is time $0$. We are interested in modeling asset prices in the future, up to time $T$. It is natural to use negative $t$ to denote times in the past. For example $S^{(i)}_{-0.5}$ means the price of the $i$\textsuperscript{th} asset half of a year ago. Hence for $t > 0,\ S_t$ is random vector, which we are about to model, and for $t \leq 0,\ S_t$ is a vector with historical prices, which may be obtained from stock archives.
+
+Since asset prices follow (\ref{eq:BS_multi_dynamics}) and its solution is given by (\ref{eq:gmb_sol}), thus for all $i$
+\[  S^{(i)}_{t_{n+1}} = S^{(i)}_{t_n} \exp\left\{ (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t + \sigma_i \sqrt{\Delta t} Z_i \right\}, \]
+where $\Delta t = t_{n+1} - t_n$, $Z$ is a random vector with corralation matrix $\Sigma = \bigl( \varrho_{ij} \bigr)_{i,j=1}^d$, and for each $Z_i$, $Z_i \sim \mathcal{N}(0,1)$. Let
+\[  L^{(i)}_{n+1} = \ln\left( \frac{S^{(i)}_{t_{n+1}}}{S^{(i)}_{t_n}} \right). \]
+It is clear that $ L^{(i)}_{n+1} \sim \mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$
+
+The key to the calibration is an assumption that in the past, price processes followed (\ref{eq:BS_multi_dynamics}) as well. Let $\overline{T}$ denote how old is the oldest price observation, and $N$ be such that $N \cdot \Delta t = \overline{T}$. Furthermore let $t_k = -(N-k)\Delta t\ (k=0,1,\ldots,N)$. Values $t_k$ are times in which we take historical prices, from $t_0 = -\overline{T}$, to $t_N = 0$, which is today. Let us focus on the $i$\textsuperscript{th} asset. We have $N+1$ historical prices:
+\[  \bigl( S^{(i)}_{t_0}, S^{(i)}_{t_1}, \ldots,S^{(i)}_{t_N} \bigr), \]
+from which we obtain a vector
+\[ \bigl( L^{(i)}_{1}, L^{(i)}_{2}, \ldots, L^{(i)}_{N} \bigr) \]
+with $N$ samples from distribution $\mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$.
+
+In practice, usually $\Delta t = 1/252$, because there are about 252 working days in a year. However, it is debatable how long should be $\overline{T}$. Values taken most often vary from ... to ...
+{\Large \color{red} TODO TODO TODO TODO }
+
+Finally, we present how to obtain values of model parameters.
+\paragraph{Drifts and volatilities.}
+Let $L^{(i)} \sim \mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$. It means that
+\begin{equation*}
+ \begin{split}
+  \E\left( L^{(i)} \right) &= (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t, \\
+  \Var\left( L^{(i)} \right) &= \sigma_i^2 \Delta t.
+ \end{split}
+\end{equation*}
+Hence
+\begin{equation*}
+ \begin{split}
+  \mu_i  &= \frac{ 2\E\left( L^{(i)} \right) + \Var\left( L^{(i)} \right) }{2\Delta t}, \\
+  \sigma_i^2 &= \frac{\Var\left( L^{(i)} \right)}{\Delta t}.
+ \end{split}
+\end{equation*}
+Now we can use the sample vector to estimate expectaion and variance. Let
+\begin{equation*}
+ \begin{split}
+  \alpha_i &= \frac{1}{N}\sum\limits_{k=1}^{N} L^{(i)}_k\\
+  \beta_i &= \frac{1}{N-1}\sum\limits_{k=1}^{N}(L^{(i)}_k - \alpha_i)^2
+ \end{split}
+\end{equation*}
+Values $\alpha_i$ and $\beta_i$ are unbiased estimators of expectation and variance respectively. Thus we assign
+\begin{equation*}
+ \begin{split}
+  \mu_i  &= \frac{ 2\alpha_i + \beta_i }{2\Delta t}, \\
+  \sigma_i^2 &= \frac{\beta_i}{\Delta t}.
+ \end{split}
+\end{equation*}
+\begin{remark}
+ Calculating drifts is in many applications redundant. Note that there is no drift term in Black-Scholes formula nor equation. As it is shown in section \ref{sec:risk-neutral} also the dynamics in the martingale measure does not depend on the drift.
+\end{remark}
+
+
+\paragraph{Correlation.} At first recall that $\Corr(aX + b, cY + d) = \Corr(X,Y)$. Thus finding a correlation between $Z_i$ and $Z_j$ is equivalent to finding corralation between $L^{(i)}$ and $L^{(j)}$. We can do it using Pearson's estimator:
+
+\[ \varrho_{i,j} = \frac{1}{N-1} \frac{\sum\limits_{k=1}^N(L^{(i)}_k - \alpha_i)(L^{(j)}_k - \alpha_j)}{\sqrt{\beta_i \beta_j}} \]
+
+\paragraph{Riskless interest rate.}
+In order to calculate the interest rate it is necessary to choose a bond whose maturity is close to the expiry of valuated option. The interest rate implied by that bond reflects well the real interest rate in the concerned time.
+
+It is clear that
+\[ C = Ne^{-rT}, \]
+where $C$ is price of the bond, $N$ is its nominal value, $r$ is the interest rate implied by the bond, and $T$ is the maturity time. By simple transformation
+\begin{equation*}
+r = \dfrac{\ln(\frac{N}{C})}{T}.
+\end{equation*}
 
 \section{Risk-neutral pricing}
 \label{sec:risk-neutral}
@@ -1037,21 +1148,42 @@ Above lemma allows us to describe vector of price processes in terms of some equ
 \begin{proof}
  Lemma \ref{lemma:measure_change} states that there exist equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
  From (\ref{eq:gmb_sol})
- \[ X_t = e^{-rt} S_t = S_0 e^{ \frac{1}{2}\sigma^2 t + \sigma W_t }. \]
+ \[ X_t = e^{-rt} S_t = S_0 e^{ -\frac{1}{2}\sigma^2 t + \sigma W_t }. \]
  Let $0 \leq s \leq t \leq T$. We have
  \begin{equation*}
   \begin{split}
-   \Em[X_t | \mathcal{F}_s] &= \Em[ S_0 e^{ \frac{1}{2}\sigma^2 t + \sigma W_t } | \mathcal{F}_s] \\
-       &= S_0 e^{\frac{1}{2}\sigma^2 t} \Em[ e^{  \sigma W_s} e^{ \sigma (W_t - W_s) } | \mathcal{F}_s] \\
-       &= S_0 e^{\frac{1}{2}\sigma^2 t + \sigma W_s} \Em[ e^{ \sigma (W_t - W_s) }] \\
-       &= S_0 e^{\frac{1}{2}\sigma^2 t + \sigma W_s}  e^{ -\frac{1}{2}\sigma^2(t-s) } \\
-       &= S_0 e^{\frac{1}{2}\sigma^2 s + \sigma W_s}.
+   \Em[X_t | \mathcal{F}_s] &= \Em[ S_0 e^{ -\frac{1}{2}\sigma^2 t + \sigma W_t } | \mathcal{F}_s] \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 t} \Em[ e^{  \sigma W_s} e^{ \sigma (W_t - W_s) } | \mathcal{F}_s] \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 t + \sigma W_s} \Em[ e^{ \sigma (W_t - W_s) }] \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 t + \sigma W_s}  e^{ \frac{1}{2}\sigma^2(t-s) } \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 s + \sigma W_s} = X_s.
   \end{split}
  \end{equation*}
 Hence $\Pm$ is an equivalent martingale measure.
 \end{proof}
 
-Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucial meaning in our applications. They allow us to generate trajectories of the asset prices under the risk-neutral measure, which is essential in the Monte Carlo pricing.
+Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucial meaning in our applications. They allow us to generate trajectories of the asset prices under the risk-neutral measure, which is essential in the Monte Carlo pricing. We show one more application of the risk-neutral pricing -- it can be used to derive Black-Scholes formula.
+\begin{proof}[(Proof of Proposition \ref{prop:BSFormula})]
+ From Proposition \ref{prop:solution_dynamics}
+ \[ S_T = S_t \exp\bigl\{ (r - \frac{1}{2} \sigma^2)(T-t) + \sigma W_{T-t} \bigr\} = S_t e^Z, \]
+ where $Z \sim \mathcal{N}\left((r - \frac{1}{2} \sigma^2)(T-t), (T-t)\sigma^2 \right)$ in the measure $\Pm$. Let $f_Z$ be the density of $Z$ and $S_t = s$.
+ \begin{equation*}
+  \begin{split}
+    F_t\textsuperscript{call} &= e^{-r(T-t)} \Em\left[(S_T-E)_+ | \mathcal{F}_t \right] = e^{-r(T-t)} \Em\left[(S_T-E)_+ |S_t\right] \\
+    &= e^{-r(T-t)} \Em\left[(s e^Z-E)_+ \right] = e^{-r(T-t)} \Em\left[(s e^Z-E) \mathbbm{1}\left({\textstyle Z \geq \ln\left(\frac{E}{s}\right)} \right) \right] \\
+    &= e^{-r(T-t)} \int\limits_{\ln(E/s)}^\infty (se^z - E)f_Z(z) dz \\
+    &= s\int\limits_{\ln(E/s)}^\infty e^{-r(T-t)}e^z f_Z(z) dz - e^{-r(T-t)} E\int\limits_{\ln(E/s)}^\infty f_Z(z) dz = (\bigstar)
+  \end{split}
+ \end{equation*}
+ Simple calculation gives
+ \[ \int\limits_{\ln(E/s)}^\infty e^{-r(T-t)}e^z f_Z(z) dz = \Phi\bigl( d_1(t) \bigr),  \ \ \ 
+    \int\limits_{\ln(E/s)}^\infty f_Z(z) dz = \Phi\bigl( d_2(t) \bigr),  \ \ \ \]
+ hence 
+ \[ (\bigstar) = S_t \Phi\bigl( d_1(t) \bigr)  - e^{-r(T-t)} E \Phi\bigl( d_2(t) \bigr) . \]
+ Derivation of the formula for put's price is analogous.
+\end{proof}
+
+
 
 
 \chapter[{Pricing European options with Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
