@@ -15,6 +15,7 @@
 \usepackage[font={small,sl}]{caption}
 \usepackage{bbm}
 
+% pretty display of a chapter/part
 \addto\captionsenglish{
   \renewcommand\chaptername{Part}}
 \titleformat{\chapter}[display]
@@ -30,20 +31,19 @@
   \vspace{1pc}%
   \Huge}
 
-\setcounter{tocdepth}{1} %subsections won't appear in TOC
 
-\newtheorem{thm}{Theorem}[section]
+\newtheorem{thm}{Theorem}[chapter]
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{coro}[thm]{Corollary}
 \newtheorem{lemma}[thm]{Lemma}
 
 \theoremstyle{definition}
-\newtheorem{mydef}{Definition}[section]
+\newtheorem{mydef}{Definition}[chapter]
 \newtheorem{notation}[mydef]{Notation}
-\newtheorem{example}{Example}[section]
+\newtheorem{example}{Example}[chapter]
 
 \theoremstyle{remark}
-\newtheorem{remark}{Remark}
+\newtheorem{remark}{Remark}[chapter]
 
 % \newcounter{example}
 % \newenvironment{example}
@@ -53,6 +53,7 @@
 \def\Var{{\rm Var}}
 \def\E{{\mathbb{E}}}
 \def\P{{\mathbb{P}}\,}
+\def\Q{{\mathbb{Q}}\,}
 \def\Cov{{\hbox{Cov}}}
 \def\Corr{{\hbox{Corr}}}
 \def\Em{{\mathbb{E}^*}\,}
@@ -69,12 +70,13 @@
 \def\CMCa[#1, #2]{\hat{#1}^{\hbox{\tiny CMC}}_{#2}}
 \def\AVa[#1, #2]{\hat{#1}^{\hbox{\tiny AV}}_{#2}}
 \def\CVa[#1, #2]{\hat{#1}^{\hbox{\tiny CV}}_{#2}}
+\DeclareMathOperator*{\esssup}{ess\,sup}
 
 \definecolor{comment}{RGB}{96,96,192}
 
 
 %opening
-\title{Pricing American and Exotic Options using the Least Squares Monte Carlo Approach}
+\title{Pricing Exotic Options using Monte Carlo methods}
 \author{Grzegorz Łoś}
 
 \pagestyle{fancy}
@@ -99,7 +101,7 @@ Instytut Matematyczny}\\
 \vspace{4cm}
 \textbf{\textit{\large Grzegorz Łoś}\\
 \vspace{0.5cm}
-{\Large Pricing American and Exotic Options using the Least Squares Monte Carlo Approach}}\\
+{\Large Pricing Exotic Options using Monte Carlo methods}}\\
 \end{center}
 \vspace{3cm}
 {\hspace*{6.5cm}\large Praca magisterska\\
@@ -182,11 +184,11 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
 \noindent Stopping times play important role in financial mathematics. Often we are interested in finding an optimal strategy for exercising an option. Such strategy is a stopping time.
 
 \begin{mydef}
- We call a stochastic process $M=(M_t)_{t=0}^T$ a \textbf{martingale} with respect to filtration $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
+ We call a stochastic process $M=(M_t)_{t=0}^T$ a \textbf{martingale} with respect to the filtration the $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
  \begin{itemize}
   \item for all $t \in [0,T],\ M_t$ is $\mathcal{F}_t$-measurable,
-  \item $\E|M_t| < \infty$,
-  \item for all $0 \leq s < t \leq T, \E[M_t|\mathcal{F}_s] = M_s$  a.s.
+  \item for all $t \in [0,T],\ \E|M_t| < \infty$,
+  \item for all $0 \leq s < t \leq T,\ \E[M_t|\mathcal{F}_s] = M_s$  a.s.
  \end{itemize}
 \end{mydef}
 
@@ -209,6 +211,22 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
   \end{split}
  \end{equation*}
 \end{example}
+
+\begin{mydef}
+ A stochastic process $M=(M_t)_{t=0}^T$ is called a \textbf{supermartingale} with respect to the filtration the $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
+ \begin{itemize}
+  \item for all $t \in [0,T],\ M_t$ is $\mathcal{F}_t$-measurable,
+  \item for all $t \in [0,T],\ \E|M_t| < \infty$,
+  \item for all $0 \leq s < t \leq T,\  M_s \geq \E[M_t|\mathcal{F}_s]$  a.s.
+ \end{itemize}
+ $M$ is called \textbf{submartingale} if it is satisfies the above conditions, but with an inequality $ M_s \leq \E[M_t|\mathcal{F}_s]$.
+\end{mydef}
+\begin{example}
+ For $0 \leq s < t \leq T$ we have
+ \[ \E[W_t^2|\mathcal{F}_s] > \E[W_t^2|\mathcal{F}_s] - t + s = \E[W_t^2 - t|\mathcal{F}_s] + s = W_s^2, \]
+ hence $W_t^2$ is a submartingale.
+\end{example}
+
 
 The breakthrough allowing financial mathematics to devolop was discovery of It\^{o} integral, named after Japanese mathematician Kiyoshi It\^{o}. We will not discuss constructon of such integral, what is done for example in \cite{latala}.
 Instead we will provide some intuition about its meaning. It\^{o} integral of $X=(X)_{t=0}^T$ with respect to Wiener process $W=(W)_{t=0}^T$ is a stochastic process
@@ -758,6 +776,7 @@ Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mat
 Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentialy'', as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since in Monte Carlo methods price trajectories are simulated only in a finite number of points.
 
 \section{European contingent claims}
+\label{sec:ECC}
 We start this section with definition of a mentioned contingent claim.
 \begin{mydef}
  \label{def:cc_eu}
@@ -1186,11 +1205,11 @@ Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucia
 
 
 
-\chapter[{Pricing European options with Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
+\chapter[{Pricing European options using Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
 The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value can not be derived analitically. Thus, other methods must be used.
 The most popular are finite diffrence, binomial trees and Monte Carlo. In this thesis only the last one is presented.
 
-\section{Pricing vanilla options}
+\section{Vanilla options}
 \label{sec:pricing_vanilla}
 
 In order to use the Monte Carlo method in option pricing, we need to involve the theory presented in the section \ref{sec:risk-neutral}. First we will focus on the case, when the only instruments traded in the market are $B = S^{(0)}$ -- a riskless bank account, and a risky asset $S = S^{(1)}$.
@@ -1319,7 +1338,7 @@ This time the asset price usually ended above the options strike, what means tha
  However, generating an antithetic variate or a control variate is often instantaneous. Hence calculating $\CMCa[H, 2n]$ may be much slower. If in time $t$ we can compute  $\CMCa[H, a]$, $\AVa[H, b]$ and $\CVa[H, c]$, then $\CMCa[H, a]$ will always\footnote{Of course we assume that antithetic variate is really antithetic, i.e. it is negatively correlated with the base variate, and control variate is not independent from the base variate.} have greater variance than $\AVa[H, b]$ and $\CVa[H, c]$.
 \end{remark}
 
-\section{Pricing path-depenent instruments}
+\section{Path-depenent instruments}
 \label{sec:pricing_complicated}
 
 To price vanilla options it was sufficient to generate the asset price only at the maturity. However, there are contingent claims whose payoff depends on the entire history, for example barrier options or Asian options. Of course, we can not generate the entire trajectory, since it has continuum points. Thus, values of the asset must be generated in a finite number $K$ of points. By taking $K$ large enough, a continous model is approximated sufficiently.
@@ -1473,7 +1492,7 @@ At the end of this section, it is worth to mention, that there exist analitical 
 \label{fig:barrier3d}
 \end{figure}
 
-\section{Pricing multiasset instruments}
+\section{Multiasset instruments}
 Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlation between the assets. Let
 \[ \Sigma = \left( \varrho_{ij} \right)_{i,j=1}^d \]
 be the matrix describing correlation between risky assets (recall that by that we understand the correlation between Wiener processes appearing in assets dynymics). Equation (\ref{eq:priceChange}) holds for every asset, i.e.
@@ -1600,34 +1619,227 @@ CV method gave the most accurate prices.
 \label{fig:EuBasket}
 \end{figure}
 
-% Generating price trajectories of many assets is usefull not only for pricing exotic options. Consider a portfolio consisting of two call options with the same expiration time $T=1$ but same strike $E=100$ but with two diffrent underlyings. For example we may assume that market parameters are following:
-% \begin{equation*}
-%  \begin{split}
-%   d &= 2,\ S_0 = (100, 100)\\
-%   r &= 0.05,\ \sigma = (0.2, 0.2),\\ 
-%   \Sigma &= \left( \begin{array}{rrr}
-%             1   & 0.9\\
-%             0.9 &   1
-%            \end{array} \right)
-%  \end{split}
-% \end{equation*}
-% Each option taken into account seperatly is worth 10.45 by virtue of Black-Scholes formula. Thus it seems that value of whole portfolio is 20.90. However, we may see the portfolio as an exotic derivative with payoff
-% \[ (S^{(1)}_T - E)_+ + (S^{(2)}_T - E)_+. \]
-% Using pricing tools presented in this section we obtain diffrent value of such instrument: .
+\chapter[{Pricing American options using Least Squares Monte Carlo}]{Pricing American options using \\Least Squares Monte Carlo}
+\label{chapter:pricingAmerican}
+Part \Roman{chapter} describes American-style derivatives. The diffrence between them and discussed previously European-style contracts is that American feature allows the owner of the derivative to exercise it at \emph{any time} up to the expiration date. This additional attribute makes the instrument much harder to analyze and more advanced theory is necessary to value and hedge. Due to the practical nature of this thesis we will not get deep into details. Nevertheless, we will provide mathematical tools necessary for pricing American contingent claims, advising the reader to find proofs in more specialist literature. 
 
-\chapter{Least Squares Monte Carlo}
+It turns out that Monte Carlo method from previous part can not be carried over directly to price American contracts. However, Least Squares Monte Carlo method uses a clever trick, so the simulations still can be involved. 
+
 \section{American contingent claims}
+Definition of the American contingent claim is analogous to its European counterpart, with one diffrence that it is not a random variable, but a \emph{process}.
+\begin{mydef}
+ \label{def:cc_am}
+ An \textbf{American contingent claim} is a non-negative adapted process $C = (C_t)_{t=0}^T$ on the filtered probability space $(\Omega, (\mathcal{F}_t)_{t=0}^T, \P)$.
+By a \textbf{derivative} of the underlying assets $\Sa$ since now we will understand such American contingent claim $C$ which is adapted also to the filtration generated by $\Sa$ (which in general may be smaller than $\mathcal{F}$).
+\end{mydef}
+Value $C_t$ has the meaning of the payoff obtained from the claim if it is exercised at time $t$. The definitions from section \ref{sec:ECC} carry over directly to their American counterparts, for example American call and put options on $i$\textsuperscript{th} asset are defined as derivatives with the payoffs
+\begin{equation*}
+ \begin{split}
+  C^{\text{call}}_t &= (S^{(i)}_t - E)_+, \\
+  C^{\text{put}}_t &= (E - S^{(i)}_t)_+,
+ \end{split}
+\end{equation*}
+where $E$ is the strike price.
+\begin{remark}
+ In fact European contracts are just a particular case of the American contracts. An European claim $\tilde{C}$ may be regarded as an American claim $C = (C_t)_{t=0}^T$ with payoff
+ \[ C_t = \begin{cases}
+         \tilde{C},\ \ \ \ t = T \\
+         0,\ \ \ \ \ t < T.
+        \end{cases}
+        \]
+\end{remark}
+
+As usually, it is conveniet to quote payoff values in terms of time 0.
+\begin{mydef}
+ The discounted value of the American contingent claim $C$ is a process $H = (H_t)_{t=0}^T$ given by
+ \begin{equation*}
+  H_t = \frac{C_t}{S^{(0)}_t}.
+ \end{equation*}
+ The process $H$ is called an \textbf{American discounted claim}.
+\end{mydef}
+
+The exercise time is entirely up to the buyer. He will decide when to get his payoff dynamically, watching the market evolution. However, at the very beginning he may plan under which conditions the option will be exercised.
+\begin{mydef}
+ An \textbf{exercise strategy} for an American contingent claim $C$ is a stopping time $\tau$ taking values in $[0,T]$. The payoff resulting from following the strategy $\tau$ is defined for any $\omega \in \Omega$ as
+ \[ C_{\tau}(\omega) = C_{\tau(\omega)}(\omega).\]
+ The set of exercise strategies is denoted by $\mathcal{T}$. 
+\end{mydef}
+An exercise strategy may be seen as an oracle telling at any time $t$ whether or not the option should be exercised now, basing only on the informations available up to time $t$. Note that the definition of an exercise strategy is limited to these stopping times which do not take value $\infty$. That is so, because the option will be exercised always, however, if the owner postpones the exercise to the expiration date, then the payoff may equal 0.
+
+Of course the option buyer looks for the best exercise strategy. Thus, we need to write precisely what we mean by that.
+\begin{mydef}
+ An exercise strategy $\hat{\tau}$ is called optimal (with respect to $\Pm$) if and only if
+\begin{equation}
+\label{eq:AM_optStrategy}
+\Em[H_{\hat{\tau}}] = \sup\limits_{\tau \in T} \Em[H_{\tau}]. 
+\end{equation}
+\end{mydef}
+
+\begin{remark}
+ The optimal exercise strategy does not always exist. However, for each $\epsilon > 0$ there exist such stopping time $\tau_\epsilon$ that
+ \[ \Em[H_{\tau_\epsilon}] \geq \sup\limits_{\tau \in T} \Em[H_{\tau}] - \epsilon.\]
+ Moreover, if the optimal exercise strategy exists it is not necessarly unique.
+\end{remark}
+As we can see the owner of the claim may choose such strategy that its expected value is arbitrarily close to the $\sup\limits_{\tau \in T} \Em[H_{\tau}]$. It suggests how the option price should be defined.
+\begin{mydef}
+ Price of the discounted American contingent claim $H$ is given by
+\begin{equation}
+\label{eq:AM_optPrice}
+V_0 = \sup\limits_{\tau \in T} \Em[H_{\tau}]. 
+\end{equation}
+\end{mydef}
+We also need to analyze how the option price changes over time.
+\begin{mydef}
+ \label{def:valueProcess}
+ Let  $\mathcal{T}_t = \{ \tau \in \mathcal{T}:\ \tau \geq t \}$. The discounted \textbf{price process} (or \textbf{value process}) of the  discounted American contingent claim $H$ is given by
+\begin{equation}
+\label{eq:AM_valueProcess}
+V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t]. 
+\end{equation}
+ If there exists the stopping time realizing this essential supremum, then we call it optimal in $\mathcal{T}_t$ and denote it by $\hat{\tau}_t$.
+\end{mydef}
+
+\begin{remark}
+ The reader may ask how do we know that in the definitions above the martingale measure should be used. It may be even confusing that we \emph{define} what is the value of the option instead of \emph{prooving} that some formula gives the value. Remember that the goal of the theory is to answer what should be the price of the option. The proposed definition is good in the sense that the extended market model $(S^{(0)}, S^{(1)}, \ldots, S^{(d)}, V)$ is still arbitrage free -- proof for discrete time is in \cite{follmer}.
+\end{remark}
+
+
+\begin{prop}
+ At any time $t$ value of the American contingent claim is not less then value of its European counterpart.
+\end{prop}
+\begin{proof}
+ Following the exercise strategy $\tau_t \equiv T$ will always result in the same payoff from the American contract as from the European. The price of the American claim must be greater or equal, because the supremum is taken over all stopping times in $\mathcal{T}_t$.
+\end{proof}
+
+\begin{prop}
+ Assume that the interest rate $r$ is nonnegative. The exercise strategy $\tau \equiv T$ is optimal for an American call option on non-dividend-paying stock.
+\end{prop}
+\begin{proof}
+ For the brevity let $S$ be the price process of the underlying asset (not the vector process of all the risky assets). From the previous Corollary we have
+ \[V_t \geq \Em[e^{-r(T-t)}(S_T - E)_+ | \mathcal{F}_t].\] Moreover,
+ \[\Em[(S_T - E)_+ | \mathcal{F}_t] \geq \Em[S_T - E | \mathcal{F}_t],\]
+ because the left hand side expectation zeroes negative values of $S_T - E$. Hence,
+ \[ V_t \geq e^{-r(T-t)}\Em[S_T - E | \mathcal{F}_t] = S_t - e^{-r(T-t)}E > S_t - E.\]
+ The obtained inequality tells us that value of the option is always higher than the immediate exercise, thus it is more profitable to sell the option rather than exercise it.
+\end{proof}
+The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay any dividend and interest rate is nonnegative). A similar proof shows that for negative interest rate $r$ American put options should be exercised only at the maturity, however, this a very rare situation.
+
+Unfortunatly the above definition of the value process is not constructive. It does not tell us how to find the optimal exercise strategy nor how to compute options value. We need to involve a little more theory. Following two definitions are formulated for general measure $\Q$. 
+
+\begin{mydef}
+ Let $X$ and $Y$ be two processes on the same probability space\\ $(\Omega, (\mathcal{F}_t)_{t=0}^T, \Q)$. We say that $X$ \textbf{dominates} $Y$ if $ X_t \geq Y_t$ $\Q$-a.s. for all $t \geq 0$.
+\end{mydef}
+ 
+\begin{mydef}
+ Let $Y$ be the process such that for all $0 \leq t \leq T$, $\E^{\Q}[Y_t] < \infty$. Its \textbf{Snell envelope} $U^{\Q}$ is defined as the smallest supermartingale dominating $Y$. In the other words $U^{\Q}$ is a supermartingale domnating $Y$ and if $\tilde{U}$ is another supermartingale dominating $Y$, then $U_t \leq \tilde{U}_t$, $\Q$-a.s. for all $t \geq 0$.
+\end{mydef}
+It is proven that Snell envelope exists for a vast class of processes. Its usefulness in the option pricing follows from the next theorem.
+\begin{thm}
+ \label{thm:snell}
+ If $\sup\limits_{\tau \in T} \Em|H_{\tau}| < \infty$, then the value process $V$ is the Snell envelope of the claim $H$ with respect to the measure $\Pm$. Moreover, if there exists an optimal stopping time (not necessarily unique), then the smallest one is given by
+ \begin{equation}
+  \label{eq:optStop}
+  \hat{\tau}_t = \inf\{ s \geq t:\ V_s = H_s \}.
+ \end{equation}
+\end{thm}
+{\LARGE \color{red} TODO: referencja do dowodu}
+Theorem \ref{thm:snell} not only states that Snell envelope $U^{\Pm}$ of the claim $H$ coincides with its value $V$. It also gives us a recipe for the optimal stopping: \textbf{exercise the option when its value equals the payoff possible to obtain immediately}.
+
+Presented theory may look incomprehensible at first glance. In order to get some intuition let us explain the above concepts in discrete time. Let us divide the time to expiration on the $K$ intervals seperated by points $0 = t_0 < t_1 < \ldots < t_K = T$. Now we consider only those stopping times $\tau$ which take values in $\{t_0, t_1, \ldots, t_K\}$. It turns out that in discrete time equation (\ref{eq:AM_valueProcess}) can be written in more friendly form.
+
+\begin{prop}
+\label{prop:AM_valueProcessDisc}
+ In the discrete time the value process of the American contingent claim is given by recursion
+ \begin{equation}
+  \label{eq:AM_valueProcessDisc}
+  V_{t_k} = \begin{cases}
+             H_T &\text{if } k = K,\\
+             \max\Bigl(H_{t_k}, \Em\bigl[ V_{t_{k+1}} | \mathcal{F}_{t_k} \bigr] \Bigl)\ \ \ \ &\text{otherwise.}
+            \end{cases}
+ \end{equation}
+ Moreover, it is optimal to stop at $k$\textsuperscript{th} time point if and only if $V_{t_k} = H_{t_k}$. 
+\end{prop}
+\begin{proof}
+Let us think about the value of the claim at $k$\textsuperscript{th} time point. From the definition, $V_{t_k}$ is the expected value resulting from following optimal strategy $\hat{\tau}_{t_k}$. However, at this point only one of these is possible: it is optimal to stop or not. If it is not optimal, then $\hat{\tau}_{t_k} = \hat{\tau}_{t_{k+1}}$ must hold. At $(k+1)$\textsuperscript{th} time point claim's value resulting from following $\hat{\tau}_{t_{k+1}}$ equals $V_{t_{k+1}}$, however, at $k$\textsuperscript{th} time point it equals (from the definition) 
+\[ V_{t_k} = \Em[H_{\hat{\tau}_{t_k}} | \mathcal{F}_{t_k}] = \Em[H_{\hat{\tau}_{t_{k+1}}} | \mathcal{F}_{t_k}] = \Em\bigl[[H_{\hat{\tau}_{t_{k+1}}} | \mathcal{F}_{t_{k+1}}] \bigl|\bigr. \mathcal{F}_{t_k} \bigr] = \Em[V_{t_{k+1}} | \mathcal{F}_{t_k}].\]
+On the other hand, if it is optimal to stop at time then the price equals immediate payoff, that is $V_{t_k} = H_{t_k}$. Hence, at time $t_k$ we have to compare $H_{t_k}$ and $\Em[V_{t_{k+1}} | \mathcal{F}_{t_k}]$, and we stop if and only if the former is greater.
+\end{proof}
+Proposition 6.11 in \cite{follmer} states that process defined via (\ref{eq:AM_valueProcessDisc}) is the Snell envelope of $H$ (in the discrete sense).
+
+Obvious conclusion from the Proposition \ref{prop:AM_valueProcessDisc} gives us a useful formula for the optimal stopping.
+\begin{coro}
+ \label{coro:AM_optStopDisc}
+ The optimal exercise strategies at time 0, and at $k$\textsuperscript{th} time point are given by:
+ \begin{equation}
+  \label{eq:AM_optStopDisc}
+  \begin{split}
+   \hat{\tau} &= t_n,\ \ \ \text{where } n = \min\{m \geq 0:\ V_m = H_m \}.\\
+   \hat{\tau}_{t_k} &= t_n,\ \ \ \text{where } n = \min\{m \geq k:\ V_m = H_m \}.\\
+  \end{split}
+ \end{equation}
+\end{coro}
+\begin{remark}
+ Since finding the optimal exercise strategy in discrete time involves taking minimum, not infinum, hence it always exist. However, it is not necessarily unique.
+\end{remark}
+
+\begin{example}
+ Figure \ref{fig:binTree} illustrates terms discussed above. It shows a binomial tree (readers not familiar with binomial trees may be interested in reading about CRR model) used to price an American put option. The red color indicates nodes where $V_{t_k} = H_{t_k}$, i.e. the immediate payoff exceeds the expected payoffs in the future. Hence, Corollary \ref{coro:AM_optStopDisc} states that following procedure is an optimal exercise strategy: exercise the option when you step in the red node.
+ 
+ It is also remarkable that decision whether the option should be exercised depends not only on the price of the underlying, but also on time. Note that we should exercise the option for asset price 91 in the time step one before last, but not in the previos time steps.
+\end{example}
+
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/LSMIdea/LSMidea1.pdf}
-\caption{To co chcemy}
+ \includegraphics[scale=0.4]{images/LSM/binomialTree.png}
+\caption{The binomial tree used to price American put@100. In nodes marked red it is optimal to exercise the option. Blue indicates those nodes where exercise should be postponed. }
+\label{fig:binTree}
 \end{figure}
+
 \section{The idea of LSM}
-%\paragraph{Problems with Monte Carlo method for american options.}
-\begin{figure}
+After wading through the theory we want to use it in practice. We showed on the example of the European options that Monte Carlo methods are very flexible and can be used to price exotic options with very sophisticated payoffs (at least when they are European-styled). Therefore we would like to adjust them for pricing American claims. 
+
+\subsection{Difficulties with pricing American options with Monte Carlo methods.}
+
+Let us think how pricing American options using Monte Carlo method would look like. Of course, as for European options we need to simulate some paths and for each path we have to determine what payoff we would obtain. Since the option may be exercised at any time, it is not sufficient to check the payoff at the expiration date. We have to follow the path and at each time step compare the immediate payoff with the expectation of the future payoff.
+
+Consider an American put option. Let us say that we are already at time $t_k$, and we need to compute $V_{t_k}$. From (\ref{eq:AM_valueProcessDisc}) we know that it is the greater of values $H_{t_k}$ and $\Em\bigl[ V_{t_{k+1}} | \mathcal{F}_{t_k} \bigr]$. Value $H_{t_k}$ is obtained instantaneously, but how can we get $\Em\bigl[ V_{t_{k+1}} | \mathcal{F}_{t_k} \bigr]$? Note that it is the price of a similar option, with a little shorter time to expiration. We can compute it by calling the procedure again, with the beginning asset price $S_{t_k}$. Algorithm \ref{alg:naiveProcedure} presents this approach.
+
+\begin{algorithm}
+ \begin{algorithmic}[1]
+  \Function{PriceAmericanPut}{$n$, $k$, $K$, $S_0$, $\sigma$, $r$, $T$, $E$ }
+    \If{$k=K$}
+      \State \Return $e^{-rT} \max(0, E - S_0)$
+    \EndIf
+    \State $dt \gets T/K$
+    \State $t \gets k\cdot dt$
+    \State $S \gets$ simulate $n$ asset prices in the next step 
+    \State $H \gets$ $n$-element array
+    \For{$i = 1$ {\bf to} $n$} 
+       \State $H[i] \gets$ \Call{PriceAmericanPut}{$n$, $k+1$, $K$, $S[i]$, $\sigma$, $r$, $T$, $E$ }
+    \EndFor 
+    \State $av \gets$ average$(H[i])$
+    \State \Return max($e^{-rt} \max(0, E - S_0),\ av$)
+  \EndFunction 
+ \end{algorithmic}
+ \caption{Pricing American options by ``Monte Carlo on Monte Carlo''. This is how pricing \emph{cannot} be done.}
+ \label{alg:naiveProcedure}
+\end{algorithm}
+
+Unfortunatly, this is a very ineffective procedure. Computing $\Em\bigl[ V_{t_{k+1}} | \mathcal{F}_{t_k} \bigr]$ involves generating new paths starting at time $t_k$. We perform ``Monte Carlo on Monte Carlo''. Since we have to do it at every time step, complexity of such algorithm becomes exponential. These difficulties are illustrated on Figure \ref{fig:MC_difficulties}.
+
+\begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/LSMIdea/LSMidea2.pdf}
-\caption{To co mozemy}
+ \includegraphics[scale=0.5]{images/LSM/LSMidea1.pdf}
+\caption{The illustration of the difficulties occuring with attempts to involve Monte Carlo method in pricing American claims. }
+\end{figure}
+
+As we can see Monte Carlo methods used to price European options cannot be carried over directly to price American options.
+
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.5]{images/LSM/LSMidea2.pdf}
+\caption{The illustration of the idea allowing to bypass the difficulties with Monte Carlo described in previous section.}
+\label{fig:MC_difficulties}
 \end{figure}
 
 \begin{thebibliography}{99}
