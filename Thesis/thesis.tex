@@ -14,6 +14,7 @@
 \usepackage{algpseudocode} % allows writing pseudocodes
 \usepackage[font={small,sl}]{caption}
 \usepackage{bbm}
+\usepackage{subfig} % placing floats side by side
 
 % pretty display of a chapter/part
 \addto\captionsenglish{
@@ -1905,7 +1906,7 @@ for some continuous function $F$. Stone-Weierstra\ss{} theorem states that $F$ c
 The method of least squares can be used to find coefficients $a_m, a_{m-1},\ldots,a_0$ fitting the mapping (\ref{eq:AM_mapping}) the best.
 
 \subsection{Regression}
-It turned out that regression may be useful in option pricing. We will briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
+It turned out that regression is an important step in LSM. We explained that estimated future payoff may be represented by a polynomial function of $S_k$ whose coefficients may be obtained from least squares method. We will briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
 \[ \begin{cases}
     a_0 + a_1 x_1 + \ldots + a_m x_1^m &= y_1 \\
     a_0 + a_1 x_2 + \ldots + a_m x_1^m &= y_2 \\
@@ -1913,10 +1914,158 @@ It turned out that regression may be useful in option pricing. We will briefly d
     a_0 + a_1 x_n + \ldots + a_m x_n^m &= y_n
    \end{cases}
 \]
-We are minimizing
+We are minimizing functional
+\[ \psi(a_0,a_1,\ldots,a_m) = \sum\limits_{i=1}^n \left( y_i - \sum\limits_{j=0}^m a_jx_i^j \right)^2. \]
+From basic analysis we know that $\psi$ may have minimum only in those points where partial derivative with respect to each variable equals 0, hence we are looking for such $a_0,a_1,\ldots,a_m$, that for any $k \in \{0,1\ldots,m\}$
+\[ 0 = \frac{\partial \psi}{\partial a_k} = 2  \sum\limits_{i=1}^n \bigl( y_i - \sum\limits_{j=0}^m a_jx_i^j \bigr) \bigl( -x_i^k \bigr). \]
+Simple calculation gives
+\begin{equation}
+ \label{eq:regression1}
+ \sum\limits_{j=0}^m \left( a_j \sum\limits_{i=1}^n  x_i^{j+k} \right) = \sum\limits_{i=1}^n y_i x_i^k. 
+\end{equation}
+For any $k \in \{0,1\ldots,m\}$ and $l \in \{0,1\ldots,2m\}$ let
+\[ s_{l} := \sum\limits_{i=1}^n  x_i^l \text{\ \ \ and \ \ } t_k := \sum\limits_{i=1}^n y_i x_i^k .\]
+From (\ref{eq:regression1}) we obtain a system of linear equations
+\begin{equation}
+ \label{eq:regression2}
+ \begin{cases}
+  s_0 a_0 + s_1 a_1 + \ldots + s_m a_m &= t_0 \\
+  s_1 a_0 + s_2 a_1 + \ldots + s_{m+1} a_m &= t_1 \\
+    \vdots & \\
+  s_m a_0 + s_{m+1} a_1 + \ldots + s_{2m} a_m &= t_m
+  \end{cases}
+\end{equation}
+This system has $m+1$ variables and $m+1$ equations. It can be solved with Gauss elimination method.
+\begin{prop}
+ The algorithm of approximating set of points $\{ (x_i,y_i) \}_{i=1}^n$ with a polynomial of degree $m$, which was described above, has the computational complexity \mbox{$\mathcal{O}(nm + m^3)$}.
+\end{prop}
+\begin{proof}
+ For fixed $k$ computing $s_k$ or $t_k$ involves summation of $n$ values, and there is $\mathcal{O}(m)$ of $k$'s, hence the first part of the algorithm  has complexity $\mathcal{O}(nm)$. After that we have to solve the system of linear equations what can be done using Gauss elimination method in time $\mathcal{O}(m^3)$.
+\end{proof}
+
 
 \subsection{Step by step example}
+Description of the LSM may look a little bit scary, however, in fact the idea is very simple. We will explain it once again, this time on an example.
 
+Suppose we are pricing an American put@100. We take parameters
+\begin{equation*}
+\begin{split}
+ S_0 = 98,&\ r = 6.06\%\\
+ E = 100,&\ T = 1,\ K = 3. 
+\end{split}
+\end{equation*}
+Under those parameters $t_0 = 0,\ t_1 = \frac{1}{3},\ t_2 = \frac{2}{3},\ t_3 = 1,\ e^{-\frac{1}{3}r} = 0.98$.
+\bigskip
+
+\noindent \textbf{1. The algorithm starts by simulating $n$ trajectories of the asset prices.} The asset dynamics under the risk-neutral measure must be used. For our example we take $n=10$. The simulated paths are shown in Table \ref{tab:LSM_paths}. It also presents what would be the payoff from the option if the owner did not exercise it before the expiration date. It corresponds to the values $D_{i,K-1} = D_{i,2}$ described previously ($D_{i,k}$ are discounted to time 0, however, in tables we omit discounting for readability, instead we provide time of the payoff, hence everybody may calculate discounted value on his own).
+\begin{table}[!ht]
+\centering
+ \caption{Paths simulated under risk-neutral measure (on the left) and payoffs obtained conditional on not exercising the option up to the maturity (on the right).}
+ \label{tab:LSM_paths}
+\begin{tabular} {||c |c |c |c |c ||}  
+ \hline 
+ i\textbackslash k & 0   &  1  &  2  &  3  \\ \hline \hline
+1 & 98 & 108 & 102 & 112 \\ \hline 
+2 & 98 & 98 & 95 & 105 \\ \hline 
+3 & 98 & 102 & 97 & 93 \\ \hline 
+4 & 98 & 105 & 98 & 106 \\ \hline 
+5 & 98 & 92 & 102 & 98 \\ \hline 
+6 & 98 & 107 & 103 & 111 \\ \hline 
+7 & 98 & 108 & 113 & 118 \\ \hline 
+8 & 98 & 96 & 99 & 109 \\ \hline 
+9 & 98 & 107 & 98 & 96 \\ \hline 
+10 & 98 & 97 & 103 & 97 \\ \hline 
+\end{tabular} 
+\quad
+\begin{tabular}{|c|c|c|}
+\hline 
+ i  & time  &  payoff \\ \hline \hline
+ 1  & 1     &      0 \\ \hline
+ 2  & 1     &      0 \\ \hline
+ 3  & 1     &      7 \\ \hline
+ 4  & 1     &      0 \\ \hline
+ 5  & 1     &      2 \\ \hline
+ 6  & 1     &      0 \\ \hline
+ 7  & 1     &      0 \\ \hline
+ 8  & 1     &      0 \\ \hline
+ 9  & 1     &      4 \\ \hline
+10  & 1     &      3 \\ \hline
+\end{tabular}
+\end{table}
+
+\FloatBarrier
+\noindent \textbf{2. At time $t_2 = \frac{2}{3}$ the owner must decide whether or not to exercise the option.} Of course he has choice only in that paths where option is in the money. From the left side of Table \ref{tab:LSM_paths} we see that in our case at time $t_2$ option is in the money at paths number 2,3,4,8,9. To estimate future payoffs we will use payoffs obtained on these paths conditional on not exercising the option up to time $t_2$ (these values are gathered in the right side of Table \ref{tab:LSM_paths}).
+
+Look at the left side of the 
+\[ Y = -1.31\cdot X^2 + 253.17\cdot X - 12257.87 \]
+\begin{table}[!ht]
+\centering
+ \caption{Estimating future payoffs at time point 2.}
+ \label{tab:LSM_regression_t2}
+\begin{tabular} {||c |c |c || c | c ||}  
+ \hline 
+ i & X   &  Y  & now   &  future\\ \hline \hline
+  2 & 95 & $0\cdot 0.98$ & 5 & 0.33 \\ \hline
+  3 & 97 & $7\cdot 0.98$ & 3 & 4.90  \\ \hline
+  4 & 98 & $0\cdot 0.98$ & 2 & 3.27 \\ \hline
+  8 & 99 & $0\cdot 0.98$ & 1 & -0.98 \\ \hline
+  9 & 98 & $4\cdot 0.98$ & 2 & 3.27 \\ \hline
+\end{tabular}
+\quad
+\begin{tabular}{|c|c|c|}
+\hline 
+ i  & time  &  payoff \\ \hline \hline
+ 1  & 1     &      0 \\ \hline
+ 2  & 2/3   &      5 \\ \hline
+ 3  & 1     &      7 \\ \hline
+ 4  & 1     &      0 \\ \hline
+ 5  & 1     &      2 \\ \hline
+ 6  & 1     &      0 \\ \hline
+ 7  & 1     &      0 \\ \hline
+ 8  & 2/3   &      1 \\ \hline
+ 9  & 1     &      4 \\ \hline
+10  & 1     &      3 \\ \hline
+\end{tabular}
+\end{table}
+
+\FloatBarrier
+\noindent \textbf{3. At time $t_1 = \frac{1}{3}$}
+\[ Y = 0.36\cdot X^2 - 67.32\cdot X + 3173.71 \]
+\begin{table}[!ht]
+\centering
+ \caption{Estimating future payoffs at time point 1.}
+ \label{tab:LSM_regression_t1}
+\begin{tabular} {||c |c |c || c | c ||}  
+ \hline 
+  i & X   &  Y  & now   &  future\\ \hline \hline
+  2 & 98 & $5\cdot 0.98$ & 2 & 5.0 \\ \hline
+  5 & 92 & $2\cdot 0.98^2$ & 8 & 1.9  \\ \hline
+  8 & 96 & $1\cdot 0.98$ & 4 & 1.1 \\ \hline
+ 10 & 97 & $3\cdot 0.98^2$ & 3 & 2.7 \\ \hline
+\end{tabular}
+\quad
+\begin{tabular}{|c|c|c|}
+\hline 
+ i  & time  &  payoff \\ \hline \hline
+ 1  & 1     &      0 \\ \hline
+ 2  & 2/3   &      5 \\ \hline
+ 3  & 1     &      7 \\ \hline
+ 4  & 1     &      0 \\ \hline
+ 5  & 1/3   &      8 \\ \hline
+ 6  & 1     &      0 \\ \hline
+ 7  & 1     &      0 \\ \hline
+ 8  & 1/3   &      4 \\ \hline
+ 9  & 1     &      4 \\ \hline
+10  & 1/3   &      3 \\ \hline
+\end{tabular}
+\end{table}
+
+\FloatBarrier
+\noindent \textbf{4. At time 0 we have to perform final calculations to find options value.} Here we proceed different than at times $t_1$, $t_2$, because there is no data for regression. However, the right side of the Table \ref{tab:LSM_regression_t1} already tell us what would be the future payoffs if the option was not exercised immediately. In order to obtain estimated future payoff at time 0, we take the average of the payoffs from that Table, discounted to time 0. If the average is greater than immediate payoff, then this is the value of the option. Otherwise option should be exercised immediately and the its value equals the immediate payoff.
+
+price = 2.99
+
+\FloatBarrier
 \subsection{LSM algorithm}
 
 \section{Mathematical background of LSM}

@@ -129,7 +129,7 @@ barrierExample <- function(seed = 0, toFile=FALSE)
   print( convergence(n=100000, cmcFun, avFun, cvFun, CV_EX, realValue=NULL, seed) )
 }
 
-chartBarrierAndStrike1 <- function()
+chart3D_BarrierAndStrike1 <- function()
 {
   library(rgl)
   rynek <- list(
@@ -170,7 +170,7 @@ chartBarrierAndStrike1 <- function()
   persp3d(strikes, barriers, val, color=col, back="lines")
 }
 
-chartBarrierAndStrike2 <- function()
+chart3D_BarrierAndStrike2 <- function()
 {
   library(rgl)
   rynek <- list(
