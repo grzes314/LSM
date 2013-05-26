@@ -1,5 +1,7 @@
 package approx;
 
+import java.util.Arrays;
+
 
 /**
  * Class representing polynomials.
@@ -33,6 +35,43 @@ public class Polynomial
         for (int i=0; i<=deg; ++i)
             a[i] = b[i];
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Polynomial other = (Polynomial) obj;
+        if (deg != other.deg)
+            return false;
+        for (int i = 0; i <= deg; ++i)
+            if (!Common.doublesEqual(a[i], other.a[i]))
+                return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 89 * hash + this.deg;
+        hash = 89 * hash + Arrays.hashCode(this.a);
+        return hash;
+    }
+
+    public double getCoeff(int i)
+    {
+        return a[i];
+    }
+
+    public int getDeg()
+    {
+        return deg;
+    }
     
     /**
      * Returns value of the polynomial for given argument.
@@ -60,7 +99,7 @@ public class Polynomial
      */
     public double solve(double beg, double end) throws NoSolutionException
     {
-        return solve(beg, end, 0, 10e-10d);
+        return solve(beg, end, 0, 1e-10);
     }
     
     /**
@@ -78,7 +117,7 @@ public class Polynomial
      */
     public double solve(double beg, double end, double y) throws NoSolutionException
     {
-        return solve(beg, end, y, 10e-10d);
+        return solve(beg, end, y, 1e-10);
     }
            
     /**
@@ -112,7 +151,7 @@ public class Polynomial
                 v1 = v;
             } else {
                 end = mid;
-                v2 = v;
+                // v2 = v; assigment not necessary
             }            
         }
         return beg;

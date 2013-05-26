@@ -2,122 +2,120 @@ package approx;
 
 import java.util.Collection;
 
+
 /**
- *
- * @author grzes
+ * Class for calculation of polynomial approximating any set of points.
+ * @author Grzegorz Los
  */
 public class Approx
 {
     /**
-     *
-     * @param map map of pairs argument - value
-     * @param m degree of approximating polinomial
-     * @return Approximating polinomial
-     * @see http://aproks.republika.pl/#aproksymacja%20%C5%9Bredniokwadratowa
+     * Computes the polynomial approximating any set of points.
+     * @param points collection of pairs argument - value
+     * @param m degree of approximating polynomial
+     * @return Approximating polynomial
+     * @see http://www.math.uni.wroc.pl/~s221063/thesis/index.html
      */
     public Polynomial approximate(Collection<Point> points, int m)
     {
-        //System.out.println("lets approximate");
-       double[] s = new double[2*m+1];
-       double[] t = new double[m+1];
-       for (int i=0; i<=2*m; ++i)
-       {
-           s[i] = 0.0;
-           for (Point p: points)
-               s[i] += Math.pow(p.x, i);
-       }
-       for (int i=0; i<=m; ++i)
-       {
-           t[i] = 0.0;
-           for (Point p: points)
-               t[i] += Math.pow(p.x, i)*p.y;
-       }
-       double uklad[][] = new double[m+1][m+2];
-       for (int i=0; i<=m; ++i)
-       {
-           for (int j=0; j<=m; ++j)
-               uklad[i][j] = s[i+j];
-           uklad[i][m+1] = t[i];
-       }
+        ensureArgsOK(points, m);
+        if (points.size() <= m)
+            m = points.size() - 1;
+        double[] s = calculateS(points, m);
+        double[] t = calculateT(points, m);
+        double system[][] = new double[m+1][m+2];
+        for (int i = 0; i <= m; ++i)
+        {
+            for (int j = 0; j <= m; ++j)
+                system[i][j] = s[i+j];
+            system[i][m+1] = t[i];
+        }
         try {
-           // print(uklad);
-            double[] a = gauss(uklad, m + 1);
+            double[] a = gauss.solve(system, true); // for efficiency modify system
             return new Polynomial(m, a);
-        } catch (Exception ex) {
-            /*System.out.println(ex.getMessage());
-            double[] b = new double[1];
-            b[0] = 0;
-            return new Polynomial(0,b);*/
+        } catch (ManySolutionsException ex) {
+            return new Polynomial(m, ex.exampleSolution);
+        } catch (NoSolutionException ex) {
+            /*
+             * It would be worth to conduct some extra investigation
+             * to check when this situation is possible. Since we can always
+             * find approximating polynomial of degree 0, hence for now it may
+             * be sufficient to try again with smaller degree -- such procedure
+             * has to end.
+             */
             return approximate(points, m-1);
         }
     }
-
-    public static double[] gauss(double[][] uklad, int n) throws Exception
+    
+    /**
+     * Checks if arguments given to method 'approximate' are valid.
+     * @param points points to be approximated.
+     * @param m degree of approximating polynomial
+     * @throws InvalidArgumentException when points are null or empty, or
+     * m is negative.
+     */
+    private void ensureArgsOK(Collection<Point> points, int m)
     {
-        double result[] = new double[n];
-        for (int i=0; i<n; ++i)
-        {
-            try {
-                rearrange(uklad, i, n);
-            } catch (Exception ex) {
-                throw new Exception("Can't solve system, " + ex.getMessage());
-            }
-            substract(uklad, i, n);
-        }
-        for (int i=n-1; i>=0; --i)
-        {
-            double res = uklad[i][n];
-            for (int j=n-1; j>i; --j)
-                res -= uklad[i][j]*result[j];
-            result[i] = res/uklad[i][i];
-        }
-        return result;
+        if (points == null)
+            throw new InvalidArgumentException("points can not be null");
+        if (points.isEmpty())
+            throw new InvalidArgumentException("points can not be empty");
+        if (m < 0)
+            throw new InvalidArgumentException("degree can not be negative");
     }
-
-    private static void rearrange(double[][] uklad, int i, int n) throws Exception
+    
+    /**
+     * Calculates parameters s for regression. Their meaning is described
+     * under given link.
+     * @param points points to be approximated.
+     * @param m degree of approximating polynomial.
+     * @return parameters s.
+     * @see http://www.math.uni.wroc.pl/~s221063/thesis/index.html
+     */
+    private double[] calculateS(Collection<Point> points, int m)
     {
-        if ( !isZero(uklad[i][i]) ) return ;
-        for (int j=i+1; j<=n; ++j)
+        double[] s = new double[2*m+1];
+        for (int i = 0; i <= 2*m; ++i)
+            s[i] = 0.0;
+        for (Point p: points)
         {
-            if (j==n) throw new Exception("Failed to rearrange rows");
-            if ( !isZero(uklad[j][i]) )
+            double power = 1;
+            for (int i = 0; i <= 2*m; ++i)
             {
-                double[] pom = uklad[i];
-                uklad[i] = uklad[j];
-                uklad[j] = pom;
-                return ;
+                s[i] += power;
+                power *= p.x;
             }
         }
+        return s;
     }
-
-    private static void substract(double[][] uklad, int i, int n)
+    
+    /**
+     * Calculates parameters t for regression. Their meaning is described
+     * under given link.
+     * @param points points to be approximated.
+     * @param m degree of approximating polynomial.
+     * @return parameters t.
+     * @see http://www.math.uni.wroc.pl/~s221063/thesis/index.html
+     */
+    private double[] calculateT(Collection<Point> points, int m)
     {
-        for (int j=i+1; j<n; ++j)
+        double[] t = new double[m+1];
+        for (int i=0; i<=m; ++i)
+           t[i] = 0.0;
+        for (Point p: points)
         {
-            double wsp = uklad[j][i] / uklad[i][i];
-            uklad[j][i] = 0.0;
-            for (int k=i+1; k<=n; ++k)
+            double power = 1;
+            for (int i = 0; i <= m; ++i)
             {
-                uklad[j][k] -= wsp*uklad[i][k];
+                t[i] += power * p.y;
+                power *= p.x;
             }
         }
+        return t;
     }
-
-    private void print(double[][] uklad)
-    {
-        for (int i=0; i<uklad.length; ++i)
-        {
-            for (int j=0; j<uklad[i].length; ++j)
-            {
-                System.out.print(uklad[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-    private static boolean isZero(double d)
-    {
-        //return d <= 10e-100;
-        return d == 0d;
-    }
+    
+    /**
+     * Object used to solve system of linear equations.
+     */
+    private Gauss gauss = new Gauss();
 }
