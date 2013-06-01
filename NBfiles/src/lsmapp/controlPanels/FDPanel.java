@@ -7,7 +7,6 @@ import instruments.Option;
 import instruments.TimeSupport;
 import models.FDModel;
 import models.Progress;
-import models.ProgressObservable;
 
 /**
  *
@@ -47,9 +46,7 @@ public class FDPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        int I = (Integer) priceSteps.getValue();
-        int K = (Integer) timeSteps.getValue();
-        model = new FDModel(S, v, r, 3*S, I, K);
+        model = new FDModel(S, v, r);
         return model;
     }
     
@@ -84,7 +81,9 @@ public class FDPanel extends ModelPanel
         boolean isCall = call.isSelected();
         double E = (Double) strike.getValue();
         boolean isAm = amoption.isSelected();
-        return model.price(E, T, isCall, isAm);
+        int I = (Integer) priceSteps.getValue();
+        int K = (Integer) timeSteps.getValue();
+        return model.price(E, T, I, K, isCall, isAm);
     }
 
     @Override

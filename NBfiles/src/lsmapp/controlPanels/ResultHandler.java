@@ -4,7 +4,7 @@ package lsmapp.controlPanels;
 /**
  * Interface for classes elaborating pricing results. Note that in the only 
  * method  there is no information about model nor priced
- * instrument. Therefore every class implementing that instrument shall be
+ * instrument. Therefore every class implementing that interface shall be
  * connected with only one ModelPanel.
  * @author Grzegorz Los
  */

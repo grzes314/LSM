@@ -1,6 +1,7 @@
 
 package models;
 
+import utils.RandomTools;
 import static java.lang.Math.*;
 
 /**
@@ -27,7 +28,7 @@ public class BSModel implements ProgressObservable
 
     public void setS(double S)
     {
-        if (S <= 0)
+        if (S < 0)
             throw new WrongParamException("S = " + S);
         this.S = S;
     }
@@ -51,7 +52,7 @@ public class BSModel implements ProgressObservable
 
     public void setVol(double vol)
     {
-        if (vol <= 0)
+        if (vol < 0)
             throw new WrongParamException("vol = " + vol);
         this.vol = vol;
     }

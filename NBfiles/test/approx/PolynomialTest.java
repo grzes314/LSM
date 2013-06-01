@@ -3,7 +3,7 @@ package approx;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-import static approx.Common.doublesEqual;
+import static utils.Common.doublesEqual;
 
 /**
  *

@@ -5,13 +5,13 @@ import static java.lang.Math.exp;
 import static java.lang.Math.max;
 
 /**
- * Implementation of finite diffrence method.
+ * Implementation of finite difference method.
  * @author Grzegorz Los
  */
 public class FDModel implements ProgressObservable
 {
     /**
-     * Class representing a subset of a grid used in finite diffrence.
+     * Class representing a subset of a grid used in finite difference.
      */
     public static class Grid
     {
@@ -62,8 +62,8 @@ public class FDModel implements ProgressObservable
         }
         
         /**
-         * For some k's will fill one columnn of a grid.
-         * @param k Time index from finite diffrence method, 0 <= k <= K.
+         * For some k's will fill one column of a grid.
+         * @param k Time index from finite difference method, 0 <= k <= K.
          * @param col Column with prices 
          */
         public void fill(int k, double[] col, double stoppingPrice)
@@ -139,23 +139,12 @@ public class FDModel implements ProgressObservable
      * @param S Spot price for which option value is calculated.
      * @param vol Assets volatility.
      * @param r Interest rate.
-     * @param border Asset price at maximum level of the grid;
-     * @param I Number of steps at the asset price axis.
-     * @param K Number of steps at the time axis.
      */
-    public FDModel(double S, double vol, double r, double border, int I, int K)
+    public FDModel(double S, double vol, double r)
     {
         this.S0 = S;
         this.vol = vol;
         this.r = r;
-        this.border = border;
-        this.I = I;
-        this.K = K;
-        V = new double[2][I+1];
-        A = new double[I+1];
-        B = new double[I+1];
-        C = new double[I+1];
-        this.S = new double[I+1];
     }
 
     public double getS()
@@ -165,7 +154,7 @@ public class FDModel implements ProgressObservable
 
     public void setS(double S)
     {
-        if (S <= 0)
+        if (S < 0)
             throw new WrongParamException("S = " + S);
         this.S0 = S;
     }
@@ -189,7 +178,7 @@ public class FDModel implements ProgressObservable
 
     public void setVol(double vol)
     {
-        if (vol <= 0)
+        if (vol < 0)
             throw new WrongParamException("vol = " + vol);
         this.vol = vol;
     }
@@ -210,12 +199,17 @@ public class FDModel implements ProgressObservable
      * can be set in constructor or by setters.
      * @param strike Strike value of the option.
      * @param T Option's expiration time.
+     * @param I Number of steps at the asset price axis.
+     * @param K Number of steps at the time axis.
      * @param call Is it a call option?
      * @param american Is it an american option?
      * @return 
      */
-    public double price(double strike, double T, boolean call, boolean american)
+    public double price(double strike, double T, int I, int K,
+            boolean call, boolean american)
     {
+        this.I = I;
+        this.K = K;
         this.strike = strike;
         this.T = T;
         setAuxVars();
@@ -261,6 +255,12 @@ public class FDModel implements ProgressObservable
     
     private void setAuxVars()
     {
+        V = new double[2][I+1];
+        A = new double[I+1];
+        B = new double[I+1];
+        C = new double[I+1];
+        this.S = new double[I+1];
+        border = 3*max(S0, strike);
         dS = border/I;
         dt = T/K;
         double v1 = dt/dS/dS;

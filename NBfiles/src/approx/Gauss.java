@@ -1,7 +1,7 @@
 
 package approx;
 
-import static approx.Common.isZero;
+import static utils.Common.isZero;
 
 /**
  * Class providing method for solving systems of linear equations.
