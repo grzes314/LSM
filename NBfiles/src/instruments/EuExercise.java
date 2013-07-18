@@ -28,7 +28,7 @@ public class EuExercise extends Modificator
     @Override
     public String toString()
     {
-        return "European " + wrapped.toString();
+        return "Eu " + wrapped.toString();
     }
     
     @Override

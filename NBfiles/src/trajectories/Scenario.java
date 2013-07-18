@@ -1,8 +1,6 @@
 
 package trajectories;
 
-import instruments.TimeSupport;
-
 /**
  * Interface for classes representing market scenarios. The market scenario
  * is a set of trajectories of all assets in the market.

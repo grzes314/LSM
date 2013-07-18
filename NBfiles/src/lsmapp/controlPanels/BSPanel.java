@@ -7,7 +7,7 @@ package lsmapp.controlPanels;
 import instruments.EuExercise;
 import instruments.Instr;
 import instruments.Option;
-import instruments.TimeSupport;
+import trajectories.TimeSupport;
 import models.BSModel;
 import models.Progress;
 import models.ProgressObservable;

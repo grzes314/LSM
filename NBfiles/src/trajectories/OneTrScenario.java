@@ -1,8 +1,6 @@
 
 package trajectories;
 
-import instruments.TimeSupport;
-
 /**
  *
  * @author Grzegorz Los

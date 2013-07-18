@@ -4,6 +4,7 @@
  */
 package lsmapp.controlPanels;
 
+import trajectories.TimeSupport;
 import instruments.*;
 import models.LSModel;
 import models.Progress;
@@ -60,7 +61,7 @@ public class LSMPanel extends ModelPanel
         int K = (Integer) steps.getValue();
         TimeSupport ts = new TimeSupport(T, K);
         if (obligation.isSelected())
-            instr = new Obligation(ts);
+            instr = new Bond(ts);
         else
         {
             int type = (put.isSelected() ? Option.PUT : Option.CALL);

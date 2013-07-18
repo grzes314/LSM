@@ -2,7 +2,7 @@
 package models;
 
 import instruments.Instr;
-import instruments.TimeSupport;
+import trajectories.TimeSupport;
 import trajectories.Anthitetic;
 import trajectories.OneTrGenerator;
 import trajectories.Scenario;

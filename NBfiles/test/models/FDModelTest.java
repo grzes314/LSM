@@ -1,86 +1,106 @@
 
 package models;
 
+import junit.framework.TestCase;
+import models.testsupports.SimpleModelParams;
+import models.testsupports.VanillaOptionParams;
+import static models.testsupports.VanillaOptionParams.CallOrPut.CALL;
+
 /**
  *
  * @author Grzegorz Los
  */
-public class FDModelTest extends BaseForTests
+public class FDModelTest extends TestCase
 {
-            
+    class EuOptionSupport extends models.testsupports.EuOption
+    {    
+        @Override
+        protected void setModelParams(SimpleModelParams smp)
+        {
+            model = new FDModel(smp.S, smp.vol, smp.r);
+        }
+
+        @Override
+        protected double price(VanillaOptionParams vop)
+        {
+            double vol = model.getVol();
+            int KI = 100000000;
+            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1/3);
+            int K = KI / I;
+            return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), false);
+        }     
+    }
+    
+    class AmOptionSupport extends models.testsupports.AmOption
+    {    
+        @Override
+        protected void setModelParams(SimpleModelParams smp)
+        {
+            model = new FDModel(smp.S, smp.vol, smp.r);
+        }
+
+        @Override
+        protected double price(VanillaOptionParams vop)
+        {
+            double vol = model.getVol();
+            int KI = 100000000;
+            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1/3);
+            int K = KI / I;
+            return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), true);
+        }   
+    }
+          
+    public FDModelTest()
+    {
+        eos = new EuOptionSupport();
+        aos = new AmOptionSupport();
+    }
+    
     public void testEuCallExtremes()
     {
-        callExtremeSpot(EU);
-        callExtremeStrike(EU);
+        eos.callExtremeSpot();
+        eos.callExtremeStrike();
     }
     
     public void testEuCallTypical()
     {
-        euCallTypical();
+        eos.callTypical();
     }
     
     public void testEuPutExtremes()
     {
-        euPutExtremeSpot();
-        euPutExtremeStrike();
+        eos.putExtremeSpot();
+        eos.putExtremeStrike();
     }
     
     public void testEuPutTypical()
     {
-        euPutTypical();
+        eos.putTypical();
     }
         
     public void testAmCallExtremes()
     {
-        callExtremeSpot(AM);
-        callExtremeStrike(AM);
+        aos.callExtremeSpot();
+        aos.callExtremeStrike();
     }
     
     public void testAmCallTypical()
     {
-        amCallTypical();
+        aos.callTypical();
     }
 
     public void testAmPutExtremes()
     {
-        amPutExtremeSpot();
-        amPutExtremeStrike();
+        aos.putExtremeSpot();
+        aos.putExtremeStrike();
     }
     
     public void testAmPutTypical()
     {
-        amPutTypical();
-    }
-    
-    @Override
-    protected void setModelParams(double S, double vol, double r)
-    {
-        model = new FDModel(S, vol, r);
-    }
-
-    @Override
-    protected double price(double strike, double T, int callPut, int amEu)
-    {
-        int K = 100000; // time steps
-        double vol = model.getVol();
-        int I = (int) Math.sqrt( 0.9*K / (T*vol*vol) );
-        return model.price(strike, T, I, K, (callPut == CALL), (amEu == AM));
-    }
-
-    @Override
-    protected double priceBarrier(double strike, double T, int callPut,
-        int amEu, double barrier, int barType)
-    {
-        throw new UnsupportedOperationException("FDModel does not support "
-                + "barrier options");
-    }
-    
-    @Override
-    protected double priceObl(double T)
-    {
-        throw new UnsupportedOperationException("FDModel does not support "
-                + "obligations");
+        aos.putTypical();
     }
 
     private FDModel model;
+    private EuOptionSupport eos;
+    private AmOptionSupport aos;
 }

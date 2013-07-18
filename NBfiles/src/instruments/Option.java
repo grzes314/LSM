@@ -1,11 +1,12 @@
 
 package instruments;
 
+import trajectories.TimeSupport;
 import trajectories.Scenario;
 import trajectories.Trajectory;
 
 /**
- * Option is a class extending Instrument to represent an american option.
+ * Option is a class extending Instrument to represent an American option.
  * @author Grzegorz Los
  */
 public class Option extends Instr
@@ -54,7 +55,7 @@ public class Option extends Instr
     @Override
     public String toString()
     {
-        return "Option" + (type == CALL ? "Call" : "Put") + "@" + K;
+        return (type == CALL ? "Call" : "Put") + "@" + K;
     }
     
     @Override

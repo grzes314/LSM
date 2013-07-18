@@ -1,6 +1,7 @@
 
 package lsmapp.controlPanels;
 
+import trajectories.TimeSupport;
 import instruments.*;
 import java.awt.Component;
 import javax.swing.JPanel;
@@ -62,7 +63,7 @@ public class MCPanel extends ModelPanel
         double E = (Double) strike.getValue();
         if (option.isSelected())
             instr = new EuExercise( new Option(type, E, "OnlyAsset", ts) );
-        else instr = new Obligation(ts);
+        else instr = new Bond(ts);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);
         return instr;

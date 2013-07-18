@@ -6,7 +6,7 @@ import approx.Approx;
 import approx.Point;
 import approx.Polynomial;
 import instruments.Instr;
-import instruments.TimeSupport;
+import trajectories.TimeSupport;
 import static java.lang.Math.exp;
 import java.util.ArrayList;
 import java.util.Collection;

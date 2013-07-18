@@ -56,6 +56,12 @@ public class BSModel implements ProgressObservable
             throw new WrongParamException("vol = " + vol);
         this.vol = vol;
     }
+    
+    public double price(double K, double T, boolean isCall)
+    {
+        if (isCall) return priceCall(K, T);
+        else return pricePut(K, T);
+    }
 
     public double priceCall(double K, double T)
     {

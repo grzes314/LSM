@@ -2,14 +2,15 @@
 package instruments;
 
 import trajectories.Scenario;
+import trajectories.TimeSupport;
 
 /**
  *
  * @author grzes
  */
-public class Obligation extends Instr
+public class Bond extends Instr
 {
-    public Obligation(TimeSupport ts)
+    public Bond(TimeSupport ts)
     {
         super(ts);
     }
@@ -17,13 +18,13 @@ public class Obligation extends Instr
     @Override
     public String desc()
     {
-        return "Obligation paying 1 after" + ts.getT() + " years";
+        return "Bond paying 1 after" + ts.getT() + " years";
     }
     
     @Override
     public String toString()
     {
-        return "Obligation";
+        return "Bond";
     }
 
     
@@ -54,7 +55,7 @@ public class Obligation extends Instr
     @Override
     public boolean areYou(String str)
     {
-        if (str.equalsIgnoreCase("obligation"))
+        if (str.equalsIgnoreCase("bond"))
             return true;
         else return false;
     }    

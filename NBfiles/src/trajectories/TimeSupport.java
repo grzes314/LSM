@@ -1,5 +1,5 @@
 
-package instruments;
+package trajectories;
 
 /**
  * Class constitutes a bridge between continous and discrete language.
