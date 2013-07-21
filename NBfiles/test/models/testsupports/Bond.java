@@ -1,14 +1,15 @@
 
 package models.testsupports;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertTrue;
+import models.SimpleModelParams;
 import static utils.Common.doublesEqual;
 
 /**
  * Class supporting tests of pricing bonds paying 1 unit after given time.
  * @author Grzegorz Los
  */
-public abstract class Bond extends TestCase
+public abstract class Bond
 {    
     public void negativeRates()
     {

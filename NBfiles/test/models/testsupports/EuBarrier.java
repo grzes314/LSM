@@ -1,11 +1,14 @@
 
 package models.testsupports;
 
-import junit.framework.TestCase;
+import static junit.framework.Assert.assertTrue;
 import models.BSModel;
+import models.SimpleModelParams;
+import models.VanillaOptionParams;
+import models.VanillaOptionParams.CallOrPut;
+import static models.VanillaOptionParams.CallOrPut.CALL;
+import static models.VanillaOptionParams.CallOrPut.PUT;
 import static models.testsupports.BarrierParams.Type.*;
-import models.testsupports.VanillaOptionParams.CallOrPut;
-import static models.testsupports.VanillaOptionParams.CallOrPut.*;
 import static utils.Common.doublesEqual;
 
 
@@ -16,7 +19,7 @@ import static utils.Common.doublesEqual;
  * European barrier options.
  * @author Grzegorz Los
  */
-public abstract class EuBarrier extends TestCase
+public abstract class EuBarrier
 { 
     public void inAndOutParity()
     {
@@ -26,8 +29,7 @@ public abstract class EuBarrier extends TestCase
             setModelParams(tcd[i].smp);
             double fst = price(tcd[i].vop, tcd[i].barrier);
             double snd = price(tcd[i].vop, parityBarrier(tcd[i].barrier));
-            double vanillaPrice = bs.price(tcd[i].vop.strike, tcd[i].vop.T,
-                    tcd[i].vop.callOrPut == CALL);
+            double vanillaPrice = bs.price(tcd[i].vop);
             assertTrue( doublesEqual(vanillaPrice, fst + snd, 1e-3) );
         }
     }
@@ -38,8 +40,7 @@ public abstract class EuBarrier extends TestCase
         typicalCases(typicalTestCasesOut);
     }
     
-    @Override
-    protected void setUp()
+    public void setUp()
     {
         makeTestCases();
     }
@@ -103,7 +104,7 @@ public abstract class EuBarrier extends TestCase
             TestCaseData tcd = typicalTestCases[i];
             setModelParams(tcd.smp);
             double barrierPrice = price(tcd.vop, tcd.barrier);
-            double vanillaPrice = bs.price(tcd.vop.strike, tcd.vop.T, tcd.vop.callOrPut == CALL);
+            double vanillaPrice = bs.price(tcd.vop);
             assertTrue(vanillaPrice > barrierPrice - 0.001);
             assertTrue(barrierPrice > 0);
         }

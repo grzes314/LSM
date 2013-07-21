@@ -2,9 +2,7 @@
 package models;
 
 import junit.framework.TestCase;
-import models.testsupports.SimpleModelParams;
-import models.testsupports.VanillaOptionParams;
-import static models.testsupports.VanillaOptionParams.CallOrPut.CALL;
+import static models.VanillaOptionParams.CallOrPut.CALL;
 
 /**
  *
@@ -24,8 +22,8 @@ public class FDModelTest extends TestCase
         protected double price(VanillaOptionParams vop)
         {
             double vol = model.getVol();
-            int KI = 100000000;
-            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1/3);
+            int KI = 10000000;
+            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
             return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), false);
         }     
@@ -43,8 +41,8 @@ public class FDModelTest extends TestCase
         protected double price(VanillaOptionParams vop)
         {
             double vol = model.getVol();
-            int KI = 100000000;
-            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1/3);
+            int KI = 10000000;
+            int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
             return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), true);
         }   
@@ -54,6 +52,13 @@ public class FDModelTest extends TestCase
     {
         eos = new EuOptionSupport();
         aos = new AmOptionSupport();
+    }
+    
+    @Override
+    public void setUp() throws Exception
+    {
+        eos.setUp();
+        aos.setUp();
     }
     
     public void testEuCallExtremes()

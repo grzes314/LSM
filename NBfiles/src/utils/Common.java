@@ -30,4 +30,9 @@ public class Common
     {
         return abs(a) < 1e-9;
     }
+    
+    public static double plus(double a)
+    {
+        return (a > 0 ? a : 0);
+    }
 }
