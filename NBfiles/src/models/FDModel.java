@@ -136,27 +136,23 @@ public class FDModel implements ProgressObservable
     /**
      * Constructor of the model. Takes only arguments related to market and
      * an underlying asset.
-     * @param S Spot price for which option value is calculated.
-     * @param vol Assets volatility.
-     * @param r Interest rate.
+     * 
      */
-    public FDModel(double S, double vol, double r)
+    public FDModel(SimpleModelParams smp)
     {
-        this.S0 = S;
-        this.vol = vol;
-        this.r = r;
+        setParams(smp);
     }
 
+    public final void setParams(SimpleModelParams smp)
+    {
+        S0 = smp.S;
+        vol = smp.vol;
+        r = smp.r;   
+    }
+    
     public double getS()
     {
         return S0;
-    }
-
-    public void setS(double S)
-    {
-        if (S < 0)
-            throw new WrongParamException("S = " + S);
-        this.S0 = S;
     }
 
     public double getR()
@@ -164,23 +160,9 @@ public class FDModel implements ProgressObservable
         return r;
     }
 
-    public void setR(double r)
-    {
-        if (r < -1)
-            throw new WrongParamException("r = " + r);
-        this.r = r;
-    }
-
     public double getVol()
     {
         return vol;
-    }
-
-    public void setVol(double vol)
-    {
-        if (vol < 0)
-            throw new WrongParamException("vol = " + vol);
-        this.vol = vol;
     }
 
     public double getBorder()
@@ -205,15 +187,16 @@ public class FDModel implements ProgressObservable
      * @param american Is it an american option?
      * @return 
      */
-    public double price(double strike, double T, int I, int K,
-            boolean call, boolean american)
+    public double price(VanillaOptionParams vop, int I, int K)
     {
         this.I = I;
         this.K = K;
-        this.strike = strike;
-        this.T = T;
+        this.strike = vop.strike;
+        this.T = vop.T;
         setAuxVars();
         grid = new Grid(I, K, T, border);
+        boolean call = vop.callOrPut == VanillaOptionParams.CallOrPut.CALL;
+        boolean american = vop.amOrEu == VanillaOptionParams.AmOrEu.AM;
         fillLast(call);
         for (int k = K-1; k >= 0; --k)
         {

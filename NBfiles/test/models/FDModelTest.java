@@ -2,7 +2,6 @@
 package models;
 
 import junit.framework.TestCase;
-import static models.VanillaOptionParams.CallOrPut.CALL;
 
 /**
  *
@@ -15,7 +14,7 @@ public class FDModelTest extends TestCase
         @Override
         protected void setModelParams(SimpleModelParams smp)
         {
-            model = new FDModel(smp.S, smp.vol, smp.r);
+            model = new FDModel(smp);
         }
 
         @Override
@@ -25,7 +24,7 @@ public class FDModelTest extends TestCase
             int KI = 10000000;
             int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
-            return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), false);
+            return model.price(vop, I, K);
         }     
     }
     
@@ -34,7 +33,7 @@ public class FDModelTest extends TestCase
         @Override
         protected void setModelParams(SimpleModelParams smp)
         {
-            model = new FDModel(smp.S, smp.vol, smp.r);
+            model = new FDModel(smp);
         }
 
         @Override
@@ -44,7 +43,7 @@ public class FDModelTest extends TestCase
             int KI = 10000000;
             int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
-            return model.price(vop.strike, vop.T, I, K, (vop.callOrPut == CALL), true);
+            return model.price(vop, I, K);
         }   
     }
           

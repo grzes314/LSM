@@ -7,10 +7,9 @@ package lsmapp.controlPanels;
 import instruments.EuExercise;
 import instruments.Instr;
 import instruments.Option;
+import models.*;
+import models.VanillaOptionParams.CallOrPut;
 import trajectories.TimeSupport;
-import models.BSModel;
-import models.Progress;
-import models.ProgressObservable;
 
 /**
  *
@@ -40,9 +39,8 @@ public class BSPanel extends ModelPanel
     {
         double K = (Double) strike.getValue();
         double T = (Double) years.getValue();
-        if (put.isSelected())
-            return model.pricePut(K, T);
-        else return model.priceCall(K, T);
+        CallOrPut CP = put.isSelected() ? CallOrPut.PUT : CallOrPut.CALL;
+        return model.price(new VanillaOptionParams(K, T, CP));
     }
         
     @Override
@@ -51,7 +49,7 @@ public class BSPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new BSModel(S,v,r);
+        model = new BSModel( new SimpleModelParams(S,v,r) );
         return model;
     }
     

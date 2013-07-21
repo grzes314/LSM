@@ -4,9 +4,17 @@ package lsmapp.controlPanels;
 import instruments.EuExercise;
 import instruments.Instr;
 import instruments.Option;
-import trajectories.TimeSupport;
 import models.FDModel;
 import models.Progress;
+import models.SimpleModelParams;
+import models.VanillaOptionParams;
+import models.VanillaOptionParams.AmOrEu;
+import static models.VanillaOptionParams.AmOrEu.AM;
+import static models.VanillaOptionParams.AmOrEu.EU;
+import models.VanillaOptionParams.CallOrPut;
+import static models.VanillaOptionParams.CallOrPut.CALL;
+import static models.VanillaOptionParams.CallOrPut.PUT;
+import trajectories.TimeSupport;
 
 /**
  *
@@ -46,7 +54,7 @@ public class FDPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new FDModel(S, v, r);
+        model = new FDModel( new SimpleModelParams(S, v, r) );
         return model;
     }
     
@@ -77,13 +85,13 @@ public class FDPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        double T = (Double) years.getValue();
-        boolean isCall = call.isSelected();
         double E = (Double) strike.getValue();
-        boolean isAm = amoption.isSelected();
+        double T = (Double) years.getValue();
+        CallOrPut CorP = call.isSelected() ? CALL : PUT;
+        AmOrEu AorE = amoption.isSelected() ? AM : EU;
         int I = (Integer) priceSteps.getValue();
         int K = (Integer) timeSteps.getValue();
-        return model.price(E, T, I, K, isCall, isAm);
+        return model.price(new VanillaOptionParams(E, T, CorP, AorE), I, K);
     }
 
     @Override

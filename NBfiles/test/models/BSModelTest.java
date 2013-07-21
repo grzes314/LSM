@@ -16,18 +16,13 @@ public class BSModelTest extends TestCase
         @Override
         protected void setModelParams(SimpleModelParams smp)
         {
-            model.setS(smp.S);
-            model.setR(smp.r);
-            model.setVol(smp.vol);
+            model.setParams(smp);
         }
 
         @Override
-        protected double price(VanillaOptionParams sop)
+        protected double price(VanillaOptionParams vop)
         {
-            if (sop.callOrPut == CALL)
-                return model.priceCall(sop.strike, sop.T);
-            else
-                return model.pricePut(sop.strike, sop.T);
+            return model.price(vop);
         }       
     }
     
