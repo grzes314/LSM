@@ -1,10 +1,13 @@
 
 package trajectories;
 
-import math.utils.RandomTools;
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
-import models.*;
+import math.utils.RandomTools;
+import models.ObservableSupport;
+import models.Progress;
+import models.ProgressObservable;
+import models.ProgressObserver;
 
 /**
  * Creates a trajectory whose dynamics is given by equation dS = rSdS + vol S dS.
@@ -57,7 +60,7 @@ public class OneTrGenerator implements Generator, ProgressObservable
         for (int j = 1; j <= ts.getK(); ++j)
         {
             tr.set(j, tr.price(j-1)*exp(
-                    dvol*rt.nextGaussian() + dm - dvol*dvol/2) );
+                    dvol*rt.normal() + dm - dvol*dvol/2) );
         }
         tr.setReady();
         return new OneTrScenario(ts,tr);        
@@ -71,7 +74,7 @@ public class OneTrGenerator implements Generator, ProgressObservable
         neg.set(0, S);
         for (int j = 1; j <= ts.getK(); ++j)
         {
-            double N = rt.nextGaussian();
+            double N = rt.normal();
             pos.set(j, pos.price(j-1)*exp(
                     dvol*N + dm - dvol*dvol/2) );
             neg.set(j, neg.price(j-1)*exp(

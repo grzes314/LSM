@@ -3,12 +3,12 @@ package math.matrices;
 public class NotPositiveDefiniteMatrixException extends Exception
 {
 
-	public NotPositiveDefiniteMatrixException()
-	{
-	}
+    public NotPositiveDefiniteMatrixException()
+    {
+    }
 
-	public NotPositiveDefiniteMatrixException(String msg)
-	{
-		super(msg);
-	}
+    public NotPositiveDefiniteMatrixException(String msg)
+    {
+        super(msg);
+    }
 }
