@@ -57,7 +57,7 @@ public abstract class AmOption extends EuOption
         checkPuts(new Checker(){
             @Override
             public void check(SimpleModelParams smp, VanillaOptionParams vop) {
-                checkPrice(smp, vop.withT(0), utils.Common.plus(vop.strike - smp.S));
+                checkPrice(smp, vop.withT(0), math.utils.Numerics.plus(vop.strike - smp.S));
                     // ^^^ price = (K - S)+
                 comparePutPrices(smp, vop.withT(1000));
             }            
@@ -92,6 +92,6 @@ public abstract class AmOption extends EuOption
         bsModel.setParams(smp);
         double euPrice = bsModel.price(vop.asEuropean());
         checkPriceIsGreater(smp, vop, euPrice);
-        checkPriceIsGreater(smp, vop, utils.Common.plus(vop.strike - smp.S), 0.01);        
+        checkPriceIsGreater(smp, vop, math.utils.Numerics.plus(vop.strike - smp.S), 0.01);        
     }
 }

@@ -4,7 +4,7 @@ package models;
 import junit.framework.TestCase;
 import static models.VanillaOptionParams.CallOrPut.CALL;
 import static models.VanillaOptionParams.CallOrPut.PUT;
-import static utils.Common.doublesEqual;
+import static math.utils.Numerics.doublesEqual;
 /**
  *
  * @author Grzegorz Los

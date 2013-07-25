@@ -1,6 +1,6 @@
 package approx;
 
-import utils.Common;
+import math.utils.Numerics;
 import java.util.Arrays;
 
 
@@ -50,7 +50,7 @@ public class Polynomial
         if (deg != other.deg)
             return false;
         for (int i = 0; i <= deg; ++i)
-            if (!Common.doublesEqual(a[i], other.a[i]))
+            if (!Numerics.doublesEqual(a[i], other.a[i]))
                 return false;
         return true;
     }

@@ -3,7 +3,7 @@ package models.testsupports;
 
 import static junit.framework.Assert.assertTrue;
 import models.SimpleModelParams;
-import static utils.Common.doublesEqual;
+import static math.utils.Numerics.doublesEqual;
 
 /**
  * Class supporting tests of pricing bonds paying 1 unit after given time.

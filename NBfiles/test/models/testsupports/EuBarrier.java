@@ -9,7 +9,7 @@ import models.VanillaOptionParams.CallOrPut;
 import static models.VanillaOptionParams.CallOrPut.CALL;
 import static models.VanillaOptionParams.CallOrPut.PUT;
 import static models.testsupports.BarrierParams.Type.*;
-import static utils.Common.doublesEqual;
+import static math.utils.Numerics.doublesEqual;
 
 
 

@@ -1,7 +1,7 @@
 
 package trajectories;
 
-import utils.RandomTools;
+import math.utils.RandomTools;
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
 import models.*;

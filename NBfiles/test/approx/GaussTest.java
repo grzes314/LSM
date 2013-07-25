@@ -1,7 +1,7 @@
 
 package approx;
 
-import static utils.Common.doublesEqual;
+import static math.utils.Numerics.doublesEqual;
 import java.util.Random;
 import junit.framework.TestCase;
 

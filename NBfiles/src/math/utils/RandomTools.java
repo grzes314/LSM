@@ -1,5 +1,5 @@
 
-package utils;
+package math.utils;
 
 import java.util.Random;
 

@@ -1,4 +1,4 @@
-package utils;
+package math.utils;
 
 import static java.lang.Math.abs;
 
@@ -6,7 +6,7 @@ import static java.lang.Math.abs;
  *
  * @author Grzegorz Los
  */
-public class Common
+public class Numerics
 {
     public static boolean doublesEqual(double a, double b)
     {

@@ -7,7 +7,7 @@ import models.SimpleModelParams;
 import models.VanillaOptionParams;
 import static models.VanillaOptionParams.CallOrPut.CALL;
 import static models.VanillaOptionParams.CallOrPut.PUT;
-import static utils.Common.plus;
+import static math.utils.Numerics.plus;
 
 /**
  * Class provides functions useful for testing results of pricing

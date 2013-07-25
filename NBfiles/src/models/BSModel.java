@@ -2,8 +2,8 @@
 package models;
 
 import static java.lang.Math.*;
-import utils.Common;
-import utils.RandomTools;
+import math.utils.Numerics;
+import math.utils.RandomTools;
 
 /**
  * Class for pricing options with BS Formula.
@@ -72,8 +72,8 @@ public class BSModel implements ProgressObservable
     
     private double priceCall(double K, double T)
     {
-        if (Common.isZero(T))
-            return Common.plus(S-K);
+        if (Numerics.isZero(T))
+            return Numerics.plus(S-K);
         double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
         double d2 = d1 - vol * sqrt(T);
         return S*rt.cndf(d1) - K*exp(-r*T)*rt.cndf(d2) ;
@@ -81,8 +81,8 @@ public class BSModel implements ProgressObservable
     
     private double pricePut(double K, double T)
     {
-        if (Common.isZero(T))
-            return Common.plus(K-S);
+        if (Numerics.isZero(T))
+            return Numerics.plus(K-S);
         double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
         double d2 = d1 - vol * sqrt(T);
         return K*exp(-r*T)*rt.cndf(-d2)- S*rt.cndf(-d1);

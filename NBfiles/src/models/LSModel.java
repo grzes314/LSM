@@ -1,7 +1,7 @@
 
 package models;
 
-import utils.RandomTools;
+import math.utils.RandomTools;
 import approx.Approx;
 import approx.Point;
 import approx.Polynomial;
