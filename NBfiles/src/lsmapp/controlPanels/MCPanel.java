@@ -1,12 +1,13 @@
 
 package lsmapp.controlPanels;
 
-import trajectories.TimeSupport;
 import instruments.*;
 import java.awt.Component;
 import javax.swing.JPanel;
 import models.MCModel;
 import models.Progress;
+import models.SimpleModelParams;
+import trajectories.TimeSupport;
 
 /**
  *
@@ -47,9 +48,8 @@ public class MCPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        int N = (Integer) simulations.getValue();
-        int K = (Integer) timeSteps.getValue();
-        model = new MCModel(S, v, r, N, K, useAnthi.isSelected());
+        SimpleModelParams smp = new SimpleModelParams(S, v, r);
+        model = new MCModel(smp);
         return model;
     }
     
@@ -82,7 +82,9 @@ public class MCPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        return model.price(instr);
+        int N = (Integer) simulations.getValue();
+        int K = (Integer) timeSteps.getValue();
+        return model.price(instr, N, K, useAnthi.isSelected());
     }
 
     @Override

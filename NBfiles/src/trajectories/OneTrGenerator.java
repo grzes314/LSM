@@ -7,7 +7,7 @@ import static java.lang.Math.sqrt;
 import models.*;
 
 /**
- *
+ * Creates a trajectory whose dynamics is given by equation dS = rSdS + vol S dS.
  * @author Grzegorz Los
  */
 public class OneTrGenerator implements Generator, ProgressObservable

@@ -2,10 +2,10 @@
 package models;
 
 import instruments.Instr;
-import trajectories.TimeSupport;
 import trajectories.Anthitetic;
 import trajectories.OneTrGenerator;
 import trajectories.Scenario;
+import trajectories.TimeSupport;
 
 /**
  *
@@ -13,15 +13,19 @@ import trajectories.Scenario;
  */
 public class MCModel implements ProgressObservable
 {
-    public MCModel(double S, double vol, double r, int N, int K, boolean anthi) 
+    public enum VarRedMethod
     {
-        this.S = S;
-        this.vol = vol;
-        this.r = r;
-        this.N = N;
-        this.K = K;
-        this.anthi = anthi;
-        convergence = new double[N/100];
+        None, Anthi, Control
+    }
+    
+    public MCModel(SimpleModelParams smp) 
+    {
+        setParams(smp);
+    }
+
+    public final void setParams(SimpleModelParams smp)
+    {
+        this.smp = smp;
     }
 
     public int getK()
@@ -29,49 +33,24 @@ public class MCModel implements ProgressObservable
         return K;
     }
 
-    public void setK(int K)
-    {
-        this.K = K;
-    }
-
     public int getN()
     {
         return N;
     }
 
-    public void setN(int N)
-    {
-        this.N = N;
-    }
-
     public double getS()
     {
-        return S;
-    }
-
-    public void setS(double S)
-    {
-        this.S = S;
+        return smp.S;
     }
 
     public double getR()
     {
-        return r;
-    }
-
-    public void setR(double r)
-    {
-        this.r = r;
+        return smp.r;
     }
 
     public double getVol()
     {
-        return vol;
-    }
-
-    public void setVol(double vol)
-    {
-        this.vol = vol;
+        return smp.vol;
     }
 
     @Override
@@ -92,8 +71,12 @@ public class MCModel implements ProgressObservable
         os.addObserver(ob);
     }
     
-    public double price(Instr instr)
+    public double price(Instr instr, int N, int K, boolean anthi)
     {
+        this.N = N;
+        this.K = K;
+        this.anthi = anthi;
+        convergence = new double[N/100];
         if (anthi) return priceAnthi(instr);
         else return priceNoAnthi(instr);
     }
@@ -107,9 +90,9 @@ public class MCModel implements ProgressObservable
     public String toString()
     {
         return "CLASSIC MONTE CARLO MODEL\n" +
-               "S = "+ S + "\n" +
-               "vol = " + vol + "\n" +
-               "r = " + r + "\n" +             
+               "S = "+ smp.S + "\n" +
+               "vol = " + smp.vol + "\n" +
+               "r = " + smp.r + "\n" +             
                "N = " + N + "\n" +             
                "K = " + K + "\n" +
                 (anthi ? "anhtitetic paths used" : "");
@@ -155,7 +138,7 @@ public class MCModel implements ProgressObservable
     
     private Scenario[] getScenarios(TimeSupport ts)
     {
-        OneTrGenerator gen = new OneTrGenerator(S, r, vol, ts);
+        OneTrGenerator gen = new OneTrGenerator(smp.S, smp.r, smp.vol, ts);
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)
@@ -168,7 +151,7 @@ public class MCModel implements ProgressObservable
     
     private Anthitetic[] getScenariosAnthi(TimeSupport ts)
     {
-        OneTrGenerator gen = new OneTrGenerator(S, r, vol, ts);
+        OneTrGenerator gen = new OneTrGenerator(smp.S, smp.r, smp.vol, ts);
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)
@@ -181,17 +164,17 @@ public class MCModel implements ProgressObservable
     
     private double getPayoff(Instr instr, Scenario s)
     {
-        return instr.payoff(s, K)*Math.exp(-r*instr.getTS().getT());
+        return instr.payoff(s, K)*Math.exp(-smp.r*instr.getTS().getT());
     }
     
     private double getPayoff(Instr instr, Anthitetic a)
     {
-        return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-r*instr.getTS().getT())
-                     + instr.payoff(a.neg, K)*Math.exp(-r*instr.getTS().getT()));
+        return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-smp.r*instr.getTS().getT())
+                     + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
     }
     
     private double convergence[];
-    private double S, vol, r;
+    private SimpleModelParams smp;
     private int N, K;
     private boolean anthi;
     private ObservableSupport os = new ObservableSupport();
