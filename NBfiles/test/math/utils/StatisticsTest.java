@@ -1,11 +1,12 @@
 package math.utils;
 
+import junit.framework.TestCase;
 import math.matrices.Matrix;
 import math.matrices.Vector;
-import junit.framework.TestCase;
 
-public class StatisticsTest extends TestCase {
-
+public class StatisticsTest extends TestCase
+{
+    @Override
     protected void setUp() throws Exception
     {
         super.setUp();
@@ -24,8 +25,8 @@ public class StatisticsTest extends TestCase {
         bigCorr = bigCorrelation();
     }    
 
-    /********************************************************************************************/
-    /*********************************************************************************************/
+/*************************************************************************************************/
+/************************* Preparation of data for tests *****************************************/
     
     private Vector smallVector1()
     {
@@ -119,32 +120,33 @@ public class StatisticsTest extends TestCase {
         return new Matrix(d);
     }
 
-    /*********************************************************************************************/
-    /*********************************************************************************************/
+
+/*************************************************************************************************/
+/************************* Tests of mean called on vector ****************************************/
     
     public void testMean_Vector()
     {
-        auxMeanOnVectorConst();
-        auxMeanOnVectorArth();
-        auxMeanOnVectorGeom();
-        auxMeanOnVectorSmall();
-        auxMeanOnVectorBig();
+        auxMean_VectorConst();
+        auxMean_VectorArth();
+        auxMean_VectorGeom();
+        auxMean_VectorSmall();
+        auxMean_VectorBig();
     }
 
-    private void auxMeanOnVectorConst()
+    private void auxMean_VectorConst()
     {
         Vector vec = Sequences.constant(n, Math.PI);
         assertEquals(Math.PI, Statistics.mean(vec), 1e-3);
     }
 
-    private void auxMeanOnVectorArth()
+    private void auxMean_VectorArth()
     {
         Vector vec = Sequences.arithmetic(n, -45, 0.01);
         double ex = Sequences.sumOfArithmetic(n, -45, 0.01) / n;
         assertEquals(ex, Statistics.mean(vec), 1e-3);        
     }
 
-    private void auxMeanOnVectorGeom()
+    private void auxMean_VectorGeom()
     {
         int len = 1000;
         Vector vec = Sequences.geometric(len, 1, 1.01);
@@ -152,28 +154,63 @@ public class StatisticsTest extends TestCase {
         assertEquals(ex, Statistics.mean(vec), 1e-3);        
     }
     
-    private void auxMeanOnVectorSmall()
+    private void auxMean_VectorSmall()
     {
         assertEquals(smallMean1(), Statistics.mean(smallVector1), 1e-3);
         assertEquals(smallMean2(), Statistics.mean(smallVector2), 1e-3);
     }
     
-    private void auxMeanOnVectorBig()
+    private void auxMean_VectorBig()
     {
         assertEquals(bigMean1(), Statistics.mean(bigVector1), 1e-3);
         assertEquals(bigMean2(), Statistics.mean(bigVector2), 1e-3);
         assertEquals(bigMean3(), Statistics.mean(bigVector3), 1e-3);
     }
 
+/*************************************************************************************************/
+/************************* Tests of mean called on matrix ****************************************/
+    
     public void testMean_Matrix()
     {
-        auxMeanOnIdMatrix();
-        auxMeanOnConstColMatrix();
-        auxMeanOnConcreteMatrix();
+        auxMean_MatrixId();
+        auxMean_MatrixConstCol();
+        auxMean_MatrixConcrete();
         auxMean_MatrixSmall();
         auxMean_MatrixBig();
     }
+
+    private void auxMean_MatrixId()
+    {
+        int len = 200;
+        Matrix m = new Matrix(len, len);
+        Vector v = Statistics.mean(m);
+        for (int col = 1; col <= len; ++col)
+            assertEquals(1./len, v.get(col), 1e-3);    
+    }
+
+    private void auxMean_MatrixConstCol()
+    {
+        Matrix m = new Matrix(200, 300);
+        for (int col = 1; col <= m.getCols(); ++col)
+            m.setCol(col, Sequences.constant(m.getRows(), col));
+        Vector v = Statistics.mean(m);
+        for (int col = 1; col <= m.getCols(); ++col)
+            assertEquals(col, v.get(col), 1e-3);
+    }
     
+    private void auxMean_MatrixConcrete()
+    {
+        int len = 999;
+        Matrix m = new Matrix(len, 3);
+        m.setCol(1, Sequences.arithmetic(len, -(len-1)/2, 1.0));
+        m.setCol(2, Sequences.geometric(len, 0.05, 1.01));
+        m.setCol(3, Sequences.squares(len));
+        Vector v = Statistics.mean(m);
+        assertEquals(0, v.get(1), 1e-3);
+        assertEquals(Sequences.sumOfGeometric(len, 0.05, 1.01)/len, v.get(2), 1e-3);
+        assertEquals(Sequences.sumOfSquares(len) / len, v.get(3), 1e-3);
+    }
+        
     private void auxMean_MatrixSmall()
     {
         Vector mean = Statistics.mean(smallMat);
@@ -186,108 +223,97 @@ public class StatisticsTest extends TestCase {
         assertTrue( mean.equals(bigMean) );
     }
 
-    private void auxMeanOnIdMatrix()
-    {
-        Matrix m = new Matrix(n, n);
-        Vector v = Statistics.mean(m);
-        for (int col = 1; col <= n; ++col)
-            assertEquals(1./n, v.get(col), 1e-3);    
-    }
-
-    private void auxMeanOnConstColMatrix()
-    {
-        Matrix m = new Matrix(200, 300);
-        for (int col = 1; col <= m.getCols(); ++col)
-            m.setCol(col, Sequences.constant(m.getRows(), col));
-        Vector v = Statistics.mean(m);
-        for (int col = 1; col <= m.getCols(); ++col)
-            assertEquals(col, v.get(col), 1e-3);
-    }
-    
-    private void auxMeanOnConcreteMatrix()
-    {
-        int len = 999;
-        Matrix m = new Matrix(len, 3);
-        m.setCol(1, Sequences.arithmetic(len, -len/2, 1.0));
-        m.setCol(2, Sequences.geometric(len, 0.05, 1.01));
-        m.setCol(3, Sequences.squares(len));
-        Vector v = Statistics.mean(m);
-        assertEquals(0, v.get(1), 1e-3);
-        assertEquals(Sequences.sumOfGeometric(len, 0.05, 1.01)/len, v.get(2), 1e-3);
-        assertEquals(Sequences.sumOfSquares(len) / len, v.get(3), 1e-3);
-    }
-    
-    
+/*************************************************************************************************/
+/************************** Tests of variance calculation ****************************************/
+   
     public void testVar()
     {
-        auxTestVarOnConst();
-        auxTestVarOnIntersperse();
-        //TODO testVar_small(), testVar_big();
+        auxVar_Const();
+        auxVar_Intersperse();
+        auxVar_Small();
+        auxVar_Big();
     }
 
-    private void auxTestVarOnConst()
+    private void auxVar_Const()
     {
         Vector v = Sequences.constant(n, 7);
         assertEquals(0, Statistics.var(v), 1e-3);
     }
 
-    private void auxTestVarOnIntersperse()
+    private void auxVar_Intersperse()
     {
         Vector v = Sequences.intersperse(n);
         assertEquals(1, Statistics.var(v), 1e-2);
     }
     
-    public void testCovar_Vectors()
+    private void auxVar_Small()
     {
-        auxTestCovar_Vectors_sameVector();
-        auxTestCovar_Vectors_Dependent();
-        auxTestCovar_Vectors_Small();
-        auxTestCovar_Vectors_Big();
+        assertEquals(smallCov.get(1, 1), Statistics.var(smallVector1), 1e-3);
+        assertEquals(smallCov.get(2, 2), Statistics.var(smallVector2), 1e-3);
     }
     
-    private void auxTestCovar_Vectors_sameVector()
+    private void auxVar_Big()
     {
-        Vector v1 = Sequences.sineOfNatural(n);
-        Vector v2 = new Vector(v1);
-        assertEquals(   Statistics.var(v1),
-                        Statistics.covar(v1, v2),
+        assertEquals(bigCov.get(1, 1), Statistics.var(bigVector1), 1e-3);
+        assertEquals(bigCov.get(2, 2), Statistics.var(bigVector2), 1e-3);
+        assertEquals(bigCov.get(3, 3), Statistics.var(bigVector3), 1e-3);
+    }
+    
+/*************************************************************************************************/
+/************************* Tests of covariance called on vectors *********************************/
+   
+    public void testCov_Vectors()
+    {
+        auxCov_Vectors_sameVector();
+        auxCov_Vectors_Dependent();
+        auxCov_Vectors_Small();
+        auxCov_Vectors_Big();
+    }
+    
+    private void auxCov_Vectors_sameVector()
+    {
+        Vector copy = new Vector(bigVector1);
+        assertEquals(   Statistics.var(bigVector1),
+                        Statistics.cov(bigVector1, copy),
                         1e-3 );
     }
 
-    private void auxTestCovar_Vectors_Dependent()
+    private void auxCov_Vectors_Dependent()
     {
-        int n = 10000;
-        Vector v1 = Sequences.intersperse(n);
-        Vector v2 = v1.times(2);
-        assertEquals(2, Statistics.covar(v1, v2), 1e-2);
+        Vector v1 = Sequences.intersperse(n); //variance equals 1
+        Vector v2 = v1.times(7.5);
+        assertEquals(7.5, Statistics.cov(v1, v2), 1e-3);
     }
     
-    private void auxTestCovar_Vectors_Small()
+    private void auxCov_Vectors_Small()
     {
-        Matrix cov = Statistics.covar(smallMat);
-        assertTrue( smallCov.equals(cov) );
+        assertEquals(smallCov.get(1, 2), Statistics.cov(smallVector1, smallVector2), 1e-3);
     }
 
-    private void auxTestCovar_Vectors_Big()
+    private void auxCov_Vectors_Big()
     {
-        //TODO
+        assertEquals(bigCov.get(1, 2), Statistics.cov(bigVector1, bigVector2), 1e-3);
+        assertEquals(bigCov.get(1, 3), Statistics.cov(bigVector1, bigVector3), 1e-3);
+        assertEquals(bigCov.get(2, 3), Statistics.cov(bigVector2, bigVector3), 1e-3);
     }
     
-    public void testCovar_Matrix()
+/*************************************************************************************************/
+/************************* Tests of covariance called on matrix **********************************/
+
+    public void testCov_Matrix()
     {
-        auxTestCovar_Matrix_sameVector();
-        auxTestCovar_Matrix_Dependent();
-        auxTestCovar_Matrix_Small();
-        auxTestCovar_Matrix_Big();
+        auxCov_Matrix_sameVector();
+        auxCov_Matrix_Dependent();
+        auxCov_Matrix_Small();
+        auxCov_Matrix_Big();
     }
     
-    private void auxTestCovar_Matrix_sameVector()
+    private void auxCov_Matrix_sameVector()
     {
-        int n = 10000;
         Vector v1 = Sequences.intersperse(n);
         Vector v2 = new Vector(v1);
         Matrix m = v1.cbind(v2);
-        Matrix cov = Statistics.covar(m);
+        Matrix cov = Statistics.cov(m);
         assertEquals( 2, cov.getCols() );
         assertEquals( 2, cov.getRows() );
         for (int row = 1; row <= 2; ++row)
@@ -295,13 +321,12 @@ public class StatisticsTest extends TestCase {
                 assertEquals(1, cov.get(row, col));
     }
 
-    private void auxTestCovar_Matrix_Dependent()
+    private void auxCov_Matrix_Dependent()
     {
-        int n = 10000;
-        Vector v1 = Sequences.sineOfNatural(n);
+        Vector v1 = bigVector1;
         Vector v2 = v1.times(2);
         Vector v3 = v1.times(4);
-        Matrix cov = Statistics.covar(v1.cbind(v2).cbind(v3));
+        Matrix cov = Statistics.cov(v1.cbind(v2).cbind(v3));
         assertEquals( 3, cov.getCols() );
         assertEquals( 3, cov.getRows() );
         assertTrue( cov.isSymmetric() );
@@ -311,23 +336,74 @@ public class StatisticsTest extends TestCase {
         assertEquals( 2*var, cov.get(2, 3), 1e-3 );
     }
 
-    private void auxTestCovar_Matrix_Small()
+    private void auxCov_Matrix_Small()
     {
-        //TODO
+        Matrix cov = Statistics.cov(smallMat);
+        assertEquals( smallCov, cov );
     }
 
-    private void auxTestCovar_Matrix_Big()
+    private void auxCov_Matrix_Big()
     {
-        //TODO
+        Matrix cov = Statistics.cov(bigMat);
+        assertEquals( bigCov, cov );
     }
+    
+/*************************************************************************************************/
+/************************* Tests of correlation called on vectors ********************************/
+        
+    public void testCorr_Vectors()
+    {
+        auxCorr_Vectors_Small();
+        auxCorr_Vectors_Big();
+    }
+    
+    private void auxCorr_Vectors_Small()
+    {
+        assertEquals(smallCorr.get(1, 2), Statistics.corr(smallVector1, smallVector2), 1e-3);
+    }
+
+    private void auxCorr_Vectors_Big()
+    {
+        assertEquals(bigCorr.get(1, 2), Statistics.corr(bigVector1, bigVector2), 1e-3);
+        assertEquals(bigCorr.get(1, 3), Statistics.corr(bigVector1, bigVector3), 1e-3);
+        assertEquals(bigCorr.get(2, 3), Statistics.corr(bigVector2, bigVector3), 1e-3);
+    }
+    
+/*************************************************************************************************/
+/************************ Tests of correlation called on matrix **********************************/
+    
+    public void testCorr_Matrix()
+    {
+        auxCorr_Matrix_Small();
+        auxCorr_Matrix_Big();
+    }
+    
+    private void auxCorr_Matrix_Small()
+    {
+        Matrix corr = Statistics.corr(smallMat);
+        assertEquals( smallCorr, corr );
+    }
+
+    private void auxCorr_Matrix_Big()
+    {
+        Matrix corr = Statistics.corr(bigMat);
+        assertEquals( bigCorr, corr );
+    }
+    
+/*************************************************************************************************/
+/************** Tests of cumulative standard normal distribuant function *************************/
 
     public void testCndf()
     {
         assertEquals(0, Statistics.cndf(-1e9), 1e-3);
         assertEquals(1, Statistics.cndf(1e9), 1e-3);
         assertEquals(0.5, Statistics.cndf(0), 1e-3);
+        assertEquals(0.975, Statistics.cndf(1.959964), 1e-3);
     }
     
+/*************************************************************************************************/
+/************** Tests of cumulative standard normal distribuant function *************************/
+
     final int n = 10000; //size of vectors for big tests
     Vector smallVector1, smallVector2, bigVector1, bigVector2, bigVector3, smallMean, bigMean;
     Matrix smallMat, bigMat, smallCov, smallCorr, bigCov, bigCorr;

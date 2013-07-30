@@ -65,7 +65,7 @@ public class Statistics
      * @param s2 vector with values of second variable.
      * @return sample covariance.
      */
-    public static double covar(Vector s1, Vector s2)
+    public static double cov(Vector s1, Vector s2)
     {
         return 0;
     }
@@ -76,7 +76,7 @@ public class Statistics
      * @param m Matrix with observations.
      * @return covariance matrix.
      */
-    public static Matrix covar(Matrix m)
+    public static Matrix cov(Matrix m)
     {
         return new Matrix(1,1);
     }
