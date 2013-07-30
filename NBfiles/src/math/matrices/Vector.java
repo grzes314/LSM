@@ -13,6 +13,11 @@ public class Vector extends Matrix
         super(vals);
     }
     
+    public Vector(Vector original)
+    {
+        super(original);
+    }
+    
     public double get(int row)
     {
         return get(row, 1);
@@ -30,6 +35,15 @@ public class Vector extends Matrix
         Vector res = new Vector(getRows());
         for (int row = 1; row <= getRows(); ++row)
             res.set(row, get(row) + other.get(row));
+        return res;
+    }
+    
+    @Override
+    public Vector times(double t)
+    {
+        Vector res = new Vector(getRows());
+        for (int row = 1; row <= getRows(); ++row)
+            res.set(row, get(row)*t);
         return res;
     }
 }
