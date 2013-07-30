@@ -72,16 +72,16 @@ public class Matrix
             throw new IllegalArgumentException(msg);        
     }
     
-    private void ensureHasRows(double[][] obs, String msg)
+    private void ensureHasRows(double[][] array, String msg)
     {
-        if (obs.length == 0)
+        if (array.length == 0)
             throw new IllegalArgumentException(msg);            
     }
     
-    private void ensureRowsNotNull(double[][] obs, String msg)
+    private void ensureRowsNotNull(double[][] array, String msg)
     {
-        for (int i = 0; i < obs.length; ++i)
-            if (fields[i] == null)
+        for (int i = 0; i < array.length; ++i)
+            if (array[i] == null)
                 throw new IllegalArgumentException(msg);
     }
     
@@ -89,7 +89,7 @@ public class Matrix
     {
         int l = array[0].length;
         for (int i = 1; i < array.length; ++i)
-            if (fields[i].length != l)
+            if (array[i].length != l)
                 throw new IllegalArgumentException(msg);
     }
     
