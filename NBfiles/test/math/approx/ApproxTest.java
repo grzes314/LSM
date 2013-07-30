@@ -1,5 +1,5 @@
 
-package approx;
+package math.approx;
 
 import java.util.ArrayList;
 import junit.framework.TestCase;

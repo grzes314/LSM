@@ -1,5 +1,5 @@
 
-package approx;
+package math.approx;
 
 import static math.utils.Numerics.isZero;
 

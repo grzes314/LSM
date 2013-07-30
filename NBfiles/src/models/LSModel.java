@@ -2,9 +2,9 @@
 package models;
 
 import math.utils.RandomTools;
-import approx.Approx;
-import approx.Point;
-import approx.Polynomial;
+import math.approx.Approx;
+import math.approx.Point;
+import math.approx.Polynomial;
 import instruments.Instr;
 import trajectories.TimeSupport;
 import static java.lang.Math.exp;

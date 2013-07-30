@@ -1,5 +1,5 @@
 
-package approx;
+package math.approx;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;

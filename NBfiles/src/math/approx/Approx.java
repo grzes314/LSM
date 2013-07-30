@@ -1,4 +1,4 @@
-package approx;
+package math.approx;
 
 import java.util.Collection;
 

@@ -1,4 +1,4 @@
-package approx;
+package math.approx;
 
 import math.utils.Numerics;
 import java.util.Arrays;

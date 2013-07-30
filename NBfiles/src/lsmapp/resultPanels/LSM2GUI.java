@@ -1,7 +1,7 @@
 
 package lsmapp.resultPanels;
 
-import approx.Polynomial;
+import math.approx.Polynomial;
 import instruments.Instr;
 import instruments.Option;
 import java.awt.BorderLayout;
