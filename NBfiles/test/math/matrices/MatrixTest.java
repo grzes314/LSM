@@ -2,9 +2,9 @@ package math.matrices;
 
 import junit.framework.TestCase;
 
-public class MatrixTest extends TestCase {
+public class MatrixTest extends TestCase
+{
 
-    @Override
     protected void setUp() throws Exception
     {
         super.setUp();
@@ -91,20 +91,27 @@ public class MatrixTest extends TestCase {
     
     public void testAddition()
     {
-        
+        Matrix sum = rect.add(rect);
+        for (int row = 1; row <= sum.getRows(); ++row)
+            for (int col = 1; col <= sum.getCols(); ++col)
+                assertEquals(rect.get(row, col)*2, sum.get(row, col), 1e-3);                
+    }
+    
+    public void testTimes()
+    {
+        Matrix res = rect.times(2);
+        for (int row = 1; row <= res.getRows(); ++row)
+            for (int col = 1; col <= res.getCols(); ++col)
+                assertEquals(rect.get(row, col)*2, res.get(row, col), 1e-3);        
     }
     
     public void testMultiplicationByMatrix()
     {
         Matrix idL = new Matrix(rowsRec, rowsRec);
         Matrix idR = new Matrix(colsRec, colsRec);
-        try {
-            assertTrue( idL.mult(rect).equals(rect) );
-            assertTrue( rect.mult(idR).equals(rect) );
-            assertTrue( rect.mult(rect.transpose()).isSymmetric() );
-        } catch (DimensionException e) {
-            assertTrue("Multiplying square matrices of suitable size should not throw", false);
-        }
+        assertTrue( idL.mult(rect).equals(rect) );
+        assertTrue( rect.mult(idR).equals(rect) );
+        assertTrue( rect.mult(rect.transpose()).isSymmetric() );
     }
 
     public void testMultiplicationByVector()
@@ -112,17 +119,13 @@ public class MatrixTest extends TestCase {
         Vector vec = new Vector(rect.getCols());
         for (int i = 1; i <= vec.getRows(); ++i)
             vec.set(i, 1);
-        try {
-            Vector res = rect.mult(vec);
-            for (int row = 1; row <= rect.getRows(); ++row)
-            {
-                double sum = 0;
-                for (int col = 1; col <= rect.getCols(); ++col)
-                    sum += rect.get(row, col);
-                assertEquals(sum, res.get(row), delta);
-            }
-        } catch (DimensionException e) {
-            assertTrue("Multiplying vector by matrix of suitable size should not throw", false);
+        Vector res = rect.mult(vec);
+        for (int row = 1; row <= rect.getRows(); ++row)
+        {
+            double sum = 0;
+            for (int col = 1; col <= rect.getCols(); ++col)
+                sum += rect.get(row, col);
+            assertEquals(sum, res.get(row), delta);
         }
     }
     
@@ -141,7 +144,7 @@ public class MatrixTest extends TestCase {
             TestCase.assertTrue("Cholesky decomposition on rectangle matrix should throw", false);
         } catch (NotPositiveDefiniteMatrixException e) {}
         try {
-            rect.cholesky();
+            square.cholesky();
             TestCase.assertTrue("Cholesky decomposition on not positive definite matrix " +
                     "should throw", false);
         } catch (NotPositiveDefiniteMatrixException e) {}        
@@ -174,9 +177,7 @@ public class MatrixTest extends TestCase {
             assertTrue( triangular.equals(M.cholesky()) );
         } catch (NotPositiveDefiniteMatrixException e) {
             assertTrue("Cholesky decomposition on positive definite matrix should not throw", false);
-        } catch (DimensionException e) {
-            assertTrue("Multiplying square matrices of the same size should not throw", false);
-        }        
+        }    
     }
 
     private double delta = 1e-3;

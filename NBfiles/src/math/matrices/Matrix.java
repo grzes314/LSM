@@ -30,9 +30,9 @@ public class Matrix
     private void ensureDimensionOK(int rows, int cols)
     {
         if (rows <= 0)
-            throw new IllegalArgumentException("rows = " + rows);    
+            throw new DimensionException("Number of rows must be positive, rows = " + rows);    
         if (cols <= 0)
-            throw new IllegalArgumentException("rows = " + cols);    
+            throw new DimensionException("Number of columns must be positive, cols = " + cols);    
     }
 
     /**
@@ -212,21 +212,30 @@ public class Matrix
      */
     public Matrix add(Matrix other) throws DimensionException
     {
-        if (cols != other.cols || rows != other.rows)
-        {
-            throw new DimensionException("Matrix of size " + rows + "x" + cols +
-                    " cannot be added to matrix of size " + other.rows + "x" + other.cols);
-        }
-        return addProper(other);
-    }
-    
-    private Matrix addProper(Matrix other)
-    {
+        ensureHasSameSize(other);
         Matrix res = new Matrix(rows, cols);
         for (int row = 1; row <= rows; ++row)
             for (int col = 1; col <= cols; ++col)
                 res.set(row, col, get(row, col) + other.get(row, col));
         return res;
+    }
+
+    public Matrix times(double t)
+    {
+        Matrix res = new Matrix(this);
+        for (int row = 1; row <= rows; ++row)
+            for (int col = 1; col <= cols; ++col)
+                res.set(row, col, t*res.get(row, col));
+        return res;
+    }
+    
+    private void ensureHasSameSize(Matrix other)
+    {
+        if (cols != other.cols || rows != other.rows)
+        {
+            throw new DimensionException("Matrix of size " + rows + "x" + cols +
+                    " cannot be added to matrix of size " + other.rows + "x" + other.cols);
+        }        
     }
 
     /**
@@ -237,16 +246,21 @@ public class Matrix
      */
     public Matrix mult(Matrix other) throws DimensionException
     {
-        if (cols != other.rows)
-        {
-            throw new DimensionException("Multiplied matrices do not have suitable sizes " +
-                    "(columns of left = " + cols + ", rows of right = " + other.rows + ")");
-        }
+        ensureCanBeMultiplied(other);
         try {
             Vector vec = (Vector) other;
             return multVector(vec);
         } catch (ClassCastException e){
             return multMatrices(other);
+        }
+    }
+    
+    private void ensureCanBeMultiplied(Matrix other)
+    {
+        if (cols != other.rows)
+        {
+            throw new DimensionException("Multiplied matrices do not have suitable sizes " +
+                    "(columns of left = " + cols + ", rows of right = " + other.rows + ")");
         }
     }
     
@@ -333,7 +347,16 @@ public class Matrix
      */
     public double get(int row, int col)
     {
+        ensureIndicesOK(row, col);
         return fields[row-1][col-1];
+    }
+    
+    private void ensureIndicesOK(int row, int col) throws DimensionException
+    {
+        if (row <= 0 || row > rows)
+            throw new DimensionException("Invalid row index: " + row);
+        if (col <= 0 || col > cols)
+            throw new DimensionException("Invalid col index: " + col);        
     }
     
     /**
@@ -345,6 +368,7 @@ public class Matrix
      */
     public void set(int row, int col, double val)
     {
+        ensureIndicesOK(row, col);
         fields[row-1][col-1] = val;
     }
 
@@ -376,11 +400,88 @@ public class Matrix
     
     public Vector getRow(int row)
     {
+        ensureIndicesOK(row, 1 /* one is always ok */);
         return new Vector(fields[row-1]);
+    }
+    
+    public void setCol(int col, Vector v) throws DimensionException
+    {
+        ensureCanBeColumn(v);
+        for (int row = 1; row <= rows; ++row)
+            set(row, col, v.get(row));        
+    }
+    
+    private void ensureCanBeColumn(Vector v)
+    {
+        if (v.getRows() != rows)
+            throw new DimensionException("Vector of size " + rows + " required.");        
+    }
+    
+    public void setRow(int row, Vector v)
+    {
+        ensureCanBeRow(v);
+        for (int col = 1; col <= cols; ++col)
+            set(row, col, v.get(row));        
+    }
+    
+    private void ensureCanBeRow(Vector v)
+    {
+        if (v.getCols() != cols)
+            throw new DimensionException("Vector of size " + cols + " required.");        
+    }
+    
+    public Matrix cbind(Matrix other)
+    {
+        ensureMayBeCBinded(other);
+        Matrix res = new Matrix(rows, cols + other.cols);
+        res.copyWithWriteOffset(fields, 0, 0);
+        res.copyWithWriteOffset(other.fields, 0, cols);
+        return res;
+    }
+    
+    public Matrix rbind(Matrix other)
+    {
+        ensureMayBeRBinded(other);
+        Matrix res = new Matrix(rows, cols + other.cols);
+        res.copyWithWriteOffset(fields, 0, 0);
+        res.copyWithWriteOffset(other.fields, rows, 0);
+        return res;
+    }
+    
+    private void ensureMayBeCBinded(Matrix other)
+    {
+        if (other.getRows() != rows)
+            throw new DimensionException("Matrix with " + rows + " rows required.");    
+    }
+    
+    private void ensureMayBeRBinded(Matrix other)
+    {
+        if (other.getCols() != cols)
+            throw new DimensionException("Matrix with " + rows + " rows required.");    
+    }
+
+    private void copyWithWriteOffset(double[][] fields, int rowOffset, int colOffset)
+    {
+        for (int i = 0; i < fields.length; ++i)
+            for (int j = 0; j < fields[i].length; ++j)
+                this.fields[i + rowOffset][j + colOffset] = fields[i][j];
+    }
+    
+    public String toString()
+    {
+        //TODO zrobic to porzadnie
+        StringBuilder str = new StringBuilder();
+        for (int row = 1; row <= rows; ++row)
+        {
+            str.append("[ ");
+            for (int col = 1; col < cols; ++col)
+                str.append(get(row, col) + ", ");
+            str.append(get(row, cols) + " ]\n");
+        }
+        return str.toString();
     }
     
     private final double[][] fields;
     private final int rows;
     private final int cols;
-
 }
