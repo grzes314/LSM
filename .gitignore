@@ -12,13 +12,21 @@
 *.backup
 *.pdf
 *.toc
+Thesis/images/
+# Old version of section Elements of Stochastic Analysis #
 Thesis/EoSA.txt
 
-# i do not know what does the one below #
+# backup files #
 *~
 
-
 # not source directories #
-/NBFiles/nbproject/
-/NBfiles/build/
-/NBfiles/dist/
+NBfiles/build.xml
+NBfiles/nbproject/
+NBfiles/build/
+NBfiles/dist/
+
+# R #
+R/.RData
+R/.Rhistory
+R/tmp.tex
+
