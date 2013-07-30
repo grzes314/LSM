@@ -76,7 +76,7 @@ public class BSModel implements ProgressObservable
             return Numerics.plus(S-K);
         double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
         double d2 = d1 - vol * sqrt(T);
-        return S*stat.cndf(d1) - K*exp(-r*T)*stat.cndf(d2) ;
+        return S*Statistics.cndf(d1) - K*exp(-r*T)*Statistics.cndf(d2) ;
     }
     
     private double pricePut(double K, double T)
@@ -85,9 +85,8 @@ public class BSModel implements ProgressObservable
             return Numerics.plus(K-S);
         double d1 = (log(S/K) + (r + vol*vol/2)*T) / (vol * sqrt(T));
         double d2 = d1 - vol * sqrt(T);
-        return K*exp(-r*T)*stat.cndf(-d2)- S*stat.cndf(-d1);
+        return K*exp(-r*T)*Statistics.cndf(-d2)- S*Statistics.cndf(-d1);
     }
     
-    private Statistics stat = new Statistics();
     private double S, vol, r;
 }
