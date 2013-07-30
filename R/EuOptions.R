@@ -7,6 +7,7 @@
 # S - cena spot w chwili t
 # vol - zmiennosc (roczna) aktywa
 # mu - dryft (roczny) aktywa
+# q - cialga dwyidenda
 
 # Zmienna opcja opisuje parametry wycenianej opcji. Jest to lista zawierajaca pola:
 # E - wartosc strike

@@ -59,3 +59,6 @@ onestep <- function(k)
 onestep(2)
 onestep(1)
 
+print( paste("price =",
+             mean( exp(-r*cashflow_t) * cashflow_v )
+))
