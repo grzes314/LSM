@@ -1,7 +1,32 @@
 package math.matrices;
 
-public class Vector extends Matrix
+import java.util.Iterator;
+
+public class Vector extends Matrix implements Iterable
 {
+    public class VecIterator implements  Iterator<Double>
+    {
+        @Override
+        public boolean hasNext()
+        {
+            return row < getSize();
+        }
+
+        @Override
+        public Double next()
+        {
+            return get(++row);
+        }
+
+        @Override
+        public void remove()
+        {
+            throw new UnsupportedOperationException("Remove does not "
+                    + "have sense for constant size vectors.");
+        }         
+        int row = 0;
+    };
+        
     public Vector(int rows)
     {
         super(rows, 1);
@@ -16,6 +41,11 @@ public class Vector extends Matrix
     public Vector(Vector original)
     {
         super(original);
+    }
+    
+    public final int getSize()
+    {
+        return getRows();
     }
     
     public final double get(int row)
@@ -45,5 +75,11 @@ public class Vector extends Matrix
         for (int row = 1; row <= getRows(); ++row)
             res.set(row, get(row)*t);
         return res;
+    }
+
+    @Override
+    public VecIterator iterator()
+    {
+        return new VecIterator();
     }
 }
