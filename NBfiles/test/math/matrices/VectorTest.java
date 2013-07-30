@@ -1,8 +1,6 @@
 package math.matrices;
 
 import junit.framework.TestCase;
-import math.matrices.DimensionException;
-import math.matrices.Vector;
 
 public class VectorTest extends TestCase {
     

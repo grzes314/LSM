@@ -5,7 +5,7 @@ public class Vector extends Matrix
     public Vector(int rows)
     {
         super(rows, 1);
-        set(1, 0); //TODO call to virtual method in constructor
+        set(1, 0);
     }
     
     public Vector(double[] vals)
@@ -18,12 +18,12 @@ public class Vector extends Matrix
         super(original);
     }
     
-    public double get(int row)
+    public final double get(int row)
     {
         return get(row, 1);
     }
     
-    public void set(int row, double val)
+    public final void set(int row, double val)
     {
         set(row, 1, val);
     }

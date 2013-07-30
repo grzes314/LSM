@@ -345,7 +345,7 @@ public class Matrix
      * @param col column of the element.
      * @return element at the specified position.
      */
-    public double get(int row, int col)
+    public final double get(int row, int col)
     {
         ensureIndicesOK(row, col);
         return fields[row-1][col-1];
@@ -366,7 +366,7 @@ public class Matrix
      * @param col column of the element.
      * @param val new value of the element at the specified position.
      */
-    public void set(int row, int col, double val)
+    public final void set(int row, int col, double val)
     {
         ensureIndicesOK(row, col);
         fields[row-1][col-1] = val;
@@ -390,7 +390,7 @@ public class Matrix
         return cols;
     }
     
-    public Vector getCol(int col)
+    public final Vector getCol(int col)
     {
         Vector res = new Vector(rows);
         for (int row = 1; row <= rows; ++row)
@@ -398,13 +398,13 @@ public class Matrix
         return res;
     }
     
-    public Vector getRow(int row)
+    public final Vector getRow(int row)
     {
         ensureIndicesOK(row, 1 /* one is always ok */);
         return new Vector(fields[row-1]);
     }
     
-    public void setCol(int col, Vector v) throws DimensionException
+    public final void setCol(int col, Vector v) throws DimensionException
     {
         ensureCanBeColumn(v);
         for (int row = 1; row <= rows; ++row)
@@ -417,7 +417,7 @@ public class Matrix
             throw new DimensionException("Vector of size " + rows + " required.");        
     }
     
-    public void setRow(int row, Vector v)
+    public final void setRow(int row, Vector v)
     {
         ensureCanBeRow(v);
         for (int col = 1; col <= cols; ++col)
@@ -467,6 +467,7 @@ public class Matrix
                 this.fields[i + rowOffset][j + colOffset] = fields[i][j];
     }
     
+    @Override
     public String toString()
     {
         //TODO zrobic to porzadnie
@@ -475,8 +476,8 @@ public class Matrix
         {
             str.append("[ ");
             for (int col = 1; col < cols; ++col)
-                str.append(get(row, col) + ", ");
-            str.append(get(row, cols) + " ]\n");
+                str.append(get(row, col)).append(", ");
+            str.append(get(row, cols)).append(" ]\n");
         }
         return str.toString();
     }
