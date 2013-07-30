@@ -4,13 +4,20 @@ import math.matrices.Matrix;
 import math.matrices.Vector;
 
 public class Statistics
-{    
+{   
+    /**
+     * This class is not supposed to be instantiated.
+     */
+    private Statistics()
+    {
+    }
+    
     /**
      * Cumulative normal distribution function.
      * @param t will return Phi(t)
      * @return Phi(t)
      */
-    public double cndf(double t)
+    public static  double cndf(double t)
     {
         return 0.5d * (1d + erf(t / Math.sqrt(2d)));
     }
@@ -20,7 +27,7 @@ public class Statistics
      * @param v vector with a sample.
      * @return sample mean.
      */
-    public double mean(Vector v)
+    public static double mean(Vector v)
     {
         double sum = 0.0;
         for (int row = 1; row <= v.getRows(); ++row)
@@ -34,7 +41,7 @@ public class Statistics
      * @param m Matrix with observations.
      * @return vector containing mean of each column of the matrix.
      */
-    public Vector mean(Matrix m)
+    public static Vector mean(Matrix m)
     {
         Vector res = new Vector(m.getCols());
         for (int row = 1; row <= res.getRows(); ++row)
@@ -47,7 +54,7 @@ public class Statistics
      * @param sample vector with observations.
      * @return sample variance.
      */
-    public double var(Vector sample)
+    public static double var(Vector sample)
     {
         return 0;
     }
@@ -58,9 +65,20 @@ public class Statistics
      * @param s2 vector with values of second variable.
      * @return sample covariance.
      */
-    public double covar(Vector s1, Vector s2)
+    public static double covar(Vector s1, Vector s2)
     {
         return 0;
+    }
+    
+    /**
+     * Computes covariance between all variables in given matrix. Columns of the matrix
+     * correspond two variables. Rows of the matrix correspond to observations (or individuals).
+     * @param m Matrix with observations.
+     * @return covariance matrix.
+     */
+    public static Matrix covar(Matrix m)
+    {
+        return new Matrix(1,1);
     }
     
     /**
@@ -69,7 +87,7 @@ public class Statistics
      * @param s2 vector with values of second variable.
      * @return sample correlation.
      */
-    public double corr(Vector s1, Vector s2)
+    public static double corr(Vector s1, Vector s2)
     {
         return 0;
     }
@@ -80,7 +98,7 @@ public class Statistics
      * @param m Matrix with observations.
      * @return correlation matrix.
      */
-    public Matrix corr(Matrix m)
+    public static Matrix corr(Matrix m)
     {
         return new Matrix(1,1);
     }
@@ -91,7 +109,7 @@ public class Statistics
      * @param d
      * @return
      */
-    private double erf(double x)
+    private static double erf(double x)
     {
         if (x < 0) return -erf(-x);
         double p = 0.3275911d, a1 = 0.254829592d, a2 = -0.284496736d,
