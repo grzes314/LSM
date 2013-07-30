@@ -1850,7 +1850,7 @@ Unfortunately, this is a very ineffective procedure. Computing $\Em\bigl[ V_{k+1
 As we can see Monte Carlo methods used to price European options cannot be carried over directly to price American options.
 
 \subsection{LSM idea}
-We will present one of the methods allowing to circumvent the difficulties described above. It is called \textbf{Least Squares Monte Carlo}, or \textbf{Longstaff-Schwartz method}, after its discoverers Francis Longstaff and Eduardo Schwartz, abbreviated \textbf{LSM}.
+We will present one of methods allowing to circumvent the difficulties described above. It is called \textbf{Least Squares Monte Carlo}, or \textbf{Longstaff-Schwartz method}, after its discoverers Francis Longstaff and Eduardo Schwartz, abbreviated \textbf{LSM}.
 
 Consider again the problem of pricing American options with the Monte Carlo method. At the beginning we simulate thousands of trajectories. At every time point on every path we need to obtain an expectation of the future payoff. Assume that we follow one path and we are already at time $t_k$. In order to obtain option's value at this point, we have to compute $\Em\bigl[ V_{k+1} | \mathcal{F}_{k} \bigr]$. Previously we came up with an idea to generate new trajectories starting from that point.
 Note that we have exactly the same problem on every path. Look at the Figure \ref{fig:LSMidea}. There are several points marked at line $x = t_k$, they are asset prices on simulated trajectories, at time $t_k$. While using previous method we had to release thousands of ``subpaths'' from each point, but we cannot afford this. However, these points are not lying far from each other. The main idea of the LSM is that instead of generating new ``subpaths'' starting at time $t_k$, we can use the remainders of the ``original'' paths.
@@ -1862,9 +1862,9 @@ Note that we have exactly the same problem on every path. Look at the Figure \re
 \label{fig:LSMidea}
 \end{figure}
 
-As in Part on pricing European options, $S_{i,k}$ will denote the price of the underlying at time $t_k$, on $i$\textsuperscript{th} simulated path (similarly for and $V_{i,k}$ and $H_{i,k}$). Moreover, let $D_{i,k}$ be the payoff (discounted to time 0) obtained on $i$\textsuperscript{th} path conditional on not exercising the option up to time $t_k$ (inclusively).
+As in Part on pricing European options, $S_{i,k}$ will denote the price of the underlying at time $t_k$, on $i$\textsuperscript{th} simulated path (similarly for $V_{i,k}$ and $H_{i,k}$). Moreover, let $D_{i,k}$ be the payoff (discounted to time 0) obtained on $i$\textsuperscript{th} path conditional on not exercising the option up to time $t_k$ (inclusively).
 \begin{remark}
-  Some values appearing in the discussion have ambiguous meaning. The reader must aware of both interpretations.
+  Some values appearing in the discussion have an ambiguous meaning. The reader must aware of both interpretations.
  \begin{itemize}
   \item It is clear that $S_{k}$ is a random variable, but $S_{i,k}$ may be seen in two ways. After simulations $S_{i,k}$ is a real value, a concrete realization of $S_{k}$. However, prior to the simulations $S_{i,k}$ is also a random variable with the same distribution as $S_k$. The same applies to  $V_k$, $H_k$, $D_k$, etc.
   \item Let $Y$ be any random variable measurable with respect to $\mathcal{F}_k$. From the perspective of time 0, $Y$ is unknown and depends on the market evolution up to time $t_k$. However, from the perspective of time $t_k$ we already know the history up to time $t_k$, hence $Y$ is already a concrete real value.
@@ -1878,7 +1878,7 @@ If we a priori knew what is the optimal exercise strategy, then $D_{k} = (H_{\ha
 \end{equation}
 In the LSM equation (\ref{eq:LSM_futurePayoff}) is still used, although we use a strategy which only approximates the optimal stopping. Such strategy is built dynamically. At time point $K$ values $V_{i,K}$ and $D_{i,K-1}$ are obtained instantaneously, we have
 \[ D_{i,K-1} := H_{i,K},\ \ \ \ V_{i,K} := H_{i,K}.\]
-At time $t_{K-1}$ situation is not that clear. For each path we have to estimate value $\Em\bigl[ V_{i,K} | \mathcal{F}_{K-1} \bigr]$, which we believe is close to $\Em[D_{i,K-1}]$. If we knew that value we could assign to $V_{i,K-1}$ maximum of $H_{i,K-1}$ and $\Em\bigl[ V_{i,K} | \mathcal{F}_{K-1} \bigr]$. If the former value is greater, then we decide to exercise the option at time $t_{k-1}$, and $D_{i,K-2} := H_{i,K-1}$. Otherwise we postpone the exercise, hence $D_{i,K-2} := D_{i,K-1}$. In general, for $k < K$ we do
+At time $t_{K-1}$ situation is not that clear. For each path we have to estimate value $\Em\bigl[ V_{i,K} | \mathcal{F}_{K-1} \bigr]$, which we believe is close to $\Em[D_{i,K-1}]$. If we knew that value we could assign to $V_{i,K-1}$ maximum of $H_{i,K-1}$ and $\Em\bigl[ V_{i,K} | \mathcal{F}_{K-1} \bigr]$. If the former value is greater, then we decide to exercise the option at time $t_{k-1}$, and $D_{i,K-2} := H_{i,K-1}$. Otherwise we postpone the exercise, hence $D_{i,K-2} := D_{i,K-1}$. In general, for $0 < k < K$ we do
 \begin{align*}
  V_{i,k} &:= \max(H_{i,k}, \Em[D_{i,k}]) \\
  D_{i,k-1} &:= \begin{cases}
@@ -1887,10 +1887,10 @@ At time $t_{K-1}$ situation is not that clear. For each path we have to estimate
                \end{cases}
 \end{align*}
 \begin{remark}
- Someone might argue that in above assignments instead of $\Em[D_{i,k}]$ we should take $D_{i,k}$, because after simulations this value is already known and an option should be exercised if and only if $D_{i,k} > H_{i,k}$. However, we have to take the point of view of the investor who at time $t_k$ does not know the future and must rely on the expectations. 
+ Someone might argue that in above assignments instead of $\Em[D_{i,k}]$ we should take $D_{i,k}$, because after simulations this value is already known and an option should be exercised if and only if $D_{i,k} < H_{i,k}$. However, we have to take the point of view of the investor who at time $t_k$ does not know the future and must rely on the expectations. 
 \end{remark}
 
-So far we did not explain how to calculate $\Em[D_{i,k}]$. Here the main idea of LSM comes in. We cannot create thousands of ``subpaths'' starting from $S_{i,k}$ to obtain thousands of realizations of $D_{i,k}$ and assign to $\Em[D_{i,k}]$ their average, but we \emph{already have} single realizations of $D_{1,k}, D_{2,k},\ldots, D_{n,k}$. In the other words, we have mapping
+So far we did not explain how to calculate $\Em[D_{i,k}]$. Here the main idea of the LSM comes in. We cannot create thousands of ``subpaths'' starting from $S_{i,k}$ to obtain thousands of realizations of $D_{i,k}$ and assign to $\Em[D_{i,k}]$ their average, but we \emph{already have} single realizations of $D_{1,k}, D_{2,k},\ldots, D_{n,k}$. In the other words, we have mapping
 \begin{equation}
  \label{eq:AM_mapping}
   S_{i,k} \mapsto D_{i,k}.
@@ -1906,7 +1906,7 @@ for some continuous function $F$. Stone-Weierstra\ss{} theorem states that $F$ c
 The method of least squares can be used to find coefficients $a_m, a_{m-1},\ldots,a_0$ fitting the mapping (\ref{eq:AM_mapping}) the best.
 
 \subsection{Regression}
-It turned out that regression is an important step in LSM. We explained that estimated future payoff may be represented by a polynomial function of $S_k$ whose coefficients may be obtained from least squares method. We will briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
+It turned out that regression is an important step in LSM. We explained that the estimated future payoff may be represented by a polynomial function of $S_k$ whose coefficients may be obtained from least squares method. We will briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
 \[ \begin{cases}
     a_0 + a_1 x_1 + \ldots + a_m x_1^m &= y_1 \\
     a_0 + a_1 x_2 + \ldots + a_m x_1^m &= y_2 \\
@@ -1935,12 +1935,12 @@ From (\ref{eq:regression1}) we obtain a system of linear equations
   s_m a_0 + s_{m+1} a_1 + \ldots + s_{2m} a_m &= t_m
   \end{cases}
 \end{equation}
-This system has $m+1$ variables and $m+1$ equations. It can be solved with Gauss elimination method.
+This system has $m+1$ variables and $m+1$ equations. It can be solved with the Gauss elimination method.
 \begin{prop}
- The algorithm of approximating set of points $\{ (x_i,y_i) \}_{i=1}^n$ with a polynomial of degree $m$, which was described above, has the computational complexity \mbox{$\mathcal{O}(nm + m^3)$}.
+ The algorithm of approximating set of points $\{ (x_i,y_i) \}_{i=1}^n$ by a polynomial of degree $m$, which was described above, has the computational complexity \mbox{$\mathcal{O}(nm + m^3)$}.
 \end{prop}
 \begin{proof}
- For fixed $k$ computing $s_k$ or $t_k$ involves summation of $n$ values, and there is $\mathcal{O}(m)$ of $k$'s, hence the first part of the algorithm  has complexity $\mathcal{O}(nm)$. After that we have to solve the system of linear equations what can be done using Gauss elimination method in time $\mathcal{O}(m^3)$.
+ For fixed $k$ computing $s_k$ or $t_k$ involves summation of $n$ values, and there is $\mathcal{O}(m)$ of $k$'s, hence the first part of the algorithm  has complexity $\mathcal{O}(nm)$. After that we have to solve the system of linear equations what can be done using the Gauss elimination method in time $\mathcal{O}(m^3)$.
 \end{proof}
 
 
@@ -1950,123 +1950,191 @@ Description of the LSM may look a little bit scary, however, in fact the idea is
 Suppose we are pricing an American put@100. We take parameters
 \begin{equation*}
 \begin{split}
- S_0 = 98,&\ r = 6.06\%\\
+ S_0 = 98,&\ \sigma=0.35,\ r = 6.06\%,\\
  E = 100,&\ T = 1,\ K = 3. 
 \end{split}
 \end{equation*}
 Under those parameters $t_0 = 0,\ t_1 = \frac{1}{3},\ t_2 = \frac{2}{3},\ t_3 = 1,\ e^{-\frac{1}{3}r} = 0.98$.
 \bigskip
 
-\noindent \textbf{1. The algorithm starts by simulating $n$ trajectories of the asset prices.} The asset dynamics under the risk-neutral measure must be used. For our example we take $n=10$. The simulated paths are shown in Table \ref{tab:LSM_paths}. It also presents what would be the payoff from the option if the owner did not exercise it before the expiration date. It corresponds to the values $D_{i,K-1} = D_{i,2}$ described previously ($D_{i,k}$ are discounted to time 0, however, in tables we omit discounting for readability, instead we provide time of the payoff, hence everybody may calculate discounted value on his own).
+\noindent \textbf{1. The algorithm starts by simulating $n$ trajectories of the asset price.} The asset dynamics under the risk-neutral measure must be used. For our example we take $n=10$. The simulated paths are shown in Table \ref{tab:LSM_paths}. Table \ref{tab:LSM_cashflows_t3} presents what would be the payoff from the option if the owner did not exercise it before the expiration date. It corresponds to the values $D_{i,K-1} = D_{i,2}$ described previously ($D_{i,k}$ are discounted to time 0, but in tables we omit discounting for readability, instead we provide time of the payoff, hence everybody may calculate discounted value on his own).
 \begin{table}[!ht]
-\centering
- \caption{Paths simulated under risk-neutral measure (on the left) and payoffs obtained conditional on not exercising the option up to the maturity (on the right).}
- \label{tab:LSM_paths}
-\begin{tabular} {||c |c |c |c |c ||}  
- \hline 
- i\textbackslash k & 0   &  1  &  2  &  3  \\ \hline \hline
-1 & 98 & 108 & 102 & 112 \\ \hline 
-2 & 98 & 98 & 95 & 105 \\ \hline 
-3 & 98 & 102 & 97 & 93 \\ \hline 
-4 & 98 & 105 & 98 & 106 \\ \hline 
-5 & 98 & 92 & 102 & 98 \\ \hline 
-6 & 98 & 107 & 103 & 111 \\ \hline 
-7 & 98 & 108 & 113 & 118 \\ \hline 
-8 & 98 & 96 & 99 & 109 \\ \hline 
-9 & 98 & 107 & 98 & 96 \\ \hline 
-10 & 98 & 97 & 103 & 97 \\ \hline 
-\end{tabular} 
-\quad
-\begin{tabular}{|c|c|c|}
-\hline 
- i  & time  &  payoff \\ \hline \hline
- 1  & 1     &      0 \\ \hline
- 2  & 1     &      0 \\ \hline
- 3  & 1     &      7 \\ \hline
- 4  & 1     &      0 \\ \hline
- 5  & 1     &      2 \\ \hline
- 6  & 1     &      0 \\ \hline
- 7  & 1     &      0 \\ \hline
- 8  & 1     &      0 \\ \hline
- 9  & 1     &      4 \\ \hline
-10  & 1     &      3 \\ \hline
-\end{tabular}
+ \parbox{.45\linewidth} {
+   \centering
+   \caption{Paths simulated under the risk-neutral measure.}
+   \label{tab:LSM_paths}
+   \begin{tabular} {||c |c |c |c |c ||}  
+    \hline 
+    i\textbackslash k & 0   &  1  &  2  &  3  \\ \hline \hline
+    1 & 98 & 108 & 102 & 112 \\ \hline 
+    2 & 98 & 98 & 95 & 105 \\ \hline 
+    3 & 98 & 102 & 97 & 93 \\ \hline 
+    4 & 98 & 105 & 98 & 106 \\ \hline 
+    5 & 98 & 92 & 102 & 98 \\ \hline 
+    6 & 98 & 107 & 103 & 111 \\ \hline 
+    7 & 98 & 108 & 113 & 118 \\ \hline 
+    8 & 98 & 96 & 99 & 109 \\ \hline 
+    9 & 98 & 107 & 98 & 96 \\ \hline 
+    10 & 98 & 97 & 103 & 97 \\ \hline 
+   \end{tabular} 
+ }
+ \qquad 
+ \parbox{.45\linewidth} {
+  \centering
+  \caption{Cash flows obtained conditional on not exercising the option before the maturity.}
+  \label{tab:LSM_cashflows_t3}
+  \begin{tabular}{|| c | c | c ||}
+    \hline 
+    i  & time  &  payoff \\ \hline \hline
+    1  & 1     &      0 \\ \hline
+    2  & 1     &      0 \\ \hline
+    3  & 1     &      7 \\ \hline
+    4  & 1     &      0 \\ \hline
+    5  & 1     &      2 \\ \hline
+    6  & 1     &      0 \\ \hline
+    7  & 1     &      0 \\ \hline
+    8  & 1     &      0 \\ \hline
+    9  & 1     &      4 \\ \hline
+    10  & 1     &      3 \\ \hline
+  \end{tabular}
+}
 \end{table}
 
 \FloatBarrier
-\noindent \textbf{2. At time $t_2 = \frac{2}{3}$ the owner must decide whether or not to exercise the option.} Of course he has choice only in that paths where option is in the money. From the left side of Table \ref{tab:LSM_paths} we see that in our case at time $t_2$ option is in the money at paths number 2,3,4,8,9. To estimate future payoffs we will use payoffs obtained on these paths conditional on not exercising the option up to time $t_2$ (these values are gathered in the right side of Table \ref{tab:LSM_paths}).
+\noindent \textbf{2. At time $t_2 = \frac{2}{3}$ the owner must decide whether or not to exercise the option.} Of course he has choice only in that paths where option is in the money. From Table \ref{tab:LSM_paths} we see that in our case at time $t_2$ option is in the money at paths number 2,3,4,8,9. To estimate future payoffs we will use payoffs obtained on these paths conditional on not exercising the option up to time $t_2$ (these values are gathered in Table \ref{tab:LSM_cashflows_t3}).
 
-Look at the left side of the 
-\[ Y = -1.31\cdot X^2 + 253.17\cdot X - 12257.87 \]
 \begin{table}[!ht]
-\centering
- \caption{Estimating future payoffs at time point 2.}
- \label{tab:LSM_regression_t2}
-\begin{tabular} {||c |c |c || c | c ||}  
- \hline 
- i & X   &  Y  & now   &  future\\ \hline \hline
-  2 & 95 & $0\cdot 0.98$ & 5 & 0.33 \\ \hline
-  3 & 97 & $7\cdot 0.98$ & 3 & 4.90  \\ \hline
-  4 & 98 & $0\cdot 0.98$ & 2 & 3.27 \\ \hline
-  8 & 99 & $0\cdot 0.98$ & 1 & -0.98 \\ \hline
-  9 & 98 & $4\cdot 0.98$ & 2 & 3.27 \\ \hline
-\end{tabular}
-\quad
-\begin{tabular}{|c|c|c|}
-\hline 
- i  & time  &  payoff \\ \hline \hline
- 1  & 1     &      0 \\ \hline
- 2  & 2/3   &      5 \\ \hline
- 3  & 1     &      7 \\ \hline
- 4  & 1     &      0 \\ \hline
- 5  & 1     &      2 \\ \hline
- 6  & 1     &      0 \\ \hline
- 7  & 1     &      0 \\ \hline
- 8  & 2/3   &      1 \\ \hline
- 9  & 1     &      4 \\ \hline
-10  & 1     &      3 \\ \hline
-\end{tabular}
+\parbox{.45\linewidth} {
+  \centering
+  \caption{Estimating future payoffs at time point 2.}
+  \label{tab:LSM_regression_t2}
+  \begin{tabular} {||c |c |c || c | c ||}  
+  \hline 
+    i & X   &  Y  & now   &  future\\ \hline \hline
+    2 & 95 & $0\cdot 0.98$ & 5 & 0.33 \\ \hline
+    3 & 97 & $7\cdot 0.98$ & 3 & 4.90  \\ \hline
+    4 & 98 & $0\cdot 0.98$ & 2 & 3.27 \\ \hline
+    8 & 99 & $0\cdot 0.98$ & 1 & -0.98 \\ \hline
+    9 & 98 & $4\cdot 0.98$ & 2 & 3.27 \\ \hline
+  \end{tabular}
+}
+\qquad
+\parbox{.45\linewidth} {
+  \centering
+  \caption{Cash flows obtained conditional on not exercising the option before time point 2.}
+  \label{tab:LSM_cashflows_t2}
+  \begin{tabular}{||c|c|c||}
+  \hline 
+  i  & time  &  payoff \\ \hline \hline
+  1  & 1     &      0 \\ \hline
+  2  & 2/3   &      5 \\ \hline
+  3  & 1     &      7 \\ \hline
+  4  & 1     &      0 \\ \hline
+  5  & 1     &      2 \\ \hline
+  6  & 1     &      0 \\ \hline
+  7  & 1     &      0 \\ \hline
+  8  & 2/3   &      1 \\ \hline
+  9  & 1     &      4 \\ \hline
+  10  & 1     &      3 \\ \hline
+  \end{tabular}
+}
+\end{table}
+Look at Table \ref{tab:LSM_regression_t2}. Column X presents the asset price at time $t_2$ (only paths for which option is in the money at that time are taken into consideration). Column Y contains payoffs on that paths conditional on not exercising the option at or prior to time $t_2$, discounted to time $t_2$. The regression with a quadratic function leads to the following formula for the future estimated payoff:
+\begin{equation}
+ \label{eq:LSM_example1}
+ Y = -1.31\cdot X^2 + 253.17\cdot X - 12257.87 
+\end{equation}
+Values in column ``now'' are the payoffs obtained from the immediate exercise and those in column ``future'' present the estimation of the future payoff calculated by using (\ref{eq:LSM_example1}). We decide to exercise the option on those paths where expectation of the future payoff is lower than immediate exercise. In our case these paths are 2 and 8. The update to the optimal stopping is shown on Table \ref{tab:LSM_cashflows_t2}.
+
+\begin{remark}
+ Here an inefficiency of the LSM may be seen: expected future payoff may be negative, what is of course impossible in the real life. Moreover, for asset price 95 expected future payoff is lower than for asset price 97 and 98, what also does not reflect the reality. The reason of that problem is a small number of paths for regression. In practice we use thousands on paths, hence the approximating polynomial gives better estimations.
+\end{remark}
+
+\noindent \textbf{3. At time $t_1 = \frac{1}{3}$ we proceed as in time $t_2$.}
+Table \ref{tab:LSM_regression_t1} shows the data for regression. It is worth to mention that at time $t_1$ we still use realized cashflows, not for example option's prices calculated at previous step -- such approach would lead to an upward bias.
+\begin{table}[!ht]
+\parbox{.45\linewidth} {
+  \centering
+  \caption{Estimating future payoffs at time point 1.}
+  \label{tab:LSM_regression_t1}
+  \begin{tabular} {||c |c |c || c | c ||}  
+  \hline 
+    i & X   &  Y  & now   &  future\\ \hline \hline
+    2 & 98 & $5\cdot 0.98$ & 2 & 5.0 \\ \hline
+    5 & 92 & $2\cdot 0.98^2$ & 8 & 1.9  \\ \hline
+    8 & 96 & $1\cdot 0.98$ & 4 & 1.1 \\ \hline
+  10 & 97 & $3\cdot 0.98^2$ & 3 & 2.7 \\ \hline
+  \end{tabular}
+}
+\qquad
+\parbox{.45\linewidth} {
+  \centering
+  \caption{Cash flows obtained conditional on not exercising the option before time point 1.}
+  \label{tab:LSM_cashflows_t1}
+  \begin{tabular}{|| c | c | c ||}
+  \hline 
+  i  & time  &  payoff \\ \hline \hline
+  1  & 1     &      0 \\ \hline
+  2  & 2/3   &      5 \\ \hline
+  3  & 1     &      7 \\ \hline
+  4  & 1     &      0 \\ \hline
+  5  & 1/3   &      8 \\ \hline
+  6  & 1     &      0 \\ \hline
+  7  & 1     &      0 \\ \hline
+  8  & 1/3   &      4 \\ \hline
+  9  & 1     &      4 \\ \hline
+  10  & 1/3   &      3 \\ \hline
+  \end{tabular}
+}
 \end{table}
 
-\FloatBarrier
-\noindent \textbf{3. At time $t_1 = \frac{1}{3}$}
-\[ Y = 0.36\cdot X^2 - 67.32\cdot X + 3173.71 \]
-\begin{table}[!ht]
-\centering
- \caption{Estimating future payoffs at time point 1.}
- \label{tab:LSM_regression_t1}
-\begin{tabular} {||c |c |c || c | c ||}  
- \hline 
-  i & X   &  Y  & now   &  future\\ \hline \hline
-  2 & 98 & $5\cdot 0.98$ & 2 & 5.0 \\ \hline
-  5 & 92 & $2\cdot 0.98^2$ & 8 & 1.9  \\ \hline
-  8 & 96 & $1\cdot 0.98$ & 4 & 1.1 \\ \hline
- 10 & 97 & $3\cdot 0.98^2$ & 3 & 2.7 \\ \hline
-\end{tabular}
-\quad
-\begin{tabular}{|c|c|c|}
-\hline 
- i  & time  &  payoff \\ \hline \hline
- 1  & 1     &      0 \\ \hline
- 2  & 2/3   &      5 \\ \hline
- 3  & 1     &      7 \\ \hline
- 4  & 1     &      0 \\ \hline
- 5  & 1/3   &      8 \\ \hline
- 6  & 1     &      0 \\ \hline
- 7  & 1     &      0 \\ \hline
- 8  & 1/3   &      4 \\ \hline
- 9  & 1     &      4 \\ \hline
-10  & 1/3   &      3 \\ \hline
-\end{tabular}
-\end{table}
+This time quadratic function representing estimated future payoff has the form
+\[ Y = 0.36\cdot X^2 - 67.32\cdot X + 3173.71. \]
+We see that option should be exercised at paths 5,8,10, and we update properly the table of realized cashflows (Table \ref{tab:LSM_cashflows_t1}).
 
-\FloatBarrier
-\noindent \textbf{4. At time 0 we have to perform final calculations to find options value.} Here we proceed different than at times $t_1$, $t_2$, because there is no data for regression. However, the right side of the Table \ref{tab:LSM_regression_t1} already tell us what would be the future payoffs if the option was not exercised immediately. In order to obtain estimated future payoff at time 0, we take the average of the payoffs from that Table, discounted to time 0. If the average is greater than immediate payoff, then this is the value of the option. Otherwise option should be exercised immediately and the its value equals the immediate payoff.
+\noindent \textbf{4. At time 0 we have to perform final calculations to find options value.} Here we proceed different than at times $t_1$, $t_2$, because there is no data for regression. However, Table \ref{tab:LSM_cashflows_t1} already tells us what would be the future payoffs if the option was not exercised immediately. In order to obtain estimated future payoff at time 0, we take the average of the realized payoffs discounted to time 0. If the average is greater than immediate payoff, then this is the value of the option. Otherwise option should be exercised at time 0 and its value equals the immediate payoff.
 
-price = 2.99
+In our example the average of realized cashflows equals 2.99. It is greater than value of immediate exercise, hence \textbf{the price of the option is 2.99}.
 
 \FloatBarrier
 \subsection{LSM algorithm}
+\begin{algorithm}
+ \begin{algorithmic}[1]
+  \Function{LSM-Put}{$N$, $K$, $M$, $S_0$, $\sigma$, $r$, $T$, $E$ }
+    \State $S \gets$ matrix $N \times (K+1)$ \Comment{{\color{comment} $S[i,k]$ will be asset price at $i$\textsuperscript{th} path at time $t_k$.}}
+    \State $CF \gets$ matrix $N \times 2$ \Comment{{\color{comment} $CF[i,1]$ is the time of the realized cash flow at $i$\textsuperscript{th} path and $CF[i,2]$ is its value.}}
+    \For{$i = 1$ {\bf to} $N$} \Comment{{\color{comment} Generating trajectories like in Algorithm \ref{alg:single-tr}}}
+      \State $S[i,] \gets$ \Call{Trajectory}{$S_0$, $\sigma$, $r$, $T$, $K$ } \Comment{{\color{comment} but only positive path is taken.}}
+      \State $CF[i,1] \gets$ vector of $N$ $T$'s \Comment{{\color{comment} Realized cash flows conditional on }}
+      \State $CF[i,2] \gets$ $\max(0, E - S[i,K])$ \Comment{{\color{comment} not exercising before expiration. }}
+    \EndFor
+    \For{$k = K-1$ {\bf to} $1$} 
+      \State $nrs \gets $ indices $i$ such that $E - S[i,k] > 0$
+      \State $X \gets S[nrs, k]$
+      \State $Y \gets \exp\bigl(-r\cdot(CF[nrs, 1]-t_k) \bigr)\cdot CF[nrs, 2]$
+      \State $P \gets $ polynomial of degree $M$ resulting from regression $Y = P(X)$
+      \For{$i = 1$ {\bf to} $N$}
+	\State $now \gets \max(0, E - S[i,k])$
+	\If{$now > 0$ and $now > P(S[i,k])$}
+	  \State $CF[i,1] \gets t_k$ \Comment{{\color{comment} Immediate exercise gives higher payoff}}
+	  \State $CF[i,2] \gets now$ \Comment{{\color{comment} than expected payoff in the future.}}
+	\EndIf
+      \EndFor
+    \EndFor
+    \State $sum \gets 0$
+    \For{$i = 1$ {\bf to} $N$} 
+      \State $sum \gets sum + \exp\bigl(-r\cdot(CF[i, 1]-t_k) \bigr)\cdot CF[i, 2]$
+    \EndFor
+    \State \Return $\max(E - S_0,\ sum/n)$
+    \EndFunction 
+ \end{algorithmic}
+ \caption{Valuation of American put options using LSM.}
+ \label{alg:LSM}
+\end{algorithm}
+
+\begin{prop}
+ The computational complexity of the LSM equals $\mathcal{O}(KNM + KM^3)$, where $N$ is the number of simulated paths, $M$ is the degree of approximating polynomial, $K$ is the number of time steps.
+\end{prop}
 
 \section{Mathematical background of LSM}
 
