@@ -1,7 +1,7 @@
 package math.matrices;
 
-public class DimensionException extends Exception {
-
+public class DimensionException extends IllegalArgumentException
+{
     public DimensionException() {
     }
 
