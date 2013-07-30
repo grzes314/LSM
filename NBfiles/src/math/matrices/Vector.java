@@ -2,7 +2,7 @@ package math.matrices;
 
 import java.util.Iterator;
 
-public class Vector extends Matrix implements Iterable
+public class Vector extends Matrix implements Iterable<Double>
 {
     public class VecIterator implements  Iterator<Double>
     {

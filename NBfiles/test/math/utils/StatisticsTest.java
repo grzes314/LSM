@@ -1,7 +1,9 @@
 package math.utils;
 
 import junit.framework.TestCase;
+import math.matrices.DimensionException;
 import math.matrices.Matrix;
+import math.matrices.NoCorrelationException;
 import math.matrices.Vector;
 
 public class StatisticsTest extends TestCase
@@ -114,9 +116,9 @@ public class StatisticsTest extends TestCase
 
     private Matrix bigCorrelation()
     {
-        double[][] d = {{0.5000453, 1.757047e-05, 0.02068187}, //checked in R
-                {1.757047e-05, 0.5000547, 0.0001787217},
-                {0.02068187, 0.0001787217, 369.2348}};    
+        double[][] d = {{1, 3.513743e-05, 0.001522067}, //checked in R
+                {3.513743e-05, 1, 1.315277e-05},
+                {0.001522067, 1.315277e-05, 1}};    
         return new Matrix(d);
     }
 
@@ -214,7 +216,7 @@ public class StatisticsTest extends TestCase
     private void auxMean_MatrixSmall()
     {
         Vector mean = Statistics.mean(smallMat);
-        assertTrue( mean.equals(smallMean) ); //TODO equals for vectors
+        assertTrue( mean.equals(smallMean) );
     }
 
     private void auxMean_MatrixBig()
@@ -232,6 +234,7 @@ public class StatisticsTest extends TestCase
         auxVar_Intersperse();
         auxVar_Small();
         auxVar_Big();
+        auxVar_Patology();
     }
 
     private void auxVar_Const()
@@ -259,6 +262,17 @@ public class StatisticsTest extends TestCase
         assertEquals(bigCov.get(3, 3), Statistics.var(bigVector3), 1e-3);
     }
     
+    private void auxVar_Patology()
+    {
+        try {
+            Vector v = new Vector(new double[]{3.4});
+            Statistics.var(v);
+            fail("Calling var on one elemenent vector should throw");
+        } catch (DimensionException ex) {
+            // OK!
+        }
+    }
+    
 /*************************************************************************************************/
 /************************* Tests of covariance called on vectors *********************************/
    
@@ -268,6 +282,7 @@ public class StatisticsTest extends TestCase
         auxCov_Vectors_Dependent();
         auxCov_Vectors_Small();
         auxCov_Vectors_Big();
+        auxCov__Vectors_Patology();
     }
     
     private void auxCov_Vectors_sameVector()
@@ -297,6 +312,25 @@ public class StatisticsTest extends TestCase
         assertEquals(bigCov.get(2, 3), Statistics.cov(bigVector2, bigVector3), 1e-3);
     }
     
+    private void auxCov__Vectors_Patology()
+    {
+        Vector v1 = new Vector(new double[]{1, 2, 3, 4});
+        Vector v2 = new Vector(new double[]{1, 2, 3});
+        Vector v3 = new Vector(new double[]{1});
+        Vector v4 = new Vector(new double[]{4});
+        try {
+            Statistics.cov(v1, v2);
+            fail("Calling cov for vectors of different sizes should throw");
+        } catch (DimensionException ex) {
+            // OK!
+        }
+        try {
+            Statistics.cov(v3, v4);
+            fail("Calling cov on one elemenent vectors should throw");
+        } catch (DimensionException ex) {
+            // OK!
+        }
+    }
 /*************************************************************************************************/
 /************************* Tests of covariance called on matrix **********************************/
 
@@ -306,6 +340,7 @@ public class StatisticsTest extends TestCase
         auxCov_Matrix_Dependent();
         auxCov_Matrix_Small();
         auxCov_Matrix_Big();
+        auxCov_Matrix_Patology();
     }
     
     private void auxCov_Matrix_sameVector()
@@ -318,7 +353,7 @@ public class StatisticsTest extends TestCase
         assertEquals( 2, cov.getRows() );
         for (int row = 1; row <= 2; ++row)
             for (int col = 1; col <= 2; ++col)
-                assertEquals(1, cov.get(row, col));
+                assertEquals(1, cov.get(row, col), 1e-3);
     }
 
     private void auxCov_Matrix_Dependent()
@@ -333,7 +368,7 @@ public class StatisticsTest extends TestCase
         double var = Statistics.var(v1);
         assertEquals( 2*var, cov.get(1, 2), 1e-3 );
         assertEquals( 4*var, cov.get(1, 3), 1e-3 );
-        assertEquals( 2*var, cov.get(2, 3), 1e-3 );
+        assertEquals( 8*var, cov.get(2, 3), 1e-3 );
     }
 
     private void auxCov_Matrix_Small()
@@ -348,6 +383,17 @@ public class StatisticsTest extends TestCase
         assertEquals( bigCov, cov );
     }
     
+    private void auxCov_Matrix_Patology()
+    {
+        try {
+            Matrix m = new Matrix(
+                    new double[][] { {1, 2, 3, 4} } );
+            Statistics.cov(m);
+            fail("Calling cov on one row matrix should throw");
+        } catch (DimensionException ex) {
+            // OK!
+        }
+    }
 /*************************************************************************************************/
 /************************* Tests of correlation called on vectors ********************************/
         
@@ -355,6 +401,7 @@ public class StatisticsTest extends TestCase
     {
         auxCorr_Vectors_Small();
         auxCorr_Vectors_Big();
+        auxCorr_Vectors_Patology();
     }
     
     private void auxCorr_Vectors_Small()
@@ -367,6 +414,18 @@ public class StatisticsTest extends TestCase
         assertEquals(bigCorr.get(1, 2), Statistics.corr(bigVector1, bigVector2), 1e-3);
         assertEquals(bigCorr.get(1, 3), Statistics.corr(bigVector1, bigVector3), 1e-3);
         assertEquals(bigCorr.get(2, 3), Statistics.corr(bigVector2, bigVector3), 1e-3);
+    }    
+    
+    private void auxCorr_Vectors_Patology()
+    {
+        try {
+            Vector v1 = new Vector( new double[] {1, 2, 3, 4} );
+            Vector v2 = new Vector( new double[] {2, 2, 2, 2} );
+            Statistics.corr(v1, v2);
+            fail("Calling corr on const vector should throw");
+        } catch (NoCorrelationException ex) {
+            // OK!
+        }
     }
     
 /*************************************************************************************************/
@@ -376,6 +435,7 @@ public class StatisticsTest extends TestCase
     {
         auxCorr_Matrix_Small();
         auxCorr_Matrix_Big();
+        auxCorr_Matrix_Patalogy();
     }
     
     private void auxCorr_Matrix_Small()
@@ -388,6 +448,20 @@ public class StatisticsTest extends TestCase
     {
         Matrix corr = Statistics.corr(bigMat);
         assertEquals( bigCorr, corr );
+    }
+    
+    private void auxCorr_Matrix_Patalogy()
+    {
+        try {
+            Matrix m = new Matrix(new double[][]
+                                    {   {1, 2, 3, 4},
+                                        {2, 2, 4, 5},
+                                        {0, 2, 2, 3}    });
+            Statistics.corr(m);
+            fail("Calling corr on matrix with const column should throw");
+        } catch (NoCorrelationException ex) {
+            // OK!
+        }
     }
     
 /*************************************************************************************************/
