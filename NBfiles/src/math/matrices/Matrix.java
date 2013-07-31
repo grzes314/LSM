@@ -156,6 +156,30 @@ public class Matrix
     }
     
     /**
+     * Returns true if and only if this matrix is positive definite.
+     * @return true if and only if this matrix is positive definite.
+     */
+    public boolean isPositiveDefinite()
+    {
+        try {
+            cholesky();
+            return true;
+        } catch (NotPositiveDefiniteMatrixException ex) {
+            return false;
+        }
+    }
+    
+    public boolean isCorrelationMatrix()
+    {
+        if (!isSquare())
+            return false;
+        for (int row = 1; row <= rows; ++row)
+            if (!Numerics.doublesEqual(get(row, row), 1))
+                return false;
+        return isPositiveDefinite();
+    }
+    
+    /**
      * Returns Cholesky decomposition of the matrix. Let L = M.cholesky(), and L' be the
      * transposition of L. Then LL' = M. L is a lower triangular matrix.
      * @return Cholesky decomposition of the matrix.
