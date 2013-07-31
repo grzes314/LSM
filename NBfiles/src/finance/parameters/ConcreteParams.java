@@ -5,7 +5,7 @@ import java.util.*;
 import math.matrices.Matrix;
 
 /**
- *
+ * Class storing parameters of multi asset models. Numeration of assets is 1-based.
  * @author Grzegorz Los
  */
 public class ConcreteParams implements ModelParams

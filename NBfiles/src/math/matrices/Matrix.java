@@ -110,6 +110,27 @@ public class Matrix
         fields = new double[rows][cols];
         copy(m.fields);
     }
+
+    public Matrix(Vector[] vectors)
+    {
+        ensureVectorListOK(vectors);
+        rows = vectors[0].getRows();
+        cols = vectors.length;
+        fields = new double[rows][cols];
+        for (int col = 1; col <= cols; ++col)
+            setCol(col, vectors[col-1]);
+    }
+    
+    private void ensureVectorListOK(Vector[] vectors)
+    {
+        if (vectors == null)
+            throw new IllegalArgumentException("Array of vectors may not be null");
+        if (vectors.length == 0)
+            throw new IllegalArgumentException("Array of vectors may not be empty");
+        for (int i = 1; i < vectors.length; ++i)
+            if (vectors[i].getSize() != vectors[0].getSize())
+                throw new IllegalArgumentException("Vectors must have the same size");
+    }
     
     /**
      * Constructor used by derived Vector class. Creates a matrix with one column.

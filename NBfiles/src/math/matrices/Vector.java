@@ -1,6 +1,7 @@
 package math.matrices;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class Vector extends Matrix implements Iterable<Double>
 {
@@ -41,6 +42,13 @@ public class Vector extends Matrix implements Iterable<Double>
     public Vector(Vector original)
     {
         super(original);
+    }
+    
+    public Vector(List<Double> vals)
+    {
+        super(vals.size(), 1);
+        for(int row = 1; row <= vals.size(); ++row)
+            set(row, vals.get(row-1));
     }
     
     public final int getSize()

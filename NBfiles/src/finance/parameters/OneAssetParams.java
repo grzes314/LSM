@@ -3,6 +3,7 @@ package finance.parameters;
 
 import finance.models.WrongParamException;
 import java.util.Objects;
+import math.utils.Numerics;
 
 /**
  * Parameters of one asset: spot price, volatility and drift.
@@ -37,13 +38,13 @@ public class OneAssetParams
             return false;
         }
         final OneAssetParams other = (OneAssetParams) obj;
-        if (Double.doubleToLongBits(this.S) != Double.doubleToLongBits(other.S)) {
+        if (!Numerics.doublesEqual(this.S, other.S, 1e-3)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.vol) != Double.doubleToLongBits(other.vol)) {
+        if (!Numerics.doublesEqual(this.vol, other.vol, 1e-3)) {
             return false;
         }
-        if (Double.doubleToLongBits(this.mu) != Double.doubleToLongBits(other.mu)) {
+        if (!Numerics.doublesEqual(this.mu, other.mu, 1e-3)) {
             return false;
         }
         if (!Objects.equals(this.name, other.name)) {

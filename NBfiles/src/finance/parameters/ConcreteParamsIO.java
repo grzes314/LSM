@@ -43,11 +43,8 @@ public class ConcreteParamsIO implements ParamsIO
             action.read();
             lineNr += action.linesRead();
         } catch (Exception ex) {
-            if (action.linesRead() == 1)
-                throw new CorruptedStreamException("Error in line " + lineNr, ex);
-            else 
-                throw new CorruptedStreamException("Error between lines " + lineNr
-                        + " and " + (lineNr + action.linesRead() - 1), ex);
+            throw new CorruptedStreamException("Error in line " +
+                    (lineNr+ action.linesRead()), ex);
         }
     }
 
