@@ -1,9 +1,9 @@
 
 package math.approx;
 
-import static math.utils.Numerics.doublesEqual;
 import java.util.Random;
 import junit.framework.TestCase;
+import static math.utils.Numerics.doublesEqual;
 
 /**
  * Tests of method gauss from Approx class.

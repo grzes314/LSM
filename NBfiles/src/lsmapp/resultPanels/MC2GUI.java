@@ -1,7 +1,7 @@
 
 package lsmapp.resultPanels;
 
-import instruments.Instr;
+import finance.instruments.Instr;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -10,7 +10,7 @@ import javax.swing.JTabbedPane;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.MCPanel;
 import lsmapp.controlPanels.ResultHandler;
-import models.MCModel;
+import finance.models.MCModel;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;

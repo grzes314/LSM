@@ -2,8 +2,8 @@
 package lsmapp.resultPanels;
 
 import math.approx.Polynomial;
-import instruments.Instr;
-import instruments.Option;
+import finance.instruments.Instr;
+import finance.instruments.Option;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.LSMPanel;
 import lsmapp.controlPanels.ResultHandler;
-import models.LSModel;
+import finance.models.LSModel;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;

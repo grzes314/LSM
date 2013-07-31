@@ -4,10 +4,13 @@
  */
 package lsmapp.controlPanels;
 
-import trajectories.TimeSupport;
-import instruments.*;
-import models.LSModel;
-import models.Progress;
+import finance.instruments.Option;
+import finance.instruments.EuExercise;
+import finance.instruments.Instr;
+import finance.instruments.Bond;
+import finance.trajectories.TimeSupport;
+import finance.models.LSModel;
+import finance.models.Progress;
 
 /**
  *

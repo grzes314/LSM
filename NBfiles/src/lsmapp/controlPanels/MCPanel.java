@@ -1,13 +1,17 @@
 
 package lsmapp.controlPanels;
 
-import instruments.*;
+import finance.instruments.Barrier;
+import finance.instruments.Option;
+import finance.instruments.EuExercise;
+import finance.instruments.Instr;
+import finance.instruments.Bond;
 import java.awt.Component;
 import javax.swing.JPanel;
-import models.MCModel;
-import models.Progress;
-import models.SimpleModelParams;
-import trajectories.TimeSupport;
+import finance.models.MCModel;
+import finance.models.Progress;
+import finance.parameters.SimpleModelParams;
+import finance.trajectories.TimeSupport;
 
 /**
  *

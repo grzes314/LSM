@@ -1,12 +1,12 @@
 
 package lsmapp.controlPanels;
 
-import instruments.Instr;
+import finance.instruments.Instr;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
-import models.Progress;
-import models.ProgressObservable;
+import finance.models.Progress;
+import finance.models.ProgressObservable;
 
 /**
  * ModelPanel constitutes common base for all panels whose purpose is getting

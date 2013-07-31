@@ -1,7 +1,7 @@
 
 package lsmapp.resultPanels;
 
-import instruments.Instr;
+import finance.instruments.Instr;
 
 /**
  *

@@ -2,9 +2,9 @@
 package lsmapp.controlPanels;
 
 import javax.swing.SwingWorker;
-import models.Progress;
-import models.ProgressObservable;
-import models.ProgressObserver;
+import finance.models.Progress;
+import finance.models.ProgressObservable;
+import finance.models.ProgressObserver;
 
 /**
  *

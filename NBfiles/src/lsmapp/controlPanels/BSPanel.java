@@ -4,12 +4,16 @@
  */
 package lsmapp.controlPanels;
 
-import instruments.EuExercise;
-import instruments.Instr;
-import instruments.Option;
-import models.*;
-import models.VanillaOptionParams.CallOrPut;
-import trajectories.TimeSupport;
+import finance.instruments.EuExercise;
+import finance.instruments.Instr;
+import finance.instruments.Option;
+import finance.models.BSModel;
+import finance.models.Progress;
+import finance.models.ProgressObservable;
+import finance.parameters.SimpleModelParams;
+import finance.parameters.VanillaOptionParams;
+import finance.parameters.VanillaOptionParams.CallOrPut;
+import finance.trajectories.TimeSupport;
 
 /**
  *

@@ -1,11 +1,11 @@
 
 package lsmapp.resultPanels;
 
-import instruments.Instr;
+import finance.instruments.Instr;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.ResultHandler;
-import models.BSModel;
+import finance.models.BSModel;
 
 /**
  *

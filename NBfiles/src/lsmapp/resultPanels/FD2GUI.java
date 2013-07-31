@@ -1,8 +1,8 @@
 
 package lsmapp.resultPanels;
 
-import instruments.Instr;
-import instruments.Option;
+import finance.instruments.Instr;
+import finance.instruments.Option;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
-import models.FDModel;
+import finance.models.FDModel;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
