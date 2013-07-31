@@ -2,6 +2,7 @@
 package finance.parameters;
 
 import finance.models.WrongParamException;
+import java.util.Objects;
 
 /**
  * Parameters of one asset: spot price, volatility and drift.
@@ -24,6 +25,42 @@ public class OneAssetParams
             throw new WrongParamException("S = " + S);
         if (vol < 0)
             throw new WrongParamException("vol = " + S);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final OneAssetParams other = (OneAssetParams) obj;
+        if (Double.doubleToLongBits(this.S) != Double.doubleToLongBits(other.S)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.vol) != Double.doubleToLongBits(other.vol)) {
+            return false;
+        }
+        if (Double.doubleToLongBits(this.mu) != Double.doubleToLongBits(other.mu)) {
+            return false;
+        }
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.S) ^ (Double.doubleToLongBits(this.S) >>> 32));
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.vol) ^ (Double.doubleToLongBits(this.vol) >>> 32));
+        hash = 89 * hash + (int) (Double.doubleToLongBits(this.mu) ^ (Double.doubleToLongBits(this.mu) >>> 32));
+        hash = 89 * hash + Objects.hashCode(this.name);
+        return hash;
     }
     
     /**

@@ -134,6 +134,39 @@ public class ConcreteParams implements ModelParams
         ensureNameOK(name2);
         return corr.get(nameToNr.get(name1), nameToNr.get(name2));
     }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ConcreteParams other = (ConcreteParams) obj;
+        if (Double.doubleToLongBits(this.r) != Double.doubleToLongBits(other.r)) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.basicParams, other.basicParams)) {
+            return false;
+        }
+        if (!this.corr.equals(other.corr)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 19 * hash + (int) (Double.doubleToLongBits(this.r) ^
+                (Double.doubleToLongBits(this.r) >>> 32));
+        hash = 19 * hash + Arrays.deepHashCode(this.basicParams);
+        hash = 19 * hash + Objects.hashCode(this.corr);
+        return hash;
+    }
     
     private double r = 0;
     private OneAssetParams[] basicParams;
