@@ -11,6 +11,38 @@ public class OneTrScenario implements Scenario
     {        
         this.ts = ts;
         this.tr = tr;
+        this.anthi = null;
+    }
+
+    public OneTrScenario(TimeSupport ts, Trajectory tr, Trajectory anthi)
+    {
+        this.ts = ts;
+        this.tr = tr;
+        this.anthi = anthi;
+    }
+
+    @Override
+    public boolean hasAnthi()
+    {
+        return anthi != null;
+    }
+
+    @Override
+    public Trajectory getAnthi(int nr)
+    {
+        if (anthi == null)
+            throw new AnthiteticPathNotAvailableException();
+        else
+            return anthi;
+    }
+
+    @Override
+    public Trajectory getAnthi(String name)
+    {
+        if (anthi == null)
+            throw new AnthiteticPathNotAvailableException();
+        else
+            return anthi;
     }
     
     @Override
@@ -33,4 +65,5 @@ public class OneTrScenario implements Scenario
     
     TimeSupport ts;
     Trajectory tr;
+    Trajectory anthi;
 }

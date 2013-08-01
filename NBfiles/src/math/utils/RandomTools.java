@@ -141,10 +141,12 @@ public class RandomTools
      * @throws DimensionException if dimension of the matrix is not the same as dimension of
      * the mean vector. 
      */
-    public Vector normal(Vector mean, Matrix covar) throws NotPositiveDefiniteMatrixException, DimensionException
+    public Vector normal(Vector mean, Matrix covar)
+            throws NotPositiveDefiniteMatrixException, DimensionException
     {
         if (mean.getRows() != covar.getRows())
-            throw new DimensionException("Sizes of mean vector and covariation matrix are not consistent.");
+            throw new DimensionException("Sizes of mean vector and covariation matrix "
+                    + "are not consistent.");
         Matrix L = covar.cholesky();
         return mean.add( L.mult( normal(mean.getRows()) ) );
     }

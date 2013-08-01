@@ -1,13 +1,14 @@
 
 package finance.trajectories;
 
-import static java.lang.Math.exp;
-import static java.lang.Math.sqrt;
-import math.utils.RandomTools;
 import finance.models.ObservableSupport;
 import finance.models.Progress;
 import finance.models.ProgressObservable;
 import finance.models.ProgressObserver;
+import finance.parameters.ModelParams;
+import static java.lang.Math.exp;
+import static java.lang.Math.sqrt;
+import math.utils.RandomTools;
 
 /**
  * Creates a trajectory whose dynamics is given by equation dS = rSdS + vol S dS.
@@ -15,45 +16,67 @@ import finance.models.ProgressObserver;
  */
 public class OneTrGenerator implements Generator, ProgressObservable
 {
-
-    public OneTrGenerator(double S, double m, double vol, TimeSupport ts)
+    public OneTrGenerator(ModelParams params, Measure measure, TimeSupport ts)
     {
-        this.S = S;
+        this.S = params.getParams(1).S;
         this.ts = ts;
-        
-        dm = m * ts.getDt();
-        dvol = vol * sqrt(ts.getDt());
+        calcAux(params, measure);
+    }
+
+    private void calcAux(ModelParams params, Measure measure)
+    {
+        switch (measure)
+        {
+            case REAL:
+                dm = params.getParams(1).mu * ts.getDt();
+                break; // TODO Upewnic sie ze break jest potrzebny
+            case MART:
+                dm = params.getR() * ts.getDt();
+        }
+        dvol = params.getParams(1).vol * sqrt(ts.getDt());
+    }
+    
+    @Override
+    public Scenario[] generate(int n)
+    {
+        return generate(n, false);
     }
 
     @Override
-    public Scenario[] generate(int n)
+    public Scenario generate()
+    {
+        return generate(false);      
+    }
+
+    @Override
+    public Scenario[] generate(int n, boolean anthi)
     {
         Scenario[] res = new Scenario[n];
         for (int i = 0; i < n; ++i)
         {
-            res[i] = generate();
-            if (i % 100 == 0)
-                notifyObservers( new Progress( "Generating trajectories",
-                                               (int)((double)i/n*100) ));
+            res[i] = generate(anthi);
+            maybeNotify(i, n);
         }
         return res;
     }
 
     @Override
-    public Anthitetic[] generateAnthi(int n)
+    public Scenario generate(boolean anthi)
     {
-        Anthitetic[] res = new Anthitetic[n];
-        for (int i = 0; i < n; ++i)
-        {
-            res[i] = generateAnthi();
-            if (i % 100 == 0)
-                notifyObservers( new Progress( "Generating trajectories",
-                                               (int)((double)i/n*100) ));
-        }
-        return res;
+        if (anthi)
+            return generateAnthi();
+        else
+            return generateNoAnthi();
     }
-
-    private Scenario generate()
+    
+    private void maybeNotify(int i, int n)
+    {
+        if (i % 100 == 0)
+            notifyObservers( new Progress( "Generating trajectories",
+                                            (int)((double)i/n*100) ));        
+    }
+    
+    private Scenario generateNoAnthi()
     {
         SimpleTrajectory tr = new SimpleTrajectory(ts.getK());
         tr.set(0, S);
@@ -63,10 +86,10 @@ public class OneTrGenerator implements Generator, ProgressObservable
                     dvol*rt.normal() + dm - dvol*dvol/2) );
         }
         tr.setReady();
-        return new OneTrScenario(ts,tr);        
+        return new OneTrScenario(ts,tr);  
     }
     
-    private Anthitetic generateAnthi()
+    private Scenario generateAnthi()
     {
         SimpleTrajectory pos = new SimpleTrajectory(ts.getK());
         SimpleTrajectory neg = new SimpleTrajectory(ts.getK());
@@ -82,7 +105,7 @@ public class OneTrGenerator implements Generator, ProgressObservable
         }
         pos.setReady();
         neg.setReady();
-        return new Anthitetic(new OneTrScenario(ts,pos), new OneTrScenario(ts,neg));        
+        return new OneTrScenario(ts, pos, neg);        
     }
 
     @Override

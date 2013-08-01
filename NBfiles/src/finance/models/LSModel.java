@@ -1,19 +1,21 @@
 
 package finance.models;
 
-import math.utils.RandomTools;
-import math.approx.Approx;
-import math.approx.Point;
-import math.approx.Polynomial;
 import finance.instruments.Instr;
+import finance.parameters.SimpleModelParams;
+import finance.trajectories.Generator;
+import finance.trajectories.OneTrGenerator;
+import finance.trajectories.Scenario;
 import finance.trajectories.TimeSupport;
 import static java.lang.Math.exp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import finance.trajectories.OneTrGenerator;
-import finance.trajectories.Scenario;
+import math.approx.Approx;
+import math.approx.Point;
+import math.approx.Polynomial;
+import math.utils.RandomTools;
 
 
 /**
@@ -113,7 +115,8 @@ public class LSModel implements ProgressObservable
     public double price(Instr instr)
     {        
         est = new Polynomial[K];
-        OneTrGenerator gen = new OneTrGenerator(S, r, vol, instr.getTS());
+        OneTrGenerator gen = new OneTrGenerator(new SimpleModelParams(S, vol, r),
+                Generator.Measure.MART, instr.getTS());
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)

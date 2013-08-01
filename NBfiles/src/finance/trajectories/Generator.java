@@ -7,18 +7,37 @@ package finance.trajectories;
  */
 public interface Generator
 {
+    public enum Measure
+    {
+        REAL, MART
+    }
+    
     /**
-     * Generates n scenarios.
+     * Generates n scenarios (without anthitetic paths).
      * @param n number of scenarios.
      * @return generated market scenarios.
      */
-    Scenario[] generate(int n);
+    public Scenario[] generate(int n);
     
     /**
-     * Generates n pairs of anthitetic scenarios.
-     * @param n number of paris of anthitetic scenarios.
+     * Generates n scenarios.
+     * @param n number of scenarios.
+     * @param anthi should the anthitetic paths be included?
      * @return generated market scenarios.
      */
-    Anthitetic[] generateAnthi(int n);
+    public Scenario[] generate(int n, boolean anthi);
     
+    /**
+     * Generates a single scenario (without anthitetic path).
+     * @param n number of scenarios.
+     * @return generated market scenario.
+     */
+    public Scenario generate();    
+    
+    /**
+     * Generates a single scenario.
+     * @param anthi should the anthitetic paths be included?
+     * @return generated market scenario.
+     */
+    public Scenario generate(boolean anthi);
 }

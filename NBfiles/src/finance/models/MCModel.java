@@ -1,13 +1,13 @@
 
 package finance.models;
 
-import finance.parameters.SimpleModelParams;
 import finance.instruments.Instr;
-import finance.trajectories.Anthitetic;
+import finance.parameters.SimpleModelParams;
+import finance.trajectories.Generator.Measure;
 import finance.trajectories.OneTrGenerator;
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeSupport;
-
+// TODO redisign
 /**
  *
  * @author Grzegorz Los
@@ -78,8 +78,9 @@ public class MCModel implements ProgressObservable
         this.K = K;
         this.anthi = anthi;
         convergence = new double[N/100];
-        if (anthi) return priceAnthi(instr);
-        else return priceNoAnthi(instr);
+        return 0;
+        //if (anthi) return priceAnthi(instr);
+        //else return priceNoAnthi(instr);
     }
 
     public double[] getLastConvergence()
@@ -99,7 +100,7 @@ public class MCModel implements ProgressObservable
                 (anthi ? "anhtitetic paths used" : "");
     }
     
-    private double priceNoAnthi(Instr instr)
+    /*private double priceNoAnthi(Instr instr)
     {
         Scenario[] scenarios = getScenarios(instr.getTS());
         convergence[0] = Double.NaN;
@@ -139,7 +140,7 @@ public class MCModel implements ProgressObservable
     
     private Scenario[] getScenarios(TimeSupport ts)
     {
-        OneTrGenerator gen = new OneTrGenerator(smp.S, smp.r, smp.vol, ts);
+        OneTrGenerator gen = new OneTrGenerator(smp, Measure.MART, ts);
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)
@@ -152,7 +153,7 @@ public class MCModel implements ProgressObservable
     
     private Anthitetic[] getScenariosAnthi(TimeSupport ts)
     {
-        OneTrGenerator gen = new OneTrGenerator(smp.S, smp.r, smp.vol, ts);
+        OneTrGenerator gen = new OneTrGenerator(smp, Measure.MART, ts);
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)
@@ -172,7 +173,7 @@ public class MCModel implements ProgressObservable
     {
         return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-smp.r*instr.getTS().getT())
                      + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
-    }
+    }*/
     
     private double convergence[];
     private SimpleModelParams smp;
