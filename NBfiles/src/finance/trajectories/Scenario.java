@@ -1,6 +1,8 @@
 
 package finance.trajectories;
 
+import java.util.Collection;
+
 /**
  * Interface for classes representing market scenarios. The market scenario
  * is a set of trajectories of all assets in the market.
@@ -8,6 +10,18 @@ package finance.trajectories;
  */
 public interface Scenario
 {
+    /**
+     * Returns number of assets in the scenario.
+     * @return number of assets in the scenario.
+     */
+    public int getNumberOfAssets();
+    
+    /**
+     * Returns collection of all asset names in the scenario.
+     * @return collection of all asset names in the scenario.
+     */
+    public Collection<String> getAssetsNames();
+    
     /**
      * Returns trajectory of the asset specified by its number.
      * @param nr number of the asset.

@@ -1,6 +1,10 @@
 
 package finance.trajectories;
 
+import finance.parameters.SimpleModelParams;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  *
  * @author Grzegorz Los
@@ -19,6 +23,20 @@ public class OneTrScenario implements Scenario
         this.ts = ts;
         this.tr = tr;
         this.anthi = anthi;
+    }
+    
+    @Override
+    public int getNumberOfAssets()
+    {
+        return 1;
+    }
+
+    @Override
+    public Collection<String> getAssetsNames()
+    {
+        ArrayList<String> col = new ArrayList<>();
+        col.add(SimpleModelParams.onlyAsset);
+        return col;
     }
 
     @Override

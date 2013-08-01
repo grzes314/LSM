@@ -35,15 +35,6 @@ public abstract class GeneratorRoot implements Generator, ProgressObservable
         }
         return res;
     }
-
-    @Override
-    public Scenario generate(boolean anthi)
-    {
-        if (anthi)
-            return generateAnthi();
-        else
-            return generateNoAnthi();
-    }
     
     private void maybeNotify(int i, int n)
     {
@@ -51,11 +42,6 @@ public abstract class GeneratorRoot implements Generator, ProgressObservable
             notifyObservers( new Progress( "Generating trajectories",
                                             (int)((double)i/n*100) ));        
     }
-    
-
-    protected abstract Scenario generateAnthi();
-
-    protected abstract Scenario generateNoAnthi();
     
     @Override
     public void removeObserver(ProgressObserver ob)

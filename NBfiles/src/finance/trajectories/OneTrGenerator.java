@@ -33,6 +33,14 @@ public class OneTrGenerator extends GeneratorRoot
     }
     
     @Override
+    public Scenario generate(boolean anthi)
+    {
+        if (anthi)
+            return generateAnthi();
+        else
+            return generateNoAnthi();
+    }
+        
     protected Scenario generateNoAnthi()
     {
         SimpleTrajectory tr = new SimpleTrajectory(ts.getK());
@@ -46,7 +54,6 @@ public class OneTrGenerator extends GeneratorRoot
         return new OneTrScenario(ts,tr);  
     }
     
-    @Override
     protected Scenario generateAnthi()
     {
         SimpleTrajectory pos = new SimpleTrajectory(ts.getK());
