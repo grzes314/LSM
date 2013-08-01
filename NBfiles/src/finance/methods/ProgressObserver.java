@@ -1,6 +1,6 @@
 
 
-package finance.models;
+package finance.methods;
 
 /**
  *

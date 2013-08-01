@@ -8,8 +8,8 @@ import finance.instruments.Instr;
 import finance.instruments.Bond;
 import java.awt.Component;
 import javax.swing.JPanel;
-import finance.models.MCModel;
-import finance.models.Progress;
+import finance.methods.montecarlo.MonteCarlo;
+import finance.methods.Progress;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.TimeSupport;
 
@@ -28,7 +28,7 @@ public class MCPanel extends ModelPanel
     }
     
     @Override
-    public MCModel getModel()
+    public MonteCarlo getModel()
     {
         return model;
     }
@@ -47,13 +47,13 @@ public class MCPanel extends ModelPanel
 
 
     @Override
-    protected MCModel createModel()
+    protected MonteCarlo createModel()
     {
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
         SimpleModelParams smp = new SimpleModelParams(S, v, r);
-        model = new MCModel(smp);
+        model = new MonteCarlo(smp);
         return model;
     }
     
@@ -133,7 +133,7 @@ public class MCPanel extends ModelPanel
             c.setEnabled(enabled);
     }
     
-    private MCModel model;
+    private MonteCarlo model;
     private Instr instr;
     
     /**

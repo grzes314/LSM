@@ -1,7 +1,11 @@
 
-package finance.models;
+package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
+import finance.methods.ObservableSupport;
+import finance.methods.Progress;
+import finance.methods.ProgressObservable;
+import finance.methods.ProgressObserver;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.Generator.Measure;
 import finance.trajectories.OneTrGenerator;
@@ -12,14 +16,14 @@ import finance.trajectories.TimeSupport;
  *
  * @author Grzegorz Los
  */
-public class MCModel implements ProgressObservable
+public class MonteCarlo implements ProgressObservable
 {
     public enum VarRedMethod
     {
         None, Anthi, Control
     }
     
-    public MCModel(SimpleModelParams smp) 
+    public MonteCarlo(SimpleModelParams smp) 
     {
         setParams(smp);
     }

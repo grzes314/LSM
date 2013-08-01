@@ -4,8 +4,8 @@ package lsmapp.controlPanels;
 import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
-import finance.models.FDModel;
-import finance.models.Progress;
+import finance.methods.FiniteDifference;
+import finance.methods.Progress;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.AmOrEu;
@@ -30,7 +30,7 @@ public class FDPanel extends ModelPanel
     }
     
     @Override
-    public FDModel getModel()
+    public FiniteDifference getModel()
     {
         return model;
     }
@@ -49,12 +49,12 @@ public class FDPanel extends ModelPanel
 
 
     @Override
-    protected FDModel createModel()
+    protected FiniteDifference createModel()
     {
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new FDModel( new SimpleModelParams(S, v, r) );
+        model = new FiniteDifference( new SimpleModelParams(S, v, r) );
         return model;
     }
     
@@ -109,7 +109,7 @@ public class FDPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private FDModel model;
+    private FiniteDifference model;
     private Instr instr;
     
     /**

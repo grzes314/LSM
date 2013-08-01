@@ -1,6 +1,7 @@
 
 package finance.models;
 
+import finance.methods.BlackScholes;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
@@ -43,7 +44,7 @@ public class BSModelTest extends TestCase
     public void testEuCallTypical()
     {
         // We cannot use method from EuSupport to test if typical options are priced
-        // correctly, because EuSupport actually uses BSModel for checking prices.
+        // correctly, because EuSupport actually uses BlackScholes for checking prices.
         // Hence expected values were calculated with standalone R program.
         eos.setModelParams( new SimpleModelParams(100, 0.2, 0.05) );
         double val = eos.price( new VanillaOptionParams(100, 1, CALL) ); 
@@ -69,11 +70,11 @@ public class BSModelTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        model = new BSModel();
+        model = new BlackScholes();
         eos = new EuOptionSupport();
         eos.setUp();
     }
 
     private EuOptionSupport eos;
-    private BSModel model;
+    private BlackScholes model;
 }

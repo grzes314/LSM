@@ -9,8 +9,8 @@ import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Bond;
 import finance.trajectories.TimeSupport;
-import finance.models.LSModel;
-import finance.models.Progress;
+import finance.methods.lsm.LSM;
+import finance.methods.Progress;
 
 /**
  *
@@ -32,7 +32,7 @@ public class LSMPanel extends ModelPanel
     }
     
     @Override
-    public LSModel getModel()
+    public LSM getModel()
     {
         return model;
     }
@@ -44,7 +44,7 @@ public class LSMPanel extends ModelPanel
     }
     
     @Override
-    protected LSModel createModel()
+    protected LSM createModel()
     {
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
@@ -52,7 +52,7 @@ public class LSMPanel extends ModelPanel
         int N = (Integer) simulations.getValue();
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
-        model = new LSModel(S,v,r,N,K,M);
+        model = new LSM(S,v,r,N,K,M);
         return model;
     }
 
@@ -107,7 +107,7 @@ public class LSMPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private LSModel model;
+    private LSM model;
     private Instr instr;
     
     /**

@@ -1,7 +1,7 @@
 
 package finance.models;
 
-import finance.models.FDModel;
+import finance.methods.FiniteDifference;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.SimpleModelParams;
 import junit.framework.TestCase;
@@ -17,7 +17,7 @@ public class FDModelTest extends TestCase
         @Override
         protected void setModelParams(SimpleModelParams smp)
         {
-            model = new FDModel(smp);
+            model = new FiniteDifference(smp);
         }
 
         @Override
@@ -36,7 +36,7 @@ public class FDModelTest extends TestCase
         @Override
         protected void setModelParams(SimpleModelParams smp)
         {
-            model = new FDModel(smp);
+            model = new FiniteDifference(smp);
         }
 
         @Override
@@ -107,7 +107,7 @@ public class FDModelTest extends TestCase
         aos.putTypical();
     }
 
-    private FDModel model;
+    private FiniteDifference model;
     private EuOptionSupport eos;
     private AmOptionSupport aos;
 }

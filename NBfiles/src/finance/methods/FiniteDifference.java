@@ -1,5 +1,5 @@
 
-package finance.models;
+package finance.methods;
 
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
@@ -10,7 +10,7 @@ import static java.lang.Math.max;
  * Implementation of finite difference method.
  * @author Grzegorz Los
  */
-public class FDModel implements ProgressObservable
+public class FiniteDifference implements ProgressObservable
 {
     /**
      * Class representing a subset of a grid used in finite difference.
@@ -140,7 +140,7 @@ public class FDModel implements ProgressObservable
      * an underlying asset.
      * 
      */
-    public FDModel(SimpleModelParams smp)
+    public FiniteDifference(SimpleModelParams smp)
     {
         setParams(smp);
     }

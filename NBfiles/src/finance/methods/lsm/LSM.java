@@ -1,7 +1,10 @@
 
-package finance.models;
+package finance.methods.lsm;
 
 import finance.instruments.Instr;
+import finance.methods.Progress;
+import finance.methods.ProgressObservable;
+import finance.methods.ProgressObserver;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.Generator;
 import finance.trajectories.OneTrGenerator;
@@ -18,14 +21,15 @@ import math.approx.Polynomial;
 import math.utils.RandomTools;
 
 
+
 /**
  *
  * @author grzes
  */
-public class LSModel implements ProgressObservable
+public class LSM implements ProgressObservable
 {
 
-    public LSModel(double S, double vol, double r, int N, int K, int M) 
+    public LSM(double S, double vol, double r, int N, int K, int M) 
     {
         this.S = S;
         this.vol = vol;
@@ -228,7 +232,6 @@ public class LSModel implements ProgressObservable
 
     private List<ProgressObserver> observers = new LinkedList<>();
 }
-
 class CF
 {
 

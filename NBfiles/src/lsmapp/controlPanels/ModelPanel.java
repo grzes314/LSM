@@ -5,8 +5,8 @@ import finance.instruments.Instr;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JPanel;
-import finance.models.Progress;
-import finance.models.ProgressObservable;
+import finance.methods.Progress;
+import finance.methods.ProgressObservable;
 
 /**
  * ModelPanel constitutes common base for all panels whose purpose is getting

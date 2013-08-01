@@ -5,7 +5,7 @@ import finance.instruments.Instr;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.models.BSModel;
+import finance.methods.BlackScholes;
 
 /**
  *
@@ -23,7 +23,7 @@ public class BS2GUI implements ResultHandler
     @Override
     public void result(double price)
     {        
-        BSModel model = bsPanel.getModel();
+        BlackScholes model = bsPanel.getModel();
         Instr instr = bsPanel.getInstr();
         frame.addResults(instr.toString(), Auxiliary.basicInfo(model, instr, price));
     }

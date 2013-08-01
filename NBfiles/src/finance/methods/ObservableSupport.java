@@ -1,5 +1,5 @@
 
-package finance.models;
+package finance.methods;
 
 import java.util.LinkedList;
 import java.util.List;

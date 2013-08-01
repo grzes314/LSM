@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.LSMPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.models.LSModel;
+import finance.methods.lsm.LSM;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -39,7 +39,7 @@ public class LSM2GUI implements ResultHandler
         showResults(lsmPanel.getModel(), lsmPanel.getInstr(), price);
     }
     
-    private void showResults(LSModel model, Instr instr, double price)
+    private void showResults(LSM model, Instr instr, double price)
     {
         JTabbedPane results = new JTabbedPane();
         
@@ -53,7 +53,7 @@ public class LSM2GUI implements ResultHandler
         frame.addResults(instr.toString(), results);
     }
     
-    private Component stoppingPlot(LSModel model, Option opt)
+    private Component stoppingPlot(LSM model, Option opt)
     {
         if (opt.getType() == Option.CALL)
             return new JLabel("It is always worth to not"
@@ -74,7 +74,7 @@ public class LSM2GUI implements ResultHandler
         return panel;
     }
     
-    private PlotObject stoppingPlotPut(LSModel model, Option opt)
+    private PlotObject stoppingPlotPut(LSM model, Option opt)
     {
         PlotObject po = new PlotObject("Stopping price", Color.RED,
                 PlotObject.Type.Lines);
@@ -97,7 +97,7 @@ public class LSM2GUI implements ResultHandler
         return po;
     }
 
-    private Component regressionView(final LSModel model, final Instr instr)
+    private Component regressionView(final LSM model, final Instr instr)
     {
         final Polynomial[] P = model.getEst();
         

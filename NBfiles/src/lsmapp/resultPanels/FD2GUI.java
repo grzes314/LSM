@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.models.FDModel;
+import finance.methods.FiniteDifference;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -36,7 +36,7 @@ public class FD2GUI implements ResultHandler
     /*@Override
     public void result(double price)
     {
-        FDModel model = fdPanel.getModel();
+        FiniteDifference model = fdPanel.getModel();
         Instr instr = fdPanel.getInstr();
         frame.addResults(instr.toString(), Auxiliary.basicInfo(model, instr, price));
     }*/
@@ -47,7 +47,7 @@ public class FD2GUI implements ResultHandler
         showResults(fdPanel.getModel(), fdPanel.getInstr(), price);
     }
     
-    private void showResults(FDModel model, Instr instr, double price)
+    private void showResults(FiniteDifference model, Instr instr, double price)
     {
         JTabbedPane results = new JTabbedPane();
         
@@ -61,7 +61,7 @@ public class FD2GUI implements ResultHandler
         frame.addResults(instr.toString(), results);
     }
     
-    private Component stoppingPlot(FDModel model, Option opt)
+    private Component stoppingPlot(FiniteDifference model, Option opt)
     {
         if (opt.getType() == Option.CALL)
             return new JLabel("It is always worth to not"
@@ -82,9 +82,9 @@ public class FD2GUI implements ResultHandler
         return panel;
     }
     
-    private PlotObject stoppingPlotPut(FDModel model)
+    private PlotObject stoppingPlotPut(FiniteDifference model)
     {
-        final FDModel.Grid grid = model.getLastGrid();
+        final FiniteDifference.Grid grid = model.getLastGrid();
         PlotObject po = new PlotObject("Stopping price", Color.RED,
                 PlotObject.Type.Lines);
         double[] stopPrice = grid.getStopping();
@@ -97,9 +97,9 @@ public class FD2GUI implements ResultHandler
         return po;
     }
 
-    private Component pricePlot(final FDModel model, final Instr instr)
+    private Component pricePlot(final FiniteDifference model, final Instr instr)
     {
-        final FDModel.Grid grid = model.getLastGrid();
+        final FiniteDifference.Grid grid = model.getLastGrid();
         double[][] V = grid.getOptionPrices();
                 
         final JPanel panel = new JPanel(new BorderLayout());
@@ -145,7 +145,7 @@ public class FD2GUI implements ResultHandler
         return panel;
     }
     
-    private void plotGridPrice(PlotObject po, FDModel.Grid grid, int k)
+    private void plotGridPrice(PlotObject po, FiniteDifference.Grid grid, int k)
     {
         po.clear();
         double V[][] = grid.getOptionPrices();

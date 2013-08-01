@@ -2,7 +2,7 @@
 package finance.models.testsupports;
 
 import static junit.framework.Assert.assertTrue;
-import finance.models.BSModel;
+import finance.methods.BlackScholes;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
@@ -111,7 +111,7 @@ public abstract class EuBarrier
     }
     
     private TestCaseData[] typicalTestCasesIn, typicalTestCasesOut ;
-    private BSModel bs;
+    private BlackScholes bs;
 }
 class TestCaseData
 {

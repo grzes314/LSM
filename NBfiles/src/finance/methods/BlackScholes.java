@@ -1,5 +1,5 @@
 
-package finance.models;
+package finance.methods;
 
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
@@ -11,13 +11,13 @@ import math.utils.Statistics;
  * Class for pricing options with BS Formula.
  * @author Grzegrorz Los
  */
-public class BSModel implements ProgressObservable
+public class BlackScholes implements ProgressObservable
 {
-    public BSModel()
+    public BlackScholes()
     {
     }
 
-    public BSModel(SimpleModelParams smp)
+    public BlackScholes(SimpleModelParams smp)
     {
         setParams(smp);
     }

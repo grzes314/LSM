@@ -2,7 +2,7 @@
 package finance.models.testsupports;
 
 import static java.lang.Math.exp;
-import finance.models.BSModel;
+import finance.methods.BlackScholes;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
@@ -139,5 +139,5 @@ public abstract class EuOption extends ValuationChecker
         }
     }
     
-    protected BSModel bsModel = new BSModel();
+    protected BlackScholes bsModel = new BlackScholes();
 }

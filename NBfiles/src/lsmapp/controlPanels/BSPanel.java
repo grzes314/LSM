@@ -7,9 +7,9 @@ package lsmapp.controlPanels;
 import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
-import finance.models.BSModel;
-import finance.models.Progress;
-import finance.models.ProgressObservable;
+import finance.methods.BlackScholes;
+import finance.methods.Progress;
+import finance.methods.ProgressObservable;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
@@ -28,7 +28,7 @@ public class BSPanel extends ModelPanel
     }
     
     @Override
-    public BSModel getModel()
+    public BlackScholes getModel()
     {
         return model;
     }
@@ -53,7 +53,7 @@ public class BSPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new BSModel( new SimpleModelParams(S,v,r) );
+        model = new BlackScholes( new SimpleModelParams(S,v,r) );
         return model;
     }
     
@@ -87,7 +87,7 @@ public class BSPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private BSModel model;
+    private BlackScholes model;
     private Instr instr;
     
     /**

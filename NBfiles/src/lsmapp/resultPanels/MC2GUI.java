@@ -10,7 +10,7 @@ import javax.swing.JTabbedPane;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.MCPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.models.MCModel;
+import finance.methods.montecarlo.MonteCarlo;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -42,7 +42,7 @@ public class MC2GUI implements ResultHandler
         showResults(mcPanel.getModel(), mcPanel.getInstr(), price);
     }
     
-    private void showResults(MCModel model, Instr instr, double price)
+    private void showResults(MonteCarlo model, Instr instr, double price)
     {
         JTabbedPane results = new JTabbedPane();
         
@@ -52,7 +52,7 @@ public class MC2GUI implements ResultHandler
         frame.addResults(instr.toString(), results);
     }
     
-    private Component plotConvergence(MCModel model)
+    private Component plotConvergence(MonteCarlo model)
     {
         JPanel panel = new JPanel(new BorderLayout());
         PlotPanel plot = new PlotPanel();
@@ -69,7 +69,7 @@ public class MC2GUI implements ResultHandler
         return panel;
     }
     
-    private PlotObject plotConvergence_(MCModel model)
+    private PlotObject plotConvergence_(MonteCarlo model)
     {
         PlotObject po = new PlotObject("Pricie of the option", Color.RED,
                 PlotObject.Type.Lines);
