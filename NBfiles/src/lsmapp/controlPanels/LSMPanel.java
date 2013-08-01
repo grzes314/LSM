@@ -62,16 +62,15 @@ public class LSMPanel extends ModelPanel
     {
         double T = (Double) years.getValue();
         int K = (Integer) steps.getValue();
-        TimeSupport ts = new TimeSupport(T, K);
         if (obligation.isSelected())
-            instr = new Bond(ts);
+            instr = new Bond(T);
         else
         {
             int type = (put.isSelected() ? Option.PUT : Option.CALL);
             double E = (Double) strike.getValue();
             if (euoption.isSelected())
-                instr = new EuExercise( new Option(type, E, "noname", ts) );
-            else instr = new Option(type, E, "noname", ts);
+                instr = new EuExercise( new Option(type, E, "noname", T) );
+            else instr = new Option(type, E, "noname", T);
         }
         return instr;
     }

@@ -15,7 +15,7 @@ public abstract class Modificator extends Instr
      */
     public Modificator(Instr wrapped)
     {
-        super(wrapped.ts);
+        super(wrapped.getT());
         this.wrapped = wrapped;
     }
 

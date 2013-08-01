@@ -1,7 +1,6 @@
 
 package finance.instruments;
 
-import finance.trajectories.TimeSupport;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
 
@@ -16,11 +15,11 @@ public class Option extends Instr
      * and time support.
      * @param type type of the option (call or put).
      * @param strike strike value.
-     * @param ts time support.
+     * @param T time horizon.
      */
-    public Option(int type, double strike, String underlying, TimeSupport ts)
+    public Option(int type, double strike, String underlying, double T)
     {
-        super(ts);
+        super(T);
         this.type = type;
         this.K = strike;
         this.underlying = underlying;
@@ -32,11 +31,11 @@ public class Option extends Instr
      * number and time support.
      * @param type type of the option (call or put).
      * @param strike strike value.
-     * @param ts time support.
+     * @param T time horizon.
      */
-    public Option(int type, double strike, int underlyingNr, TimeSupport ts)
+    public Option(int type, double strike, int underlyingNr, double T)
     {
-        super(ts);
+        super(T);
         this.type = type;
         this.K = strike;
         this.underlyingNr = underlyingNr;
@@ -49,19 +48,13 @@ public class Option extends Instr
         return "An option\n" +
                 "Type: " + (type == CALL ? "call" : "put") +
                 "\nStrike: " + K +
-                "\nExpiracy: " + ts.getT();
+                "\nExpiracy: " + getT();
     }
     
     @Override
     public String toString()
     {
         return (type == CALL ? "Call" : "Put") + "@" + K;
-    }
-    
-    @Override
-    public TimeSupport getTS()
-    {
-        return ts;
     }
 
     public int getType()

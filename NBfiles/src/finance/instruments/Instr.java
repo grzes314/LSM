@@ -3,7 +3,7 @@ package finance.instruments;
 
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeIncompatibleException;
-import finance.trajectories.TimeSupport;
+import math.utils.Numerics;
 
 /**
  * Base class for all financial instruments.
@@ -12,9 +12,13 @@ import finance.trajectories.TimeSupport;
 abstract public class Instr
 {
 
-    public Instr(TimeSupport ts)
+    /**
+     * Construct Instrument with given time horizon -- expiracy of the instrument.
+     * @param T time horizon.
+     */
+    public Instr(double T)
     {
-        this.ts = ts;
+        this.T = T;
     }
     
     /**
@@ -28,8 +32,8 @@ abstract public class Instr
      */
     public final boolean exAvail(Scenario s, int k)
     {
-        if ( !ts.equals(s.getTS()) )
-            throw new TimeIncompatibleException("TimeSupports for Scenario and "
+        if ( !Numerics.doublesEqual(s.getTS().getT(), T) )
+            throw new TimeIncompatibleException("Time horizons for Scenario and "
                     + "Instrument have to be equal");
         return exAvail_(s,k);
     }
@@ -49,29 +53,14 @@ abstract public class Instr
     }
     
     /**
-     * Returns time support object which contains information about instruments
-     * time horizon and number of timesteps in which it is considered.
-     * @return time support object for this instrument. 
+     * Returns time to expiry of the instrument.
+     * @return time horizon.
      */
-    public TimeSupport getTS()
-    {
-        return ts;
-    }
-
     public double getT()
     {
-        return ts.getT();
+        return T;
     }
 
-    /**
-     * Sets number of time points in which payoff may be considered.
-     * @param K number of time points.
-     */
-    public void setK(int K)
-    {
-        ts.setK(K);
-    }
-    
     public abstract double intrisnicValue(double x);
     
     /**
@@ -84,7 +73,7 @@ abstract public class Instr
     abstract public String toString();
     
     /**
-     * Function usefull in determining the type of this instrument,
+     * Function useful in determining the type of this instrument,
      * @param str
      * @return 
      */
@@ -110,8 +99,7 @@ abstract public class Instr
     abstract protected double payoff_(Scenario s, int k);
         
     /**
-     * Time support for describing time horizon of the instrument and time 
-     * points in which it is considered.
+     * Time horizon -- expiracy of the instrument.
      */
-    protected final TimeSupport ts;
+    private final double T;
 }

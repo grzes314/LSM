@@ -13,7 +13,6 @@ import finance.methods.ProgressObservable;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
-import finance.trajectories.TimeSupport;
 
 /**
  *
@@ -61,10 +60,9 @@ public class BSPanel extends ModelPanel
     protected Instr createInstr()
     {
         double T = (Double) years.getValue();
-        TimeSupport ts = new TimeSupport(T, 1);
         int type = (put.isSelected() ? Option.PUT : Option.CALL);
         double E = (Double) strike.getValue();
-        instr = new EuExercise( new Option(type, E, "noname", ts) ); 
+        instr = new EuExercise( new Option(type, E, "noname", T) ); 
         return instr;
     }
 

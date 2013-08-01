@@ -63,12 +63,11 @@ public class MCPanel extends ModelPanel
     {
         double T = (Double) years.getValue();
         int K = (Integer) timeSteps.getValue();
-        TimeSupport ts = new TimeSupport(T, K);
         int type = (put.isSelected() ? Option.PUT : Option.CALL);
         double E = (Double) strike.getValue();
         if (option.isSelected())
-            instr = new EuExercise( new Option(type, E, "OnlyAsset", ts) ); // TODO not only asset
-        else instr = new Bond(ts);
+            instr = new EuExercise( new Option(type, E, "OnlyAsset", T) ); // TODO not only asset
+        else instr = new Bond(T);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);
         return instr;

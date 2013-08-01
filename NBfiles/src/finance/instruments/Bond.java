@@ -2,7 +2,6 @@
 package finance.instruments;
 
 import finance.trajectories.Scenario;
-import finance.trajectories.TimeSupport;
 
 /**
  *
@@ -10,15 +9,15 @@ import finance.trajectories.TimeSupport;
  */
 public class Bond extends Instr
 {
-    public Bond(TimeSupport ts)
+    public Bond(double T)
     {
-        super(ts);
+        super(T);
     }
 
     @Override
     public String desc()
     {
-        return "Bond paying 1 after" + ts.getT() + " years";
+        return "Bond paying 1 after" + getT() + " years";
     }
     
     @Override
@@ -27,17 +26,10 @@ public class Bond extends Instr
         return "Bond";
     }
 
-    
-    @Override
-    public TimeSupport getTS()
-    {
-        return ts;
-    }
-    
     @Override
     protected boolean exAvail_(Scenario s, int k)
     {        
-        return ts.getK() == k;
+        return s.getTS().getK() == k;
     }
 
     @Override

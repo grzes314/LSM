@@ -119,8 +119,9 @@ public class LSM implements ProgressObservable
     public double price(Instr instr)
     {        
         est = new Polynomial[K];
+        ts = new TimeSupport(instr.getT(), K);
         OneTrGenerator gen = new OneTrGenerator(new SimpleModelParams(S, vol, r),
-                Generator.Measure.MART, instr.getTS());
+                Generator.Measure.MART, ts);
         gen.addObserver( new ProgressObserver() {
             @Override
             public void update(Progress pr)
@@ -132,7 +133,7 @@ public class LSM implements ProgressObservable
         Scenario[] paths = gen.generate(N);
         
         CF[] bestCF = bestCFlows(paths, instr);
-        double mean = getMean(bestCF, instr.getTS());
+        double mean = getMean(bestCF);
         return mean;
     }
         
@@ -189,7 +190,7 @@ public class LSM implements ProgressObservable
                 CF[] bestCF, int j, Instr instr)
     {
         ArrayList<Point> points = new ArrayList<>();
-        double dr = r * instr.getTS().getT() / instr.getTS().getK();
+        double dr = r * ts.getT() / ts.getK();
         for (int i = 0; i < N; ++i)
         {
             double val = bestCF[i].x * exp((j-bestCF[i].t)*dr);
@@ -213,7 +214,7 @@ public class LSM implements ProgressObservable
         }
     }
     
-    private double getMean(CF[] bestCF, TimeSupport ts)
+    private double getMean(CF[] bestCF)
     {
         double sum = 0;
         double dr = r * ts.getT() / ts.getK();
@@ -227,7 +228,7 @@ public class LSM implements ProgressObservable
     private double r;
     
     private int N, K, M;
-    private RandomTools rt = new RandomTools();
+    private TimeSupport ts;
     private Polynomial[] est;
 
     private List<ProgressObserver> observers = new LinkedList<>();

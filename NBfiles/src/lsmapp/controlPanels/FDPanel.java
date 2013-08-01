@@ -63,12 +63,11 @@ public class FDPanel extends ModelPanel
     {
         double T = (Double) years.getValue();
         int K = (Integer) timeSteps.getValue();
-        TimeSupport ts = new TimeSupport(T, K);
         int type = (put.isSelected() ? Option.PUT : Option.CALL);
         double E = (Double) strike.getValue();
         if (euoption.isSelected())
-            instr = new EuExercise( new Option(type, E, "noname", ts) );
-        else instr = new Option(type, E, "noname", ts);
+            instr = new EuExercise( new Option(type, E, "noname", T) );
+        else instr = new Option(type, E, "noname", T);
         return instr;
     }
     
