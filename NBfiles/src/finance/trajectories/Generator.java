@@ -1,11 +1,13 @@
 
 package finance.trajectories;
 
+import finance.methods.ProgressObservable;
+
 /**
  * Interface for classes generating market scenarios.
  * @author Grzegorz Los
  */
-public interface Generator
+public interface Generator extends ProgressObservable
 {
     public enum Measure
     {

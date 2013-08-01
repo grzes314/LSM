@@ -6,58 +6,32 @@ import finance.methods.ObservableSupport;
 import finance.methods.Progress;
 import finance.methods.ProgressObservable;
 import finance.methods.ProgressObserver;
-import finance.parameters.SimpleModelParams;
-import finance.trajectories.Generator.Measure;
-import finance.trajectories.OneTrGenerator;
-import finance.trajectories.Scenario;
-import finance.trajectories.TimeSupport;
-// TODO redisign
+import finance.parameters.ModelParams;
+
 /**
- *
+ * Base for Monte Carlo Pricers.
  * @author Grzegorz Los
  */
-public class MonteCarlo implements ProgressObservable
+public abstract class MonteCarlo implements ProgressObservable
 {
-    public enum VarRedMethod
+    /**
+     * Constructs MonteCarlo pricer using given parameters.
+     * @param params model parameters.
+     */
+    public MonteCarlo(ModelParams params) 
     {
-        None, Anthi, Control
+        setParams(params);
+    }
+
+    /**
+     * Sets model parameters.
+     * @param params model parameters.
+     */
+    public final void setParams(ModelParams params)
+    {
+        this.params = params;
     }
     
-    public MonteCarlo(SimpleModelParams smp) 
-    {
-        setParams(smp);
-    }
-
-    public final void setParams(SimpleModelParams smp)
-    {
-        this.smp = smp;
-    }
-
-    public int getK()
-    {
-        return K;
-    }
-
-    public int getN()
-    {
-        return N;
-    }
-
-    public double getS()
-    {
-        return smp.S;
-    }
-
-    public double getR()
-    {
-        return smp.r;
-    }
-
-    public double getVol()
-    {
-        return smp.vol;
-    }
-
     @Override
     public void removeObserver(ProgressObserver ob)
     {
@@ -76,51 +50,91 @@ public class MonteCarlo implements ProgressObservable
         os.addObserver(ob);
     }
     
-    public double price(Instr instr, int N, int K, boolean anthi)
+    /**
+     * Calculates value of given instrument using specified numbers of 
+     * replications and timesteps.
+     * @param instr instrument to be priced.
+     * @param N number of simulations.
+     * @param K number of timesteps. 
+     * @return result of pricing.
+     */
+    public Result price(Instr instr, int N, int K)
+    {
+        preparePricing(N, K);
+        return price(instr);
+    }
+
+    private void preparePricing(int N, int K)
     {
         this.N = N;
         this.K = K;
-        this.anthi = anthi;
-        convergence = new double[N/100];
-        return 0;
-        //if (anthi) return priceAnthi(instr);
-        //else return priceNoAnthi(instr);
+        convergence = new Convergence();
+    }
+    
+    /**
+     * Method doing real pricing. It may assume that {@code N} and {@code K} are already set.
+     * @param instr instrument to be priced.
+     * @return result of pricing.
+     */
+    abstract protected Result price(Instr instr);
+
+    /**
+     * Returns {@code K} -- number of timesteps in the last pricing.
+     * @return number of timesteps in the last pricing.
+     */
+    public int getLastK()
+    {
+        return K;
+    }
+    
+    /**
+     * Returns {@code N} -- number of simulations in the last pricing.
+     * @return number of simulations in the last pricing.
+     */
+    public int getLastN()
+    {
+        return N;
     }
 
-    public double[] getLastConvergence()
+    /**
+     * Returns convergence to the results of last pricing.
+     * @return convergence to the results of last pricing.
+     */
+    public Convergence getLastConvergence()
     {
         return convergence;
     }
+    
+    abstract public String methodName();
         
     @Override
     public String toString()
     {
-        return "CLASSIC MONTE CARLO MODEL\n" +
-               "S = "+ smp.S + "\n" +
-               "vol = " + smp.vol + "\n" +
-               "r = " + smp.r + "\n" +             
-               "N = " + N + "\n" +             
-               "K = " + K + "\n" +
-                (anthi ? "anhtitetic paths used" : "");
+        StringBuilder sb = new StringBuilder();
+        sb.append(methodName()).append("\n")
+          .append(params.toString()).append("\n")
+          .append("N = ").append(N).append("\n")
+          .append("K = ").append(K).append("\n");
+        return sb.toString();
     }
     
+    protected void maybeNotify(int i)
+    {
+        if (i % 1000 == 0)
+        {
+            notifyObservers(new Progress("Calculating result",
+                                         (int)(100*((long)N-i)/N)));
+        }
+    }
+    
+    protected void maybeAddConvergencePoint(int i, double res)
+    {
+        if (i % 100 == 0)
+            convergence.add(i, res);
+    }
+        
     /*private double priceNoAnthi(Instr instr)
     {
-        Scenario[] scenarios = getScenarios(instr.getTS());
-        convergence[0] = Double.NaN;
-        double res = getPayoff(instr, scenarios[0]);
-        for (int i = 1; i < N; ++i)
-        {
-            double p = getPayoff(instr, scenarios[i]);
-            res = (double)i / (i+1) * res + p/(i+1);
-            if (i % 100 == 0)
-            {
-                convergence[i/100] = res;
-                notifyObservers(new Progress("Calculating result",
-                                             (int)(100*((long)N-i)/N)));
-            }
-        }
-        return res;
     }
     
     private double priceAnthi(Instr instr)
@@ -179,10 +193,8 @@ public class MonteCarlo implements ProgressObservable
                      + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
     }*/
     
-    private double convergence[];
-    private SimpleModelParams smp;
-    private int N, K;
-    private boolean anthi;
+    protected ModelParams params;
+    protected int N, K;
     private ObservableSupport os = new ObservableSupport();
-
+    private Convergence convergence;
 }

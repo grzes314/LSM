@@ -119,16 +119,40 @@ public class MultiTrGenerator extends GeneratorRoot
 
     private void fillTrajectories()
     {
-        fillFirst(pos);
-        if (genAnthi)
-            fillFirst(neg);
+        callFillFirst();
         for (int k = 1; k <= getTimePoints(); ++k)
         {
             Vector Z = drawZ();
-            fillNext(k, pos, Z);
-            if (genAnthi)
-                fillNext(k, neg, Z);
+            callFillNext(k, Z);
         }
+        callSetReady();
+    }
+
+    private void callFillFirst()
+    {
+        fillFirst(pos);
+        if (genAnthi)
+            fillFirst(neg);
+    }
+
+    private void callFillNext(int k, Vector Z)
+    {
+        fillNext(k, pos, Z);
+        if (genAnthi)
+            fillNext(k, neg, Z);
+    }
+
+    private void callSetReady()
+    {
+        setReady(pos);
+        if (genAnthi)
+            setReady(neg);
+    }
+
+    private void setReady(SimpleTrajectory[] trs)
+    {
+        for (int i = 1; i <= numberOfAssets; ++i)
+            trs[i].setReady();
     }
     
     private void fillFirst(SimpleTrajectory[] trs)

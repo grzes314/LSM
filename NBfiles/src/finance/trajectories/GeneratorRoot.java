@@ -3,14 +3,13 @@ package finance.trajectories;
 
 import finance.methods.ObservableSupport;
 import finance.methods.Progress;
-import finance.methods.ProgressObservable;
 import finance.methods.ProgressObserver;
 
 /**
  *
  * @author Grzegorz Los
  */
-public abstract class GeneratorRoot implements Generator, ProgressObservable
+public abstract class GeneratorRoot implements Generator
 {
     @Override
     public Scenario[] generate(int n)

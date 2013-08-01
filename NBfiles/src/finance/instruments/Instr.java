@@ -58,6 +58,11 @@ abstract public class Instr
         return ts;
     }
 
+    public double getT()
+    {
+        return ts.getT();
+    }
+
     /**
      * Sets number of time points in which payoff may be considered.
      * @param K number of time points.

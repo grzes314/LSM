@@ -1,17 +1,15 @@
 
 package lsmapp.controlPanels;
 
-import finance.instruments.Barrier;
-import finance.instruments.Option;
-import finance.instruments.EuExercise;
-import finance.instruments.Instr;
-import finance.instruments.Bond;
-import java.awt.Component;
-import javax.swing.JPanel;
-import finance.methods.montecarlo.MonteCarlo;
+import finance.instruments.*;
 import finance.methods.Progress;
+import finance.methods.montecarlo.AV;
+import finance.methods.montecarlo.CMC;
+import finance.methods.montecarlo.MonteCarlo;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.TimeSupport;
+import java.awt.Component;
+import javax.swing.JPanel;
 
 /**
  *
@@ -53,7 +51,10 @@ public class MCPanel extends ModelPanel
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
         SimpleModelParams smp = new SimpleModelParams(S, v, r);
-        model = new MonteCarlo(smp);
+        if (useAnthi.isSelected())
+            model = new AV(smp);
+        else
+            model = new CMC(smp);
         return model;
     }
     
@@ -66,7 +67,7 @@ public class MCPanel extends ModelPanel
         int type = (put.isSelected() ? Option.PUT : Option.CALL);
         double E = (Double) strike.getValue();
         if (option.isSelected())
-            instr = new EuExercise( new Option(type, E, "OnlyAsset", ts) );
+            instr = new EuExercise( new Option(type, E, "OnlyAsset", ts) ); // TODO not only asset
         else instr = new Bond(ts);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);
@@ -88,7 +89,7 @@ public class MCPanel extends ModelPanel
     {
         int N = (Integer) simulations.getValue();
         int K = (Integer) timeSteps.getValue();
-        return model.price(instr, N, K, useAnthi.isSelected());
+        return model.price(instr, N, K).result;
     }
 
     @Override

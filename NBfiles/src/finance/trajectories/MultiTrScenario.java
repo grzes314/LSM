@@ -82,13 +82,13 @@ public class MultiTrScenario implements Scenario
         return name2nr.keySet(); // TODO pomyslec czy nei kopiowac
     }
 
-    private void ensureAsserNrOK(int nr)
+    private void ensureAssetNrOK(int nr)
     {
         if (nr < 1 || nr > getNumberOfAssets())
             throw new NoSuchAssetException("Wrong asset number: " + nr);
     }
     
-    private void ensureAsserNameOK(String name)
+    private void ensureAssetNameOK(String name)
     {
         if (!name2nr.containsKey(name))
             throw new NoSuchAssetException("Wrong asset name: \"" +
@@ -98,14 +98,14 @@ public class MultiTrScenario implements Scenario
     @Override
     public Trajectory getTr(int nr)
     {
-        ensureAsserNrOK(nr);
+        ensureAssetNrOK(nr);
         return pos[nr];
     }
 
     @Override
     public Trajectory getTr(String name)
     {
-        ensureAsserNameOK(name);
+        ensureAssetNameOK(name);
         return pos[ name2nr.get(name) ];
     }
 
@@ -118,14 +118,14 @@ public class MultiTrScenario implements Scenario
     @Override
     public Trajectory getAnthi(int nr)
     {
-        ensureAsserNrOK(nr);
+        ensureAssetNrOK(nr);
         return neg[nr];
     }
 
     @Override
     public Trajectory getAnthi(String name)
     {
-        ensureAsserNameOK(name);
+        ensureAssetNameOK(name);
         return neg[ name2nr.get(name) ];
     }
 

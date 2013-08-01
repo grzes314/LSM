@@ -2,6 +2,8 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
+import finance.methods.montecarlo.Convergence;
+import finance.methods.montecarlo.MonteCarlo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -10,7 +12,6 @@ import javax.swing.JTabbedPane;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.MCPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.methods.montecarlo.MonteCarlo;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -73,10 +74,10 @@ public class MC2GUI implements ResultHandler
     {
         PlotObject po = new PlotObject("Pricie of the option", Color.RED,
                 PlotObject.Type.Lines);
-        double[] convergence = model.getLastConvergence();
-        for (int k = 1; k < convergence.length; ++k)
+        Convergence con = model.getLastConvergence();
+        for (int k = 0; k < con.getLength(); ++k)
         {
-            po.addPoint(new PlotPoint(100*k, convergence[k]));
+            po.addPoint(new PlotPoint(con.getRep(k), con.getVal(k)));
         }
         return po;
     }
