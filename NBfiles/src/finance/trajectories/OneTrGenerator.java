@@ -1,10 +1,6 @@
 
 package finance.trajectories;
 
-import finance.models.ObservableSupport;
-import finance.models.Progress;
-import finance.models.ProgressObservable;
-import finance.models.ProgressObserver;
 import finance.parameters.ModelParams;
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
@@ -14,7 +10,7 @@ import math.utils.RandomTools;
  * Creates a trajectory whose dynamics is given by equation dS = rSdS + vol S dS.
  * @author Grzegorz Los
  */
-public class OneTrGenerator implements Generator, ProgressObservable
+public class OneTrGenerator extends GeneratorRoot
 {
     public OneTrGenerator(ModelParams params, Measure measure, TimeSupport ts)
     {
@@ -37,46 +33,7 @@ public class OneTrGenerator implements Generator, ProgressObservable
     }
     
     @Override
-    public Scenario[] generate(int n)
-    {
-        return generate(n, false);
-    }
-
-    @Override
-    public Scenario generate()
-    {
-        return generate(false);      
-    }
-
-    @Override
-    public Scenario[] generate(int n, boolean anthi)
-    {
-        Scenario[] res = new Scenario[n];
-        for (int i = 0; i < n; ++i)
-        {
-            res[i] = generate(anthi);
-            maybeNotify(i, n);
-        }
-        return res;
-    }
-
-    @Override
-    public Scenario generate(boolean anthi)
-    {
-        if (anthi)
-            return generateAnthi();
-        else
-            return generateNoAnthi();
-    }
-    
-    private void maybeNotify(int i, int n)
-    {
-        if (i % 100 == 0)
-            notifyObservers( new Progress( "Generating trajectories",
-                                            (int)((double)i/n*100) ));        
-    }
-    
-    private Scenario generateNoAnthi()
+    protected Scenario generateNoAnthi()
     {
         SimpleTrajectory tr = new SimpleTrajectory(ts.getK());
         tr.set(0, S);
@@ -89,7 +46,8 @@ public class OneTrGenerator implements Generator, ProgressObservable
         return new OneTrScenario(ts,tr);  
     }
     
-    private Scenario generateAnthi()
+    @Override
+    protected Scenario generateAnthi()
     {
         SimpleTrajectory pos = new SimpleTrajectory(ts.getK());
         SimpleTrajectory neg = new SimpleTrajectory(ts.getK());
@@ -107,28 +65,8 @@ public class OneTrGenerator implements Generator, ProgressObservable
         neg.setReady();
         return new OneTrScenario(ts, pos, neg);        
     }
-
-    @Override
-    public void removeObserver(ProgressObserver ob)
-    {
-        os.removeObserver(ob);
-    }
-
-    @Override
-    public void notifyObservers(Progress pr)
-    {
-        os.notifyObservers(pr);
-    }
-
-    @Override
-    public void addObserver(ProgressObserver ob)
-    {
-        os.addObserver(ob);
-    }
-
     
     private double S, dm, dvol;
     private TimeSupport ts;
     private RandomTools rt = new RandomTools();
-    private ObservableSupport os = new ObservableSupport();
 }

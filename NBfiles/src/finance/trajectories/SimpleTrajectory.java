@@ -30,39 +30,71 @@ public class SimpleTrajectory implements Trajectory
     {
         return prices[k];
     }
-
+    
+    private void ensureReady()
+    {
+        if (!ready)
+            throw new WrongTrajectoryState("Trajectory not set to ready");
+    }    
+    
+    private void ensureNotReady()
+    {
+        if (ready)
+            throw new WrongTrajectoryState("Trajectory already set to ready");
+    }
+    
+    private void ensureIndexOK(int k)
+    {
+        if (k < 0 || k > K)
+            throw new IllegalArgumentException("Invalid time point: " + k);
+    }
+    
+    private void ensureIntervalOK(int beg, int end)
+    {
+        ensureIndexOK(beg);
+        ensureIndexOK(end);
+        if (beg > end)
+            throw new IllegalArgumentException("Beginning of the interval greater " +
+                    "than end, beg = " + beg + ", end = " +end);
+    }
+    
     @Override
     public int stepMax(int k)
     {
-        if (!ready) throw new RuntimeException();
+        ensureReady();
+        ensureIndexOK(k);
         return stepMax[k];
     }
 
     @Override
     public int stepMin(int k)
     {
-        if (!ready) throw new RuntimeException();
+        ensureReady();
+        ensureIndexOK(k);
         return stepMin[k];
     }
 
     @Override
     public double cumMax(int k)
     {
-        if (!ready) throw new RuntimeException();
+        ensureReady();
+        ensureIndexOK(k);
         return cumMax[k];
     }
 
     @Override
     public double cumMin(int k)
     {
-        if (!ready) throw new RuntimeException();
+        ensureReady();
+        ensureIndexOK(k);
         return cumMin[k];
     }
 
     @Override
-    public double averege(int beg, int end)
+    public double average(int beg, int end)
     {
-        if (!ready) throw new RuntimeException();
+        ensureReady();
+        ensureIntervalOK(beg, end);
         if (beg == 0) {
             return cumSum[end] / (end+1);
         } else {
@@ -77,6 +109,7 @@ public class SimpleTrajectory implements Trajectory
      */
     void set(int k, double v)
     {
+        ensureNotReady();
         prices[k] = v;
     }
     

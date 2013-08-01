@@ -61,5 +61,5 @@ public interface Trajectory
      * @param end number of last timestep considered.
      * @return 
      */
-    double averege(int beg, int end);
+    double average(int beg, int end);
 }
