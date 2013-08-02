@@ -97,9 +97,9 @@ public class MultiTrGenerator extends GeneratorRoot
     }
     
     @Override
-    public Scenario generate(boolean anthi)
+    public Scenario generate(Anthi anthi)
     {
-        genAnthi = anthi;
+        genAnthi = anthi == Anthi.YES ? true : false;
         prepareTrajectories();
         fillTrajectories();
         return makeResult();

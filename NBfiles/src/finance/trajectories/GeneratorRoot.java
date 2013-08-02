@@ -14,17 +14,17 @@ public abstract class GeneratorRoot implements Generator
     @Override
     public Scenario[] generate(int n)
     {
-        return generate(n, false);
+        return generate(n, Anthi.NO);
     }
 
     @Override
     public Scenario generate()
     {
-        return generate(false);      
+        return generate(Anthi.NO);      
     }
 
     @Override
-    public Scenario[] generate(int n, boolean anthi)
+    public Scenario[] generate(int n, Anthi anthi)
     {
         Scenario[] res = new Scenario[n];
         for (int i = 0; i < n; ++i)

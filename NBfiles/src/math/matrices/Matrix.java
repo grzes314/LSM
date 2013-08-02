@@ -396,7 +396,7 @@ public class Matrix
         return fields[row-1][col-1];
     }
     
-    private void ensureIndicesOK(int row, int col) throws DimensionException
+    protected void ensureIndicesOK(int row, int col) throws DimensionException
     {
         if (row <= 0 || row > rows)
             throw new DimensionException("Invalid row index: " + row);

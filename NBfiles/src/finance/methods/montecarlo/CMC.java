@@ -21,28 +21,35 @@ public class CMC extends MonteCarlo
     }
     
     @Override
-    protected Result price(Instr instr)
+    public String methodName()
     {
-        makeGenerator(instr.getT());
-        sum = sumSq = 0;
-        for (int i = 0; i < N; ++i)
-        {
-            Scenario scenario = gen.generate();
-            double p = getDiscountedPayoff(instr, scenario);
-            sum += p;
-            sumSq += p*p;
-            maybeNotify(i);
-        }
-        double res = sum / N;
-        double var = (sumSq - sum*sum/N) / (N-1);
-        double se  = Math.sqrt(var / N); 
-        return new Result(res, se);
+        return "Crude Monte Carlo";
     }
     
-    private void makeGenerator(double timeHorizon)
+    @Override
+    protected void initPricing(Instr instr)
     {
-        TimeSupport ts = new TimeSupport(timeHorizon, K);
+        TimeSupport ts = new TimeSupport(instr.getT(), K);
         gen = new MultiTrGenerator(params, Measure.MART, ts);
+        sum = sumSq = 0;
+    }
+
+    @Override
+    protected void oneSimulation(Instr instr)
+    {
+        Scenario scenario = gen.generate();
+        double p = getDiscountedPayoff(instr, scenario);
+        sum += p;
+        sumSq += p*p;
+    }
+    
+    @Override
+    protected Result currentResult(int simulation)
+    {
+        double res = sum / simulation;
+        double var = (sumSq - sum*sum/simulation) / (simulation-1);
+        double se  = Math.sqrt(var / simulation); 
+        return new Result(res, se);
     }
 
     private double getDiscountedPayoff(Instr instr, Scenario scenario)
@@ -51,13 +58,6 @@ public class CMC extends MonteCarlo
                 Math.exp(-params.getR()*instr.getT());
     }
     
-    @Override
-    public String methodName()
-    {
-        return "Crude Monte Carlo";
-    }
-
     private Generator gen;
     private double sum, sumSq;
-
 }

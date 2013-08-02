@@ -51,34 +51,6 @@ public abstract class MonteCarlo implements ProgressObservable
     }
     
     /**
-     * Calculates value of given instrument using specified numbers of 
-     * replications and timesteps.
-     * @param instr instrument to be priced.
-     * @param N number of simulations.
-     * @param K number of timesteps. 
-     * @return result of pricing.
-     */
-    public Result price(Instr instr, int N, int K)
-    {
-        preparePricing(N, K);
-        return price(instr);
-    }
-
-    private void preparePricing(int N, int K)
-    {
-        this.N = N;
-        this.K = K;
-        convergence = new Convergence();
-    }
-    
-    /**
-     * Method doing real pricing. It may assume that {@code N} and {@code K} are already set.
-     * @param instr instrument to be priced.
-     * @return result of pricing.
-     */
-    abstract protected Result price(Instr instr);
-
-    /**
      * Returns {@code K} -- number of timesteps in the last pricing.
      * @return number of timesteps in the last pricing.
      */
@@ -105,8 +77,6 @@ public abstract class MonteCarlo implements ProgressObservable
         return convergence;
     }
     
-    abstract public String methodName();
-        
     @Override
     public String toString()
     {
@@ -118,6 +88,49 @@ public abstract class MonteCarlo implements ProgressObservable
         return sb.toString();
     }
     
+    /**
+     * Calculates value of given instrument using specified numbers of 
+     * replications and timesteps.
+     * @param instr instrument to be priced.
+     * @param N number of simulations.
+     * @param K number of timesteps. 
+     * @return result of pricing.
+     */
+    public Result price(Instr instr, int N, int K)
+    {
+        preparePricing(N, K);
+        return price(instr);
+    }
+
+    private void preparePricing(int N, int K)
+    {
+        this.N = N;
+        this.K = K;
+        convergence = new Convergence();
+    }
+    
+    /**
+     * Method doing real pricing. It may assume that {@code N} and {@code K} are already set.
+     * @param instr instrument to be priced.
+     * @return result of pricing.
+     */
+    protected Result price(Instr instr)
+    {
+        initPricing(instr);
+        for (int i = 1 ; i <= N; ++i)
+        {
+            oneSimulation(instr);
+            maybeNotify(i);
+            maybeAddConvergencePoint(i);
+        }
+        return currentResult(N);
+    }
+    
+    /**
+     * From time to time call to this function will call observers
+     * about the progress.
+     * @param i number of the simulation currently performed.
+     */
     protected void maybeNotify(int i)
     {
         if (i % 1000 == 0)
@@ -127,71 +140,28 @@ public abstract class MonteCarlo implements ProgressObservable
         }
     }
     
-    protected void maybeAddConvergencePoint(int i, double res)
+    /**
+     * From time to time call to this method will add to the convergence object
+     * current result.
+     * @param i number of the simulation currently performed.
+     */
+    protected void maybeAddConvergencePoint(int i)
     {
-        if (i % 100 == 0)
-            convergence.add(i, res);
+        if (i % 1000 == 0)
+            convergence.add(i, currentResult(i).result);
     }
-        
-    /*private double priceNoAnthi(Instr instr)
-    {
-    }
+       
+    /**
+     * Returns name of the pricing method.
+     * @return name of the pricing method.
+     */
+    abstract public String methodName();
     
-    private double priceAnthi(Instr instr)
-    {
-        Anthitetic[] scenarios = getScenariosAnthi(instr.getTS());
-        convergence[0] = Double.NaN;
-        double res = getPayoff(instr, scenarios[0]);
-        for (int i = 1; i < N; ++i)
-        {
-            double p = getPayoff(instr, scenarios[i]);
-            res = (double)i / (i+1) * res + p/(i+1);
-            if (i % 100 == 0)
-            {
-                convergence[i/100] = res;
-                notifyObservers(new Progress("Calculating result",
-                                             (int)(100*((long)N-i)/N)));
-            }
-        }
-        return res;        
-    }
+    abstract protected void initPricing(Instr instr);
+
+    abstract protected void oneSimulation(Instr instr);
     
-    private Scenario[] getScenarios(TimeSupport ts)
-    {
-        OneTrGenerator gen = new OneTrGenerator(smp, Measure.MART, ts);
-        gen.addObserver( new ProgressObserver() {
-            @Override
-            public void update(Progress pr)
-            {
-                notifyObservers(pr);
-            }
-        } );
-        return gen.generate(N);
-    }
-    
-    private Anthitetic[] getScenariosAnthi(TimeSupport ts)
-    {
-        OneTrGenerator gen = new OneTrGenerator(smp, Measure.MART, ts);
-        gen.addObserver( new ProgressObserver() {
-            @Override
-            public void update(Progress pr)
-            {
-                notifyObservers(pr);
-            }
-        } );
-        return gen.generateAnthi(N);
-    }
-    
-    private double getPayoff(Instr instr, Scenario s)
-    {
-        return instr.payoff(s, K)*Math.exp(-smp.r*instr.getTS().getT());
-    }
-    
-    private double getPayoff(Instr instr, Anthitetic a)
-    {
-        return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-smp.r*instr.getTS().getT())
-                     + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
-    }*/
+    abstract protected Result currentResult(int simulation);
     
     protected ModelParams params;
     protected int N, K;

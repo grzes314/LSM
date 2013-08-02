@@ -33,12 +33,15 @@ public class OneTrGenerator extends GeneratorRoot
     }
     
     @Override
-    public Scenario generate(boolean anthi)
+    public Scenario generate(Anthi anthi)
     {
-        if (anthi)
-            return generateAnthi();
-        else
-            return generateNoAnthi();
+        switch (anthi)
+        {
+            case YES:
+                return generateAnthi();
+            default:
+                return generateNoAnthi();
+        }
     }
         
     protected Scenario generateNoAnthi()

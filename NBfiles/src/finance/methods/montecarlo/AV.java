@@ -3,6 +3,10 @@ package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
 import finance.parameters.ModelParams;
+import finance.trajectories.Generator;
+import finance.trajectories.MultiTrGenerator;
+import finance.trajectories.Scenario;
+import finance.trajectories.TimeSupport;
 
 /**
  *
@@ -16,15 +20,50 @@ public class AV extends MonteCarlo
     }
 
     @Override
-    protected Result price(Instr instr)
+    public String methodName()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Monte Carlo with anthitetic variates";
     }
 
     @Override
-    public String methodName()
+    protected void initPricing(Instr instr)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        TimeSupport ts = new TimeSupport(instr.getT(), K);
+        gen = new MultiTrGenerator(params, Generator.Measure.MART, ts);
+        sum = sumSq = 0;
     }
 
+    @Override
+    protected void oneSimulation(Instr instr)
+    {
+        Scenario scenario = gen.generate(Generator.Anthi.YES);
+        double p = getDiscountedPayoff(instr, scenario);
+        sum += p;
+        sumSq += p*p;
+    }
+
+    @Override
+    protected Result currentResult(int simulation)
+    {
+        double res = sum / simulation;
+        double var = (sumSq - sum*sum/simulation) / (simulation-1);
+        double se  = Math.sqrt(var / simulation); 
+        return new Result(res, se);
+    }
+
+    /*private double getDiscountedPayoff(Instr instr, Scenario scenario)
+    {
+        
+        return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-smp.r*instr.getTS().getT())
+                     + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
+    }*/
+
+    private double getDiscountedPayoff(Instr instr, Scenario scenario)
+    {
+        // TODO Scenario reorganization
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+    
+    private Generator gen;
+    private double sum, sumSq;
 }

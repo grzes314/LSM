@@ -90,4 +90,22 @@ public class Vector extends Matrix implements Iterable<Double>
     {
         return new VecIterator();
     }
+    
+    public Vector subvector(int firstRow, int lastRow)
+    {
+        ensureSubvectorParamsOK(firstRow, lastRow);
+        Vector res = new Vector(lastRow - firstRow + 1);
+        for (int i = 1; i <= res.getSize(); ++i)
+            res.set(i, firstRow + i -1);
+        return res;
+    }
+
+    private void ensureSubvectorParamsOK(int firstRow, int lastRow)
+    {
+        ensureIndicesOK(firstRow, 1);
+        ensureIndicesOK(lastRow, 1);
+        if (firstRow > lastRow)
+            throw new IllegalArgumentException("First row can not be greater than "
+                    + "last row, firstRow = " + firstRow + ", lastRow = " + lastRow);
+    }
 }

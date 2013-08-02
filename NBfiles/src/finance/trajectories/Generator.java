@@ -14,6 +14,11 @@ public interface Generator extends ProgressObservable
         REAL, MART
     }
     
+    public enum Anthi
+    {
+        YES, NO
+    }
+    
     /**
      * Generates n scenarios (without anthitetic paths).
      * @param n number of scenarios.
@@ -27,7 +32,7 @@ public interface Generator extends ProgressObservable
      * @param anthi should the anthitetic paths be included?
      * @return generated market scenarios.
      */
-    public Scenario[] generate(int n, boolean anthi);
+    public Scenario[] generate(int n, Anthi anthi);
     
     /**
      * Generates a single scenario (without anthitetic path).
@@ -41,5 +46,5 @@ public interface Generator extends ProgressObservable
      * @param anthi should the anthitetic paths be included?
      * @return generated market scenario.
      */
-    public Scenario generate(boolean anthi);
+    public Scenario generate(Anthi anthi);
 }
