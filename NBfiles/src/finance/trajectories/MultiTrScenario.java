@@ -23,8 +23,8 @@ public class MultiTrScenario implements Scenario
     {
         this.ts = ts;
         this.names = names;
-        this.pos = tr;
-        this.neg = null;
+        this.trs = tr;
+        this.anthi = null;
         ensureConstructorArgsOK();
         makeNamesMap();
     }
@@ -41,8 +41,9 @@ public class MultiTrScenario implements Scenario
     {
         this.ts = ts;
         this.names = names;
-        this.pos = pos;
-        this.neg = neg;
+        this.trs = pos;
+        this.anthi = new MultiTrScenario(ts, names, neg);
+        this.anthi.anthi = this;
         ensureConstructorArgsOK();
         makeNamesMap();
     }
@@ -52,10 +53,8 @@ public class MultiTrScenario implements Scenario
         int l = names.length;
         if (l <= 1)
             throw new IllegalArgumentException("Names array is too short");
-        if (pos.length != l)
+        if (trs.length != l)
             throw new IllegalArgumentException("Lengths of array names and pos differ");
-        if (neg != null && neg.length != l)
-            throw new IllegalArgumentException("Lengths of array names and neg differ");
     }
     
     private void makeNamesMap()
@@ -99,34 +98,26 @@ public class MultiTrScenario implements Scenario
     public Trajectory getTr(int nr)
     {
         ensureAssetNrOK(nr);
-        return pos[nr];
+        return trs[nr];
     }
 
     @Override
     public Trajectory getTr(String name)
     {
         ensureAssetNameOK(name);
-        return pos[ name2nr.get(name) ];
+        return trs[ name2nr.get(name) ];
     }
 
     @Override
     public boolean hasAnthi()
     {
-        return neg != null;
+        return anthi != null;
     }
 
     @Override
-    public Trajectory getAnthi(int nr)
+    public Scenario getAnthi()
     {
-        ensureAssetNrOK(nr);
-        return neg[nr];
-    }
-
-    @Override
-    public Trajectory getAnthi(String name)
-    {
-        ensureAssetNameOK(name);
-        return neg[ name2nr.get(name) ];
+        return anthi;
     }
 
     @Override
@@ -137,7 +128,7 @@ public class MultiTrScenario implements Scenario
 
     private TimeSupport ts;
     private String[] names;
-    private Trajectory[] pos;
-    private Trajectory[] neg;
+    private Trajectory[] trs;
+    private MultiTrScenario anthi;
     private Map<String, Integer> name2nr;
 }

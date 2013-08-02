@@ -37,26 +37,21 @@ public interface Scenario
     Trajectory getTr(String name);
     
     /**
-     * Returns true if and only if this Scenario contains anthitetic path. In the other
+     * Returns true if and only if this Scenario contains anthitetic counterpart.
+     * In the other
      * words it tells whether call to {@code getAnthi} will return not null
-     * {@code Trajectory} rather than throw.
+     * {@code Scenario} rather than throw.
      * @return true if anthitetic path is available.
      */
     boolean hasAnthi();
     
     /**
-     * Returns anthitetic trajectory of the asset specified by its number.
-     * @param nr number of the asset.
-     * @return anthitetic trajectory of the asset specified by given number.
+     * Returns anthitetic scenario.
+     * @return anthitetic scenario.
+     * @throws AnthiteticPathNotAvailable if this scenario does not support
+     * anthitetic paths.
      */
-    Trajectory getAnthi(int nr);
-        
-    /**
-     * Returns anthitetic trajectory of the asset specified by its name.
-     * @param name name of the asset.
-     * @return anthitetic trajectory of the asset specified by given name.
-     */
-    Trajectory getAnthi(String name);
+    Scenario getAnthi();
     
     /**
      * Returns TimeSupport object indicating in which points trajectories
