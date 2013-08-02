@@ -1,8 +1,8 @@
 
 package finance.methods.testsupports;
 
-import static junit.framework.Assert.assertTrue;
 import finance.parameters.SimpleModelParams;
+import static junit.framework.Assert.assertTrue;
 import static math.utils.Numerics.doublesEqual;
 
 /**

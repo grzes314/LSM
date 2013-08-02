@@ -1,14 +1,12 @@
 
 package finance.methods.montecarlo;
 
-import finance.instruments.Instr;
-import org.junit.*;
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
 /**
  *
  * @author Grzegorz Los
  */
-public class CMCTest
+public class CMCTest extends TestCase
 {
 }

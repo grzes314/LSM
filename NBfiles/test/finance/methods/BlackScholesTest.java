@@ -11,7 +11,7 @@ import static math.utils.Numerics.doublesEqual;
  *
  * @author Grzegorz Los
  */
-public class BSModelTest extends TestCase
+public class BlackScholesTest extends TestCase
 {
     class EuOptionSupport extends finance.methods.testsupports.EuOption
     {

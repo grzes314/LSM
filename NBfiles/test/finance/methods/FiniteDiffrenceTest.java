@@ -9,7 +9,7 @@ import junit.framework.TestCase;
  *
  * @author Grzegorz Los
  */
-public class FDModelTest extends TestCase
+public class FiniteDiffrenceTest extends TestCase
 {
     class EuOptionSupport extends finance.methods.testsupports.EuOption
     {    
@@ -49,7 +49,7 @@ public class FDModelTest extends TestCase
         }   
     }
           
-    public FDModelTest()
+    public FiniteDiffrenceTest()
     {
         eos = new EuOptionSupport();
         aos = new AmOptionSupport();

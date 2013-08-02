@@ -1,14 +1,14 @@
 
 package finance.methods.testsupports;
 
-import static junit.framework.Assert.assertTrue;
 import finance.methods.BlackScholes;
+import static finance.methods.testsupports.BarrierParams.Type.*;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
-import static finance.methods.testsupports.BarrierParams.Type.*;
+import static junit.framework.Assert.assertTrue;
 import static math.utils.Numerics.doublesEqual;
 
 
