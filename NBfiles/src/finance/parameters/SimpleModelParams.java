@@ -128,6 +128,15 @@ public class SimpleModelParams implements ModelParams
         return 1.0;
     }
     
+    @Override
+    public String toString()
+    {
+        return "Model with single asset\n" +
+                "S = " + S + "\n" +
+                "vol = " + vol + "\n" +
+                "r = " + r + "\n";
+    }
+    
     /**
      * Asset's spot price.
      */

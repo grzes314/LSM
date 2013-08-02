@@ -1,5 +1,5 @@
 
-package finance.models.testsupports;
+package finance.methods.testsupports;
 
 /**
  *

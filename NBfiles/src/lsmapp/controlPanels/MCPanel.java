@@ -7,7 +7,6 @@ import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
 import finance.methods.montecarlo.MonteCarlo;
 import finance.parameters.SimpleModelParams;
-import finance.trajectories.TimeSupport;
 import java.awt.Component;
 import javax.swing.JPanel;
 
@@ -66,7 +65,7 @@ public class MCPanel extends ModelPanel
         int type = (put.isSelected() ? Option.PUT : Option.CALL);
         double E = (Double) strike.getValue();
         if (option.isSelected())
-            instr = new EuExercise( new Option(type, E, "OnlyAsset", T) ); // TODO not only asset
+            instr = new EuExercise( new Option(type, E, SimpleModelParams.onlyAsset, T) );
         else instr = new Bond(T);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);

@@ -1,5 +1,5 @@
 
-package finance.models.testsupports;
+package finance.methods.testsupports;
 
 import static java.lang.Math.exp;
 import finance.methods.BlackScholes;

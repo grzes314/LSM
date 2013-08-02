@@ -136,7 +136,7 @@ public abstract class MonteCarlo implements ProgressObservable
         if (i % 1000 == 0)
         {
             notifyObservers(new Progress("Calculating result",
-                                         (int)(100*((long)N-i)/N)));
+                                         (int)(100L*i/N)));
         }
     }
     

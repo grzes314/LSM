@@ -51,17 +51,11 @@ public class AV extends MonteCarlo
         return new Result(res, se);
     }
 
-    /*private double getDiscountedPayoff(Instr instr, Scenario scenario)
-    {
-        
-        return 0.5 * ( instr.payoff(a.pos, K)*Math.exp(-smp.r*instr.getTS().getT())
-                     + instr.payoff(a.neg, K)*Math.exp(-smp.r*instr.getTS().getT()));
-    }*/
-
     private double getDiscountedPayoff(Instr instr, Scenario scenario)
     {
-        // TODO Scenario reorganization
-        throw new UnsupportedOperationException("Not yet implemented");
+        Scenario pos = scenario, neg = scenario.getAnthi();
+        return 0.5 * ( instr.payoff(pos, K)*Math.exp(-params.getR()*instr.getT())
+                     + instr.payoff(neg, K)*Math.exp(-params.getR()*instr.getT()) );
     }
     
     private Generator gen;

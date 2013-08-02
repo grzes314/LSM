@@ -1,7 +1,6 @@
 
-package finance.models;
+package finance.methods;
 
-import finance.methods.BlackScholes;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
@@ -14,7 +13,7 @@ import static math.utils.Numerics.doublesEqual;
  */
 public class BSModelTest extends TestCase
 {
-    class EuOptionSupport extends finance.models.testsupports.EuOption
+    class EuOptionSupport extends finance.methods.testsupports.EuOption
     {
         @Override
         protected void setModelParams(SimpleModelParams smp)

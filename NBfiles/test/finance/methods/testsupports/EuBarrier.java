@@ -1,5 +1,5 @@
 
-package finance.models.testsupports;
+package finance.methods.testsupports;
 
 import static junit.framework.Assert.assertTrue;
 import finance.methods.BlackScholes;
@@ -8,7 +8,7 @@ import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
-import static finance.models.testsupports.BarrierParams.Type.*;
+import static finance.methods.testsupports.BarrierParams.Type.*;
 import static math.utils.Numerics.doublesEqual;
 
 

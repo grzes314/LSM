@@ -1,10 +1,10 @@
 
-package finance.models.testsupports;
+package finance.methods.testsupports;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
 /**
  *

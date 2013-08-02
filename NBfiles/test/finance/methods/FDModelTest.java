@@ -1,9 +1,8 @@
 
-package finance.models;
+package finance.methods;
 
-import finance.methods.FiniteDifference;
-import finance.parameters.VanillaOptionParams;
 import finance.parameters.SimpleModelParams;
+import finance.parameters.VanillaOptionParams;
 import junit.framework.TestCase;
 
 /**
@@ -12,7 +11,7 @@ import junit.framework.TestCase;
  */
 public class FDModelTest extends TestCase
 {
-    class EuOptionSupport extends finance.models.testsupports.EuOption
+    class EuOptionSupport extends finance.methods.testsupports.EuOption
     {    
         @Override
         protected void setModelParams(SimpleModelParams smp)
@@ -31,7 +30,7 @@ public class FDModelTest extends TestCase
         }     
     }
     
-    class AmOptionSupport extends finance.models.testsupports.AmOption
+    class AmOptionSupport extends finance.methods.testsupports.AmOption
     {    
         @Override
         protected void setModelParams(SimpleModelParams smp)
