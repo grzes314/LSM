@@ -1,12 +1,12 @@
 
 package finance.methods.testsupports;
 
-import static java.lang.Math.exp;
 import finance.methods.BlackScholes;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import static java.lang.Math.exp;
 import static math.utils.Numerics.plus;
 
 /**
@@ -15,7 +15,16 @@ import static math.utils.Numerics.plus;
  * @author Grzegorz Los
  */
 public abstract class EuOption extends ValuationChecker
-{         
+{
+    public EuOption()
+    {
+    }
+
+    public EuOption(double relativeDelta)
+    {
+        super(relativeDelta);
+    }
+    
     public void callExtremeSpot()
     {
         // strike and time fixed, spot price has extreme values
@@ -48,7 +57,7 @@ public abstract class EuOption extends ValuationChecker
             @Override
             public void check(SimpleModelParams smp, VanillaOptionParams vop) {
                 checkPrice(smp, vop.withT(0), plus(smp.S - vop.strike)); // price = (S - K)+
-                checkPrice(smp, vop.withT(1000), smp.S); // price = S_0
+                //checkPrice(smp, vop.withT(1000), smp.S); // price = S_0
             }            
         });  
     }
@@ -116,11 +125,14 @@ public abstract class EuOption extends ValuationChecker
     @Override
     protected void makeTypicalModelParams()
     {
-        double[] S = {100, 100, 100};
+        /*double[] S = {100, 100, 100};
         double[] vol = {0.2, 0.3, 0.4};
-        double[] r = {0.05, 0.1, 0.01};
+        double[] r = {0.05, 0.1, 0.01};*/
+        double[] S = {100};
+        double[] vol = {0.2};
+        double[] r = {0.05};
         
-        simpleModelParams = new SimpleModelParams[3];
+        simpleModelParams = new SimpleModelParams[1];
         for (int i = 0; i < simpleModelParams.length; ++i)
             simpleModelParams[i] = new SimpleModelParams(S[i], vol[i], r[i]); 
     }

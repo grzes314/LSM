@@ -3,8 +3,8 @@ package finance.methods.testsupports;
 
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
+import math.utils.Numerics;
 
 /**
  *
@@ -12,6 +12,16 @@ import static junit.framework.Assert.assertTrue;
  */
 public abstract class ValuationChecker
 {
+
+    public ValuationChecker()
+    {
+    }
+
+    public ValuationChecker(double relativeDelta)
+    {
+        this.relativeDelta = relativeDelta;
+    }
+    
     public void setUp()
     {
         makeTypicalModelParams();
@@ -50,7 +60,7 @@ public abstract class ValuationChecker
     {
         setModelParams( smp );
         double val = price( vop );
-        assertEquals(expectedPrice, val, 1e-2);          
+        assertTrue( Numerics.doublesEqual(expectedPrice, val, relativeDelta) );          
     }
            
     protected void checkPriceIsGreater(SimpleModelParams smp,
@@ -91,4 +101,5 @@ public abstract class ValuationChecker
     
     protected SimpleModelParams[] simpleModelParams;
     protected VanillaOptionParams[] puts, calls;
+    private double relativeDelta = 0.001;
 }

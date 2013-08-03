@@ -7,11 +7,11 @@ import finance.parameters.SimpleModelParams;
  *
  * @author Grzegorz Los
  */
-public class CMCTest extends MonteCarloTest
+public class AVTest extends MonteCarloTest
 {
     @Override
     protected void makeMethod(SimpleModelParams smp)
     {
-        method = new CMC(smp);
+        method = new AV(smp);
     }
 }

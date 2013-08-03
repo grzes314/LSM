@@ -96,7 +96,7 @@ public class Vector extends Matrix implements Iterable<Double>
         ensureSubvectorParamsOK(firstRow, lastRow);
         Vector res = new Vector(lastRow - firstRow + 1);
         for (int i = 1; i <= res.getSize(); ++i)
-            res.set(i, firstRow + i -1);
+            res.set(i, get(firstRow + i -1));
         return res;
     }
 

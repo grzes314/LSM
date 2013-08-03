@@ -34,6 +34,7 @@ public class CV extends MonteCarlo
     {
         super(params);
         this.controlAssetNr = controlAssetNr;
+        this.cv = ControlVariate.Stock;
     }
 
     /**
