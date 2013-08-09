@@ -1,8 +1,11 @@
 
 package finance.methods.montecarlo;
 
+import finance.instruments.Barrier;
+import finance.instruments.EuExercise;
 import finance.instruments.Instr;
-import finance.methods.testsupports.BarrierParams;
+import finance.instruments.Option;
+import finance.parameters.BarrierParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import junit.framework.TestCase;
@@ -29,7 +32,8 @@ public abstract class MonteCarloTest extends TestCase
         @Override
         protected double price(VanillaOptionParams vop)
         {
-            Instr instr = converter.makeOption(vop, SimpleModelParams.onlyAsset);
+            Instr instr = new EuExercise(
+                    new Option(vop, SimpleModelParams.onlyAsset) );
             int K = 1;
             int N = 100000;
             return method.price(instr, N, K).result;
@@ -53,8 +57,9 @@ public abstract class MonteCarloTest extends TestCase
         @Override
         protected double price(VanillaOptionParams vop, BarrierParams bp)
         {
-            Instr instr = converter.makeOption(vop, SimpleModelParams.onlyAsset);
-            instr = converter.addBarrier(instr, bp, SimpleModelParams.onlyAsset);
+            Instr instr = new EuExercise(
+                    new Option(vop, SimpleModelParams.onlyAsset) );
+            instr = new Barrier(bp, SimpleModelParams.onlyAsset, instr);
             int K = 100;
             int N = 10000;
             return method.price(instr, N, K).result;
@@ -95,5 +100,4 @@ public abstract class MonteCarloTest extends TestCase
     protected MonteCarlo method;
     private EuBarrierSupport ebs;
     private EuOptionSupport eos;
-    Converter converter = new Converter();
 }

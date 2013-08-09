@@ -13,6 +13,8 @@ import finance.methods.common.ProgressObservable;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
+import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
+import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 
 /**
  *
@@ -60,9 +62,10 @@ public class BSPanel extends ModelPanel
     protected Instr createInstr()
     {
         double T = (Double) years.getValue();
-        int type = (put.isSelected() ? Option.PUT : Option.CALL);
+        CallOrPut type = (put.isSelected() ? PUT : CALL);
         double E = (Double) strike.getValue();
-        instr = new EuExercise( new Option(type, E, "noname", T) ); 
+        VanillaOptionParams vop = new VanillaOptionParams(E, T, type);
+        instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) ); 
         return instr;
     }
 

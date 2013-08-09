@@ -4,8 +4,8 @@ package lsmapp.controlPanels;
 import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
-import finance.methods.finitedifference.FiniteDifference;
 import finance.methods.common.Progress;
+import finance.methods.finitedifference.FiniteDifference;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.AmOrEu;
@@ -14,7 +14,6 @@ import static finance.parameters.VanillaOptionParams.AmOrEu.EU;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
-import finance.trajectories.TimeSupport;
 
 /**
  *
@@ -63,11 +62,12 @@ public class FDPanel extends ModelPanel
     {
         double T = (Double) years.getValue();
         int K = (Integer) timeSteps.getValue();
-        int type = (put.isSelected() ? Option.PUT : Option.CALL);
+        CallOrPut type = (put.isSelected() ? PUT : CALL);
         double E = (Double) strike.getValue();
+        VanillaOptionParams vop = new VanillaOptionParams(E, T, type);
         if (euoption.isSelected())
-            instr = new EuExercise( new Option(type, E, "noname", T) );
-        else instr = new Option(type, E, "noname", T);
+            instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) );
+        else instr = new Option(vop, SimpleModelParams.onlyAsset);
         return instr;
     }
     

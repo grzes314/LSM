@@ -6,7 +6,13 @@ import finance.methods.common.Progress;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
 import finance.methods.montecarlo.MonteCarlo;
+import finance.parameters.BarrierParams;
+import finance.parameters.BarrierParams.Type;
 import finance.parameters.SimpleModelParams;
+import finance.parameters.VanillaOptionParams;
+import finance.parameters.VanillaOptionParams.CallOrPut;
+import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
+import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import java.awt.Component;
 import javax.swing.JPanel;
 
@@ -62,10 +68,11 @@ public class MCPanel extends ModelPanel
     {
         double T = (Double) years.getValue();
         int K = (Integer) timeSteps.getValue();
-        int type = (put.isSelected() ? Option.PUT : Option.CALL);
+        CallOrPut type = (put.isSelected() ? PUT : CALL);
         double E = (Double) strike.getValue();
+        VanillaOptionParams vop = new VanillaOptionParams(E, T, type);
         if (option.isSelected())
-            instr = new EuExercise( new Option(type, E, SimpleModelParams.onlyAsset, T) );
+            instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) );
         else instr = new Bond(T);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);
@@ -107,22 +114,18 @@ public class MCPanel extends ModelPanel
     
     private Instr addBarrier(Instr instr)
     {
-        double barrier = (Double) barrierPrice.getValue();
-        int from, knock;
-        if (upAndIn.isSelected()) {
-            from = Barrier.FROM_UP;
-            knock = Barrier.KNOCK_IN;
-        } else if (upAndOut.isSelected()) {
-            from = Barrier.FROM_UP;
-            knock = Barrier.KNOCK_OUT;
-        } else if (downAndIn.isSelected()) {
-            from = Barrier.FROM_DOWN;
-            knock = Barrier.KNOCK_IN;
-        } else {
-            from = Barrier.FROM_DOWN;
-            knock = Barrier.KNOCK_OUT;
-        }
-        return new Barrier(knock, from, barrier, "OnlyAsset", instr);
+        double level = (Double) barrierPrice.getValue();
+        BarrierParams bp = null;
+        if (upAndIn.isSelected()) 
+            bp = new BarrierParams(Type.UAI, level);
+         else if (upAndOut.isSelected()) 
+            bp = new BarrierParams(Type.UAO, level);
+         else if (downAndIn.isSelected()) 
+            bp = new BarrierParams(Type.DAI, level);
+         else 
+            bp = new BarrierParams(Type.DAO, level);
+        
+        return new Barrier(bp, SimpleModelParams.onlyAsset, instr);
     }
     
     private void panelEnabled(JPanel panel, boolean enabled)

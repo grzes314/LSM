@@ -17,6 +17,7 @@ import lsmapp.MainFrame;
 import lsmapp.controlPanels.LSMPanel;
 import lsmapp.controlPanels.ResultHandler;
 import finance.methods.lsm.LSM;
+import finance.parameters.VanillaOptionParams;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -55,7 +56,7 @@ public class LSM2GUI implements ResultHandler
     
     private Component stoppingPlot(LSM model, Option opt)
     {
-        if (opt.getType() == Option.CALL)
+        if (opt.getType() == VanillaOptionParams.CallOrPut.CALL)
             return new JLabel("It is always worth to not"
                     + " exercise american call option.");
         

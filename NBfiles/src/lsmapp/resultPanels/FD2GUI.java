@@ -16,6 +16,7 @@ import lsmapp.MainFrame;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
 import finance.methods.finitedifference.FiniteDifference;
+import finance.parameters.VanillaOptionParams;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -63,7 +64,7 @@ public class FD2GUI implements ResultHandler
     
     private Component stoppingPlot(FiniteDifference model, Option opt)
     {
-        if (opt.getType() == Option.CALL)
+        if (opt.getType() == VanillaOptionParams.CallOrPut.CALL)
             return new JLabel("It is always worth to not"
                     + " exercise american call option.");
         
