@@ -2,9 +2,9 @@
 package finance.methods.lsm;
 
 import finance.instruments.Instr;
-import finance.methods.Progress;
-import finance.methods.ProgressObservable;
-import finance.methods.ProgressObserver;
+import finance.methods.common.Progress;
+import finance.methods.common.ProgressObservable;
+import finance.methods.common.ProgressObserver;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.Generator;
 import finance.trajectories.OneTrGenerator;

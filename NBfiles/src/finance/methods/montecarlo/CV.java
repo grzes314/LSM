@@ -2,7 +2,7 @@
 package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
-import finance.methods.BlackScholes;
+import finance.methods.blackscholes.BlackScholes;
 import finance.parameters.ModelParams;
 import finance.parameters.OneAssetParams;
 import finance.parameters.SimpleModelParams;

@@ -1,5 +1,5 @@
 
-package finance.methods;
+package finance.methods.blackscholes;
 
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;

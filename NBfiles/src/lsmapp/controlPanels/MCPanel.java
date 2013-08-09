@@ -2,7 +2,7 @@
 package lsmapp.controlPanels;
 
 import finance.instruments.*;
-import finance.methods.Progress;
+import finance.methods.common.Progress;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
 import finance.methods.montecarlo.MonteCarlo;

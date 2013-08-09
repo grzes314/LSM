@@ -1,6 +1,7 @@
 
-package finance.methods;
+package finance.methods.finitedifference;
 
+import finance.methods.finitedifference.FiniteDifference;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import junit.framework.TestCase;

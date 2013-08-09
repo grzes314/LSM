@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.methods.FiniteDifference;
+import finance.methods.finitedifference.FiniteDifference;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;

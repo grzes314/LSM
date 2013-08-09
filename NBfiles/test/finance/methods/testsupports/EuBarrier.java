@@ -1,7 +1,7 @@
 
 package finance.methods.testsupports;
 
-import finance.methods.BlackScholes;
+import finance.methods.blackscholes.BlackScholes;
 import static finance.methods.testsupports.BarrierParams.Type.*;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;

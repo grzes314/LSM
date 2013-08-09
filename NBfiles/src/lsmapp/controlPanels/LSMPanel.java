@@ -10,7 +10,7 @@ import finance.instruments.Instr;
 import finance.instruments.Bond;
 import finance.trajectories.TimeSupport;
 import finance.methods.lsm.LSM;
-import finance.methods.Progress;
+import finance.methods.common.Progress;
 
 /**
  *

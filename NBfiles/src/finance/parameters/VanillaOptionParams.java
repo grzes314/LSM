@@ -1,7 +1,7 @@
 
 package finance.parameters;
 
-import finance.methods.WrongParamException;
+import finance.methods.common.WrongParamException;
 
 /**
  * Parameters of the most popular options.

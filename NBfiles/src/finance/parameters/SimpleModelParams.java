@@ -1,7 +1,7 @@
 
 package finance.parameters;
 
-import finance.methods.WrongParamException;
+import finance.methods.common.WrongParamException;
 import java.util.ArrayList;
 import java.util.Collection;
 import math.matrices.Matrix;

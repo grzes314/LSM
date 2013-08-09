@@ -1,9 +1,9 @@
 
 package finance.trajectories;
 
-import finance.methods.ObservableSupport;
-import finance.methods.Progress;
-import finance.methods.ProgressObserver;
+import finance.methods.common.ObservableSupport;
+import finance.methods.common.Progress;
+import finance.methods.common.ProgressObserver;
 
 /**
  *

@@ -2,10 +2,10 @@
 package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
-import finance.methods.ObservableSupport;
-import finance.methods.Progress;
-import finance.methods.ProgressObservable;
-import finance.methods.ProgressObserver;
+import finance.methods.common.ObservableSupport;
+import finance.methods.common.Progress;
+import finance.methods.common.ProgressObservable;
+import finance.methods.common.ProgressObserver;
 import finance.parameters.ModelParams;
 
 /**

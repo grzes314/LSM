@@ -5,7 +5,7 @@ import finance.instruments.Instr;
 import lsmapp.MainFrame;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.methods.BlackScholes;
+import finance.methods.blackscholes.BlackScholes;
 
 /**
  *

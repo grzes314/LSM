@@ -1,7 +1,7 @@
 
 package finance.trajectories;
 
-import finance.methods.ProgressObservable;
+import finance.methods.common.ProgressObservable;
 
 /**
  * Interface for classes generating market scenarios.

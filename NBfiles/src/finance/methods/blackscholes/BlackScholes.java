@@ -1,6 +1,10 @@
 
-package finance.methods;
+package finance.methods.blackscholes;
 
+import finance.methods.common.Progress;
+import finance.methods.common.ProgressObservable;
+import finance.methods.common.ProgressObserver;
+import finance.methods.common.WrongParamException;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static java.lang.Math.*;
