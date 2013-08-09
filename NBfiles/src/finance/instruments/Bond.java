@@ -11,13 +11,19 @@ public class Bond extends Instr
 {
     public Bond(double T)
     {
+        this(1.0, T);
+    }
+
+    public Bond(double nominal, double T)
+    {
         super(T);
+        this.nominal = nominal;
     }
 
     @Override
     public String desc()
     {
-        return "Bond paying 1 after" + getT() + " years";
+        return "Bond paying " + nominal + " after" + getT() + " years";
     }
     
     @Override
@@ -35,13 +41,13 @@ public class Bond extends Instr
     @Override
     protected double payoff_(Scenario s, int k)
     {
-        return 1;
+        return nominal;
     }
 
     @Override
     public double intrisnicValue(double x)
     {
-        return 1.0;
+        return nominal; // TODO rmeove instrisnic value 
     }
     
     @Override
@@ -51,4 +57,6 @@ public class Bond extends Instr
             return true;
         else return false;
     }    
+    
+    double nominal;
 }
