@@ -1,6 +1,7 @@
 
 package finance.instruments;
 
+import finance.parameters.BarrierParams;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
 
@@ -12,18 +13,14 @@ public class Barrier extends Modificator
 {
     /**
      * Constructor.
-     * @param knock value should be KNOCK_IN or KNOCK_OUT 
-     * @param from value should be FROM_UP or FROM_DOWN
-     * @param level barrier value.
+     * @param bp barrier parameters.
      * @param underlying name of the asset on which barrier is being put.
      * @param wrapped an instrument which payoff will be changed.
      */
-    public Barrier(int knock, int from, double level, String underlying, Instr wrapped)
+    public Barrier(BarrierParams bp, String underlying, Instr wrapped)
     {
         super(wrapped);
-        this.knock = knock;
-        this.from = from;
-        this.level = level;
+        this.bp = bp;
         this.underlying = underlying;
         underlyingNr = null;
     }
@@ -36,12 +33,10 @@ public class Barrier extends Modificator
      * @param underlyingNr number of the asset on which barrier is being put.
      * @param wrapped an instrument which payoff will be changed.
      */
-    public Barrier(int knock, int from, double level, int underlyingNr, Instr wrapped)
+    public Barrier(BarrierParams bp, int underlyingNr, Instr wrapped)
     {
         super(wrapped);
-        this.knock = knock;
-        this.from = from;
-        this.level = level;
+        this.bp = bp;
         this.underlyingNr = underlyingNr;
         underlying = null;
     }
@@ -54,11 +49,12 @@ public class Barrier extends Modificator
         else tr = s.getTr(underlying);
         
         boolean hit;
-        if (from == FROM_UP) hit = tr.cumMax(k) >= level;
-        else hit = tr.cumMin(k) <= level;
+        if (bp.isFromUp())
+            hit = tr.cumMax(k) >= bp.level;
+        else
+            hit = tr.cumMin(k) <= bp.level;
         
-        
-        return (knock == KNOCK_IN ? hit : !hit);
+        return (bp.isKnockIn() ? hit : !hit);
     }
 
 
@@ -68,7 +64,7 @@ public class Barrier extends Modificator
         String mssg = "\nBarrier on asset ";
         mssg += assetName() + "\n";
         mssg += barrierType();
-        mssg += ", level=" + level;
+        mssg += ", level=" + bp.level;
         return wrapped.desc() + mssg;
     }
 
@@ -79,14 +75,20 @@ public class Barrier extends Modificator
     }
     
     private String barrierType()
-    {       
-        if (knock == KNOCK_IN) {
-            if (from == FROM_UP) return "Up-and-in";
-            else return "Down-and-in";
-        } else {
-            if (from == FROM_UP) return "Up-and-out";
-            else return "Down-and-out";            
-        }        
+    {
+        switch (bp.type)
+        {
+            case UAI:
+                return "Up-and-in";
+            case UAO:
+                return "Up-and-out";
+            case DAI:
+                return "Down-and-in";
+            case DAO:
+                return "Down-and-out";
+            default:
+                throw new RuntimeException("Flow should not reach that statement");
+        }
     }
     
     private String assetName()
@@ -101,50 +103,17 @@ public class Barrier extends Modificator
         if (str.equalsIgnoreCase("barrier"))
             return true;
         else if (str.equalsIgnoreCase("up-and-out"))
-            return (knock == KNOCK_OUT && from == FROM_UP);
+            return (bp.type == BarrierParams.Type.UAO);
         else if (str.equalsIgnoreCase("up-and-in"))
-            return (knock == KNOCK_IN && from == FROM_UP);
+            return (bp.type == BarrierParams.Type.UAI);
         else if (str.equalsIgnoreCase("down-and-out"))
-            return (knock == KNOCK_OUT && from == FROM_DOWN);
+            return (bp.type == BarrierParams.Type.DAO);
         else if (str.equalsIgnoreCase("down-and-in")) 
-            return (knock == KNOCK_IN && from == FROM_DOWN);
+            return (bp.type == BarrierParams.Type.DAI);
         else return wrapped.areYou(str);
     }
-
-    /**
-     * Constant indicating that barrier is knock-in.
-     */
-    public static final int KNOCK_IN = 0;
     
-    /**
-     * Constant indicating that barrier is knock-out.
-     */
-    public static final int KNOCK_OUT = 1;
-    
-    /**
-     * Constant indicating that barrier is from up.
-     */
-    public static final int FROM_UP = 2;
-    
-    /**
-     * Constant indicating that barrier is from down.
-     */
-    public static final int FROM_DOWN = 3;
-    
-    /**
-     * Value indicating if barrier is in-type or out-type.
-     */
-    public final int knock;
-        
-    /**
-     * Value indicating if barrier is from up or from down.
-     */
-    public final int from;
-    
-    /**
-     * Level of the barrier.
-     */
-    public final double level;
+    public final BarrierParams bp;
     
     /**
      * Name of the underlying of the option. Note that only one of pair

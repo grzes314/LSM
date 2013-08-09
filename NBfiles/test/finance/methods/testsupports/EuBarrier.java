@@ -2,7 +2,8 @@
 package finance.methods.testsupports;
 
 import finance.methods.blackscholes.BlackScholes;
-import static finance.methods.testsupports.BarrierParams.Type.*;
+import finance.parameters.BarrierParams;
+import static finance.parameters.BarrierParams.Type.*;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
