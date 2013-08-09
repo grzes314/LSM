@@ -1,6 +1,9 @@
 
 package finance.instruments;
 
+import finance.parameters.VanillaOptionParams;
+import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
+import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
 
@@ -17,11 +20,10 @@ public class Option extends Instr
      * @param strike strike value.
      * @param T time horizon.
      */
-    public Option(int type, double strike, String underlying, double T)
+    public Option(VanillaOptionParams vop, String underlying)
     {
-        super(T);
-        this.type = type;
-        this.K = strike;
+        super(vop.T);
+        this.vop = vop;
         this.underlying = underlying;
         underlyingNr = null;
     }
@@ -33,11 +35,10 @@ public class Option extends Instr
      * @param strike strike value.
      * @param T time horizon.
      */
-    public Option(int type, double strike, int underlyingNr, double T)
+    public Option(VanillaOptionParams vop, int underlyingNr)
     {
-        super(T);
-        this.type = type;
-        this.K = strike;
+        super(vop.T);
+        this.vop = vop;
         this.underlyingNr = underlyingNr;
         underlying = null;
     }    
@@ -46,25 +47,25 @@ public class Option extends Instr
     public String desc()
     {
         return "An option\n" +
-                "Type: " + (type == CALL ? "call" : "put") +
-                "\nStrike: " + K +
+                "Type: " + (vop.callOrPut == CALL ? "call" : "put") +
+                "\nStrike: " + getStrike() +
                 "\nExpiracy: " + getT();
     }
     
     @Override
     public String toString()
     {
-        return (type == CALL ? "Call" : "Put") + "@" + K;
+        return (getType() == CALL ? "Call" : "Put") + "@" + getStrike();
     }
 
-    public int getType()
+    public VanillaOptionParams.CallOrPut getType()
     {
-        return type;
+        return vop.callOrPut;
     }
 
     public double getStrike()
     {
-        return K;
+        return vop.strike;
     }
 
     public String getUnderlying()
@@ -80,8 +81,8 @@ public class Option extends Instr
     @Override
     public double intrisnicValue(double stockPrice)
     {
-        if (type == CALL) return Math.max(0, stockPrice - K);
-        else return Math.max(0, K - stockPrice);        
+        if (getType() == CALL) return Math.max(0, stockPrice - getStrike());
+        else return Math.max(0, getStrike() - stockPrice);        
     }
 
     @Override
@@ -97,8 +98,8 @@ public class Option extends Instr
         if (underlying == null) tr = s.getTr(underlyingNr);
         else tr = s.getTr(underlying);
         
-        if (type == CALL) return Math.max(0, tr.price(k) - K);
-        else return Math.max(0, K - tr.price(k));
+        if (getType() == CALL) return Math.max(0, tr.price(k) - getStrike());
+        else return Math.max(0, getStrike() - tr.price(k));
     }
 
     @Override
@@ -109,31 +110,13 @@ public class Option extends Instr
         else if (str.equalsIgnoreCase("american"))
             return true;
         if (str.equalsIgnoreCase("call"))
-            return type == CALL;
+            return getType() == CALL;
         if (str.equalsIgnoreCase("put"))
-            return type == PUT;
+            return getType() == PUT;
         else return false;
     }
-      
-    /**
-     * Constant indicating call option.
-     */
-    public static final int CALL = 0;
     
-    /**
-     * Constant indicating put option.
-     */
-    public static final int PUT = 1;
-    
-    /**
-     * Type of the option.
-     */
-    public final int type;
-    
-    /**
-     * Strike value of the option.
-     */
-    public final double K;
+    public final VanillaOptionParams vop;
 
     /**
      * Name of the underlying of the option. Note that only one of pair
