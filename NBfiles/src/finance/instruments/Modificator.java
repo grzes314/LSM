@@ -19,6 +19,11 @@ public abstract class Modificator extends Instr
         this.wrapped = wrapped;
     }
 
+    public Instr getWrapped()
+    {
+        return wrapped;
+    }
+
     /**
      * By default payoff from modification is the same us from unmodified
      * instrument, only the possibility of exercise is changed.

@@ -76,7 +76,7 @@ public class BlackScholes implements ProgressObservable
     @Override
     public String toString()
     {
-        return "BLACK-SCHOLES FORUMULA\n" +
+        return "BLACK-SCHOLES FORMULA\n" +
                "S = "+ S + "\n" +
                "vol = " + vol + "\n" +
                "r = " + r + "\n";                

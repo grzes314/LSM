@@ -57,6 +57,11 @@ public class Bond extends Instr
             return true;
         else return false;
     }    
+
+    public double getNominal()
+    {
+        return nominal;
+    }
     
     double nominal;
 }
