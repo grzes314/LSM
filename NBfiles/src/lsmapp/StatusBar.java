@@ -27,8 +27,8 @@ public class StatusBar extends JLabel
     @Override
     public void setText(String lbl)
     {
-        if (timer == null)
-            return;
+        if (timer == null) // this is necessary because JLabel calls setText in constructor
+            return;        // before timer is initialized
         if (timer.isRunning())
             timer.stop();
         super.setText(lbl);
