@@ -157,6 +157,7 @@ public class Pricer extends JFrame
     private void newModelClicked()
     {
         modelManager.clear();
+        setStatus("Model cleared.");
     }
     
     private void openModelClicked()

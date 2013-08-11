@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -19,13 +21,32 @@ class ModelManager
 {
     ModelManager()
     {
+        initTableModelListener();
     }
     
     ModelManager(ModelParams mp)
     {
         readModelParams(mp);
+        initTableModelListener();
     }
 
+    private void initTableModelListener()
+    {
+        tableModelListener = new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e)
+            {
+                CorrChangeEvent ccev = (CorrChangeEvent) e;
+                    handleCorrChange(ccev.assetSource, ccev.assetChanged, ccev.value);
+            }
+        };
+    }
+    
+    private void handleCorrChange(String assetSource, String assetChanged, double value)
+    {
+        assetPanels.get(assetChanged).changeCorrelation(assetSource, value);
+    }
+            
     ModelPanel getModelPanel()
     {
         return modelPanel;
@@ -110,6 +131,7 @@ class ModelManager
     {
         ensureNewAssetNameOK(asset);
         OneAssetPanel oap = new OneAssetPanel(asset);
+        oap.addTableModelListener(tableModelListener);
         updateCorrelation(asset, oap);
         assetPanels.put(asset, oap);
     }
@@ -148,7 +170,11 @@ class ModelManager
     {
         assetPanels.clear();
         for (String asset: mp.getAssetsNames())
-            assetPanels.put( asset, new OneAssetPanel(mp.getParams(asset)) );
+        {
+            OneAssetPanel oap = new OneAssetPanel(mp.getParams(asset));
+            assetPanels.put( asset, oap );
+            oap.addTableModelListener(tableModelListener);
+        }
         readCorrelation(mp);
         modelPanel.reset();
         modelPanel.setR(mp.getR());
@@ -167,7 +193,8 @@ class ModelManager
             assetPanels.get(asset).resetCorrelations(arr);
         }
     }
-
+    
     private ModelPanel modelPanel;
     private Map<String, OneAssetPanel> assetPanels = new HashMap<>();
+    private  TableModelListener tableModelListener;
 }

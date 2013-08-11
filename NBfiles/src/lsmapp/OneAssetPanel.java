@@ -4,8 +4,14 @@ package lsmapp;
 import finance.parameters.OneAssetParams;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+
+
+
+
 
 
 /**
@@ -19,6 +25,7 @@ public class OneAssetPanel extends javax.swing.JPanel
         initComponents();
         assetName.setText(asset);
         tableModel = (MyTableModel) table.getModel();
+        tableModel.setAssetName(asset);
     }
 
     OneAssetPanel(OneAssetParams params)
@@ -26,6 +33,7 @@ public class OneAssetPanel extends javax.swing.JPanel
         initComponents();
         assetName.setText(params.name);
         tableModel = (MyTableModel) table.getModel();
+        tableModel.setAssetName(params.name);
         spot.setValue( (Double) params.S );
         volatility.setValue( (Double) params.vol );
         drift.setValue( (Double) params.mu );
@@ -63,6 +71,27 @@ public class OneAssetPanel extends javax.swing.JPanel
                 (Double) spot.getValue(),
                 (Double) volatility.getValue(),
                 (Double) drift.getValue() );
+    }
+
+    public void removeTableModelListener(TableModelListener l)
+    {
+        tableModel.removeTableModelListener(l);
+    }
+
+    public void addTableModelListener(TableModelListener l)
+    {
+        tableModel.addTableModelListener(l);
+    }
+    
+    void showIllegalCorrValue(double val)
+    {
+        JOptionPane.showMessageDialog(this, "Incorrect correlation value: " + val,
+                "Information", JOptionPane.WARNING_MESSAGE);
+    }
+    
+    void changeCorrelation(String asset, double value)
+    {
+        tableModel.changeCorrelation(asset, value);
     }
     
     private MyTableModel tableModel;
@@ -116,7 +145,7 @@ public class OneAssetPanel extends javax.swing.JPanel
 
         drift.setModel(new javax.swing.SpinnerNumberModel(0.0d, -10.0d, 10.0d, 0.01d));
 
-        table.setModel(new MyTableModel());
+        table.setModel(new MyTableModel(this));
         jScrollPane1.setViewportView(table);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -185,12 +214,24 @@ public class OneAssetPanel extends javax.swing.JPanel
     private javax.swing.JSpinner volatility;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
-
 }
+
+
 class MyTableModel implements TableModel
 {
-    public MyTableModel()
+    public MyTableModel(OneAssetPanel oap)
     {
+        this.oap = oap;
+    }
+
+    public String getAssetName()
+    {
+        return assetName;
+    }
+
+    public void setAssetName(String assetName)
+    {
+        this.assetName = assetName;
     }
 
     @Override
@@ -265,7 +306,20 @@ class MyTableModel implements TableModel
         ensureIndicesOK(rowIndex, columnIndex);
         if (columnIndex == 0)
             throw new IllegalArgumentException("Column \"Other asset\"" + "is not editable");
-        else correlations.set(rowIndex, Double.valueOf(aValue + ""));
+        double val =  Double.valueOf(aValue + "");
+        trySettingValue(val, rowIndex, columnIndex);
+    }
+
+    private void trySettingValue(double val, int rowIndex, int columnIndex)
+    {
+        if (val > 1 || val < -1)
+            oap.showIllegalCorrValue(val);
+        else 
+        {
+            correlations.set(rowIndex, val);
+            fireChange( new CorrChangeEvent(this, rowIndex, rowIndex, columnIndex,
+                    assetName, otherAssets.get(rowIndex), correlations.get(rowIndex)) );
+        }
     }
 
     @Override
@@ -278,6 +332,12 @@ class MyTableModel implements TableModel
     public void removeTableModelListener(TableModelListener l)
     {
         tableModelListeners.remove(l);
+    }
+    
+    private void fireChange(TableModelEvent ev)
+    {
+        for (TableModelListener tml: tableModelListeners)
+            tml.tableChanged(ev);
     }
 
     void zeroCorrelations(Collection<String> assetsNames)
@@ -300,6 +360,17 @@ class MyTableModel implements TableModel
             otherAssets.add(p.fst);
             correlations.add(p.snd);
         }
+    }
+
+    void changeCorrelation(String asset, double value)
+    {
+        for (int i = 0; i < otherAssets.size(); ++i)
+            if (otherAssets.get(i).equals(asset))
+            {
+                correlations.set(i, value);
+                return ;
+            }
+        throw new RuntimeException("Changing correlation of not existing asset");
     }
     
     void addNewAsset(String assetName)
@@ -332,4 +403,23 @@ class MyTableModel implements TableModel
     private ArrayList<TableModelListener> tableModelListeners = new ArrayList<>();
     private ArrayList<String> otherAssets = new ArrayList<>();
     private ArrayList<Double> correlations = new ArrayList<>();
+    private String assetName;
+    private final OneAssetPanel oap;
+}
+
+class CorrChangeEvent extends TableModelEvent
+{
+
+    public CorrChangeEvent(TableModel source, int firstRow, int lastRow, int column,
+            String assetSource, String assetChanged, double value)
+    {
+        super(source, firstRow, lastRow, column);
+        this.assetSource = assetSource;
+        this.assetChanged = assetChanged;
+        this.value = value;
+    }   
+    
+    final String assetSource;
+    final String assetChanged;
+    final double value;
 }

@@ -25,8 +25,7 @@ class ModelPanel extends javax.swing.JPanel
     {
         oneAssetContainer.removeAll();
         oneAssetContainer.add(modelManager.getAsset(asset), BorderLayout.CENTER);
-        oneAssetContainer.revalidate();
-        oneAssetContainer.repaint();
+        updateView();
     }
     
     private void addAssetClicked()
@@ -45,7 +44,6 @@ class ModelPanel extends javax.swing.JPanel
     {
         modelManager.addAsset(name);
         assetsList.addItem(name);
-        numberOfAssets.setText("" + modelManager.getNumberOfAssets());
         showStatusMessage("New asset added: " + name);
         assetsList.setSelectedItem(name);
     }
@@ -57,7 +55,7 @@ class ModelPanel extends javax.swing.JPanel
                     "Warning", JOptionPane.WARNING_MESSAGE);
         else if (modelManager.getNumberOfAssets() == 1)
             maybeDeleteTheOnlyAsset();
-        if (modelManager.getNumberOfAssets() > 0)
+        else
             maybeDeleteAsset();
     }
 
@@ -98,6 +96,7 @@ class ModelPanel extends javax.swing.JPanel
     
     void updateView()
     {
+        numberOfAssets.setText("" + modelManager.getNumberOfAssets());
         revalidate();
         repaint();
     }
@@ -133,6 +132,7 @@ class ModelPanel extends javax.swing.JPanel
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         oneAssetContainer = new javax.swing.JPanel();
         generalInfoContainer = new javax.swing.JPanel();
@@ -161,7 +161,11 @@ class ModelPanel extends javax.swing.JPanel
 
         generalInfoContainer.setBorder(new javax.swing.border.MatteBorder(null));
 
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel1.setText("Number of assets: ");
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, numberOfAssets, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel1, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
+        bindingGroup.addBinding(binding);
 
         numberOfAssets.setEditable(false);
         numberOfAssets.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
@@ -181,7 +185,11 @@ class ModelPanel extends javax.swing.JPanel
             }
         });
 
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel2.setText("Riskless interest rate: ");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, rate, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel2, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
+        bindingGroup.addBinding(binding);
 
         rate.setModel(new javax.swing.SpinnerNumberModel(0.05d, -1.0d, 5.0d, 0.001d));
 
@@ -191,19 +199,23 @@ class ModelPanel extends javax.swing.JPanel
             generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(generalInfoContainerLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
                 .addGroup(generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(numberOfAssets)
-                    .addComponent(rate, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-                .addGap(12, 12, 12)
-                .addComponent(addAsset, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(deleteAsset, javax.swing.GroupLayout.DEFAULT_SIZE, 144, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(generalInfoContainerLayout.createSequentialGroup()
+                        .addComponent(numberOfAssets, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(addAsset, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(deleteAsset, javax.swing.GroupLayout.DEFAULT_SIZE, 122, Short.MAX_VALUE)
+                        .addGap(40, 40, 40)
+                        .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE))
+                    .addGroup(generalInfoContainerLayout.createSequentialGroup()
+                        .addComponent(rate, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         generalInfoContainerLayout.setVerticalGroup(
             generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,11 +223,11 @@ class ModelPanel extends javax.swing.JPanel
                 .addContainerGap()
                 .addGroup(generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deleteAsset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel1)
-                        .addComponent(numberOfAssets)
-                        .addComponent(addAsset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(addAsset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(numberOfAssets, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(deleteAsset, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(generalInfoContainerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -254,6 +266,8 @@ class ModelPanel extends javax.swing.JPanel
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(oneAssetContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
     private void assetsListItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_assetsListItemStateChanged
@@ -284,6 +298,6 @@ class ModelPanel extends javax.swing.JPanel
     private javax.swing.JTextField numberOfAssets;
     private javax.swing.JPanel oneAssetContainer;
     private javax.swing.JSpinner rate;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
-
 }
