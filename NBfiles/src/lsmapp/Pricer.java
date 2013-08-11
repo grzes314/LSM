@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
  *
@@ -207,46 +208,82 @@ public class Pricer extends JFrame
     {
         ConcreteCalibrator cc = new ConcreteCalibrator(true);
         try {
-            InputStream in = new FileInputStream(file);
-            cc.readAndCalc(in);
-            ModelParams mp = new ConcreteParams(cc.getOneAssetParams(),
-                    cc.getCorrelation(), 0.0);
-            modelManager.readModelParams(mp);
+            tryToReadModel(file, cc);
+        } catch (NotPositiveDefiniteMatrixException ex) {
+            JOptionPane.showMessageDialog(rootPane, ex.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus("Model was not calibrated.");
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(rootPane, "Could not read the file",
                     "Error", JOptionPane.ERROR_MESSAGE);
+            setStatus("Model was not calibrated.");
         } catch (CorruptedStreamException ex) {
             JOptionPane.showMessageDialog(rootPane, "The file is corrupted",
                     "Error", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus("Model was not calibrated.");
         }
+    }
+
+    private void tryToOpenModel(File file, ConcreteParamsIO io) throws FileNotFoundException, CorruptedStreamException
+    {
+        InputStream in = new FileInputStream(file);
+        ModelParams mp = io.read(in);
+        modelManager.readModelParams(mp);
+        setStatus("Model from file " + file.getName() + " opened.");
+    }
+
+    private void tryToReadModel(File file, ConcreteCalibrator cc)
+            throws NotPositiveDefiniteMatrixException, CorruptedStreamException,
+                    FileNotFoundException
+    {
+        InputStream in = new FileInputStream(file);
+        cc.readAndCalc(in);
+        ModelParams mp = new ConcreteParams(cc.getOneAssetParams(),
+                cc.getCorrelation(), 0.0);
+        modelManager.readModelParams(mp);
+        setStatus("Model calibrated basing on data from file " + file.getName() + ".");
     }
 
     private void saveModel(File file)
     {
         ConcreteParamsIO io = new ConcreteParamsIO();
         try {
-            OutputStream out = new FileOutputStream(file);
-            io.write(modelManager.toParams(), out);
+            tryToSaveModel(file, io);
+        } catch (NotPositiveDefiniteMatrixException ex) {
+            JOptionPane.showMessageDialog(rootPane, "Can not save model: " + ex.getMessage(),
+                    "Saving failed", JOptionPane.ERROR_MESSAGE);
+            Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus("Model was not saved.");
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(rootPane, "Could not write to the file",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Saving failed", JOptionPane.ERROR_MESSAGE);
+            setStatus("Model was not saved.");
         }
+    }
+
+    private void tryToSaveModel(File file, ConcreteParamsIO io)
+            throws FileNotFoundException, IOException, NotPositiveDefiniteMatrixException
+    {
+        OutputStream out = new FileOutputStream(file);
+        io.write(modelManager.toParams(), out);
+        setStatus("Model saved to file " + file.getName() + ".");
     }
     private void openModel(File file)
     {
         ConcreteParamsIO io = new ConcreteParamsIO();
         try {
-            InputStream in = new FileInputStream(file);
-            ModelParams mp = io.read(in);
-            modelManager.readModelParams(mp);
+            tryToOpenModel(file, io);
         } catch (CorruptedStreamException ex) {
-            JOptionPane.showMessageDialog(rootPane, "The file is corrupted",
+            JOptionPane.showMessageDialog(rootPane, "The file is corrupted.\n" + ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
             Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+            setStatus("Failed to open model from file " + file.getName() + ".");
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(rootPane, "Could not read the file",
                     "Error", JOptionPane.ERROR_MESSAGE);
+            setStatus("File could not be opened.");
         }
     }
     

@@ -3,6 +3,7 @@ package finance.parameters;
 
 import java.util.*;
 import math.matrices.Matrix;
+import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
  * Class storing parameters of multi asset models. Numeration of assets is 1-based.
@@ -11,6 +12,7 @@ import math.matrices.Matrix;
 public class ConcreteParams implements ModelParams
 {
     public ConcreteParams(OneAssetParams[] basicParams, Matrix corr, double r)
+            throws NotPositiveDefiniteMatrixException
     {
         ensureNamesAreUnique(basicParams);
         ensureIsCorrMatrixOK(basicParams, corr);
@@ -34,12 +36,13 @@ public class ConcreteParams implements ModelParams
     }
 
     private void ensureIsCorrMatrixOK(OneAssetParams[] basicParams, Matrix corr)
+            throws NotPositiveDefiniteMatrixException
     {
         if (corr.getRows() != basicParams.length)
             throw new IllegalArgumentException("Sizes of the correlation matrix"
                     + " and array of basic parameteres are not suitable");
         if (!corr.isCorrelationMatrix())
-            throw new IllegalArgumentException("Given matrix can not be correlation matrix");
+            throw new NotPositiveDefiniteMatrixException("Given matrix can not be correlation matrix");
     }
 
     private void ensureInterestRataOK(double r)

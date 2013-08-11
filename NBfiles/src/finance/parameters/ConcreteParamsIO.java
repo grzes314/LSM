@@ -3,6 +3,7 @@ package finance.parameters;
 
 import java.io.*;
 import math.matrices.Matrix;
+import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
  * Reads and writes {@code ConcreteParams} in the following format:
@@ -139,8 +140,8 @@ public class ConcreteParamsIO implements ParamsIO
         try {
             ConcreteParams params = new ConcreteParams(basicParams, corr, r);
             return params;
-        } catch (IllegalArgumentException ex) {
-            throw new CorruptedStreamException("Data in file is invalid", ex);
+        } catch (IllegalArgumentException | NotPositiveDefiniteMatrixException ex) {
+            throw new CorruptedStreamException("Data in file is invalid: " + ex.getMessage(), ex);
         }
     }
     

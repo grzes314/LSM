@@ -29,18 +29,77 @@ class ModelPanel extends javax.swing.JPanel
         oneAssetContainer.repaint();
     }
     
-    private void addAsset()
+    private void addAssetClicked()
     {
         String name = JOptionPane.showInputDialog(this, "Name of the asset");
         try {
-            modelManager.addAsset(name);
-            assetsList.addItem(name);
-            numberOfAssets.setText("" + modelManager.getNumberOfAssets());
-            Pricer.getApp().setStatus("New asset added: " + name);
+            if (name != null)
+                addAsset(name);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    
+    private void addAsset(String name) throws IllegalArgumentException
+    {
+        modelManager.addAsset(name);
+        assetsList.addItem(name);
+        numberOfAssets.setText("" + modelManager.getNumberOfAssets());
+        showStatusMessage("New asset added: " + name);
+        assetsList.setSelectedItem(name);
+    }
+    
+    private void deleteAssetClicked()
+    {
+        if (modelManager.getNumberOfAssets() == 0)
+            JOptionPane.showMessageDialog(this, "There is nothing to delete.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+        else if (modelManager.getNumberOfAssets() == 1)
+            maybeDeleteTheOnlyAsset();
+        if (modelManager.getNumberOfAssets() > 0)
+            maybeDeleteAsset();
+    }
+
+    private void maybeDeleteAsset()
+    {
+        String choice = (String) JOptionPane.showInputDialog(this,
+                "Which asset shall be deleted?", "Deleting",
+                JOptionPane.QUESTION_MESSAGE, null, modelManager.getAssets().toArray(),
+                assetsList.getSelectedItem());
+        if (choice != null)
+            deleteAsset(choice);
+    }
+
+    private void deleteAsset(String name)
+    {
+        modelManager.deleteAsset(name);
+        assetsList.removeItem(name);
+        showStatusMessage("Asset \"" + name +"\" deleted.");
+        updateView();
+    }
+
+    private void maybeDeleteTheOnlyAsset()
+    {
+        int res = JOptionPane.showConfirmDialog(
+            this, "Are you sure you want to delete the only asset?",
+            "Confirm", JOptionPane.YES_NO_OPTION);
+        if (res == JOptionPane.YES_OPTION)
+        {
+            modelManager.clear();
+            showStatusMessage("Model is now empty");
+        }
+    }
+    
+    private void showStatusMessage(String mssg)
+    {
+        Pricer.getApp().setStatus(mssg);
+    }
+    
+    void updateView()
+    {
+        revalidate();
+        repaint();
     }
     
     void setR(double r)
@@ -116,6 +175,11 @@ class ModelPanel extends javax.swing.JPanel
         });
 
         deleteAsset.setText("Delete asset");
+        deleteAsset.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteAssetActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Riskless interest rate: ");
 
@@ -200,8 +264,13 @@ class ModelPanel extends javax.swing.JPanel
 
     private void addAssetActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_addAssetActionPerformed
     {//GEN-HEADEREND:event_addAssetActionPerformed
-        addAsset();
+        addAssetClicked();
     }//GEN-LAST:event_addAssetActionPerformed
+
+    private void deleteAssetActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_deleteAssetActionPerformed
+    {//GEN-HEADEREND:event_deleteAssetActionPerformed
+       deleteAssetClicked();
+    }//GEN-LAST:event_deleteAssetActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAsset;

@@ -51,6 +51,11 @@ public class OneAssetPanel extends javax.swing.JPanel
         tableModel.addNewAsset(assetName);
     }
     
+    void assetDeleted(String assetName)
+    {
+        tableModel.assetDeleted(assetName);
+    }
+    
     OneAssetParams makeOneAssetParams()
     {
         return new OneAssetParams(
@@ -301,6 +306,19 @@ class MyTableModel implements TableModel
     {
         otherAssets.add(assetName);
         correlations.add(0.0);
+    }
+
+    void assetDeleted(String assetName)
+    {
+        for (int i = 0; i < otherAssets.size(); ++i)
+        {
+            if (otherAssets.get(i).equals(assetName))
+            {
+                otherAssets.remove(i);
+                correlations.remove(i);
+                return ;
+            }
+        }
     }
 
     Collection<Pair<String, Double>> getCorrelations()

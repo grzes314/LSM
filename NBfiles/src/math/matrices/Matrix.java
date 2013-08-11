@@ -182,6 +182,8 @@ public class Matrix
      */
     public boolean isPositiveDefinite()
     {
+        if (!isSymmetric())
+            return false;
         try {
             cholesky();
             return true;
@@ -192,8 +194,6 @@ public class Matrix
     
     public boolean isCorrelationMatrix()
     {
-        if (!isSquare())
-            return false;
         for (int row = 1; row <= rows; ++row)
             if (!Numerics.doublesEqual(get(row, row), 1))
                 return false;

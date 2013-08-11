@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import math.matrices.Matrix;
+import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
  *
@@ -35,7 +36,7 @@ class ModelManager
         this.modelPanel = modelPanel;
     }
     
-    ModelParams toParams()
+    ModelParams toParams() throws NotPositiveDefiniteMatrixException
     {
         if (getNumberOfAssets() == 0)
             return null;
@@ -43,7 +44,7 @@ class ModelManager
             return makeConcreteModelParams();
     }
 
-    private ModelParams makeConcreteModelParams()
+    private ModelParams makeConcreteModelParams() throws NotPositiveDefiniteMatrixException
     {
         OneAssetParams[] oap = makeOneAssetParams();
         Matrix corr = makeCorrelation(oap);
@@ -113,6 +114,13 @@ class ModelManager
         assetPanels.put(asset, oap);
     }
 
+    void deleteAsset(String name)
+    {
+        assetPanels.remove(name);
+        for (OneAssetPanel oap: assetPanels.values())
+            oap.assetDeleted(name);
+    }
+    
     private void updateCorrelation(String newAsset, OneAssetPanel newPanel)
     {
         newPanel.zeroCorrelations(assetPanels.keySet());
