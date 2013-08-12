@@ -17,12 +17,14 @@ public class BarrierWrapper
     {
         this.barrierParams = bp;
         this.onAsset = onAsset;
+        this.partialBarrierParams = null;
     }
 
     public BarrierWrapper(PartialBarrierParams pbp, String onAsset)
     {
         this.partialBarrierParams = pbp;
         this.onAsset = onAsset;
+        this.barrierParams = null;
     }
     
     public Instr addBarrier(Instr instr)
@@ -86,12 +88,17 @@ public class BarrierWrapper
     {
         if (barrierParams == null)
             return "Partial " + partialBarrierParams.barrierParams.toString()
-                    + " on asset " + onAsset;
+                    + " on asset \"" + onAsset +"\"";
         else
-            return barrierParams.toString() + " on asset " + onAsset;
+            return barrierParams.toString() + " on asset \"" + onAsset + "\"";
+    }
+
+    public boolean isUsing(String asset)
+    {
+        return asset.equals(onAsset);
     }
     
-    private BarrierParams barrierParams;
-    private PartialBarrierParams partialBarrierParams;
-    private String onAsset;
+    public final BarrierParams barrierParams;
+    public final PartialBarrierParams partialBarrierParams;
+    public final String onAsset;
 }

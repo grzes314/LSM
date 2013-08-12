@@ -1,13 +1,17 @@
 
 package lsmapp.instrPanels;
 
-import java.util.Collection;
 import finance.instruments.EuExercise;
-import finance.instruments.Option;
 import finance.instruments.Instr;
+import finance.instruments.Option;
 import finance.parameters.VanillaOptionParams;
-import finance.parameters.VanillaOptionParams.*;
-import static finance.parameters.VanillaOptionParams.CallOrPut.*;
+import finance.parameters.VanillaOptionParams.CallOrPut;
+import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
+import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import lsmapp.Pricer;
 
 /**
  *
@@ -15,13 +19,6 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.*;
  */
 public class OptionPanel extends SpecificInstrPanel
 {
-
-    /** Creates new form OptionPanel */
-    public OptionPanel(Collection<String> assetNames)
-    {
-        initComponents();
-        initAssetsCombo(assetNames);
-    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -162,6 +159,13 @@ public class OptionPanel extends SpecificInstrPanel
     private javax.swing.JSpinner strike;
     // End of variables declaration//GEN-END:variables
 
+    /** Creates new form OptionPanel */
+    public OptionPanel()
+    {
+        initComponents();
+        fillAssetsCombo();
+    }
+    
     @Override
     public Instr makeInstr()
     {
@@ -176,9 +180,31 @@ public class OptionPanel extends SpecificInstrPanel
             return new EuExercise( new Option(vop, assetName) );
     }
 
-    private void initAssetsCombo(Collection<String> assetNames)
+    private void fillAssetsCombo()
     {
+        assets.removeAllItems();
+        Collection<String> assetNames = Pricer.getApp().getModelManager().getAssets();
         for (String name: assetNames)
             assets.addItem(name);
+    }
+
+    @Override
+    boolean isUsing(String asset)
+    {
+        return assets.getSelectedItem().equals(asset);
+    }
+       
+    @Override
+    public Set<String> getUnderlyings()
+    {
+        Set<String> res = new HashSet<>();
+        res.add((String) assets.getSelectedItem());
+        return res;
+    }
+
+    @Override
+    void updateAssetLists()
+    {
+        fillAssetsCombo();
     }
 }

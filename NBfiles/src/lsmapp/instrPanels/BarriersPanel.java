@@ -1,7 +1,10 @@
 
 package lsmapp.instrPanels;
 
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 import lsmapp.Pricer;
 
 /**
@@ -12,10 +15,12 @@ public class BarriersPanel extends javax.swing.JPanel
 {
 
     /** Creates new form BarriersPanel */
-    public BarriersPanel()
+    public BarriersPanel(InstrPanel parentInstrPanel) throws NoAssetsException
     {
-        initialName = Pricer.getApp().getModelManager().getAssets().iterator().next();
+        if (Pricer.getApp().getModelManager().getNumberOfAssets() == 0)
+            throw new NoAssetsException();
         initComponents();
+        this.parentInstrPanel = parentInstrPanel;
     }
 
     /** This method is called from within the constructor to
@@ -63,6 +68,7 @@ public class BarriersPanel extends javax.swing.JPanel
         });
 
         barrierDesc.setColumns(20);
+        barrierDesc.setEditable(false);
         barrierDesc.setRows(5);
         jScrollPane2.setViewportView(barrierDesc);
 
@@ -75,30 +81,28 @@ public class BarriersPanel extends javax.swing.JPanel
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(addBarrier, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
-                    .addComponent(removeBarrier, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
+                    .addComponent(addBarrier, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                    .addComponent(removeBarrier, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                     .addComponent(jLabel2))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 88, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(addBarrier)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(removeBarrier)
-                .addGap(6, 6, 6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -129,33 +133,66 @@ private void removeBarrierActionPerformed(java.awt.event.ActionEvent evt) {//GEN
     private void listItemSelected()
     {
         BarrierWrapper bw = (BarrierWrapper) barriersList.getSelectedValue();
-        barrierDesc.setText(bw.getDescription());
+        if (bw == null)
+            barrierDesc.setText("");
+        else
+            barrierDesc.setText(bw.getDescription());
     }
 
     private void addBarrierClicked()
     {
+        String initialName = makeInitialName();
         BarrierWrapper bw = NewBarrierDialog.showNewBarrierDialog(
                 Pricer.getApp().getModelManager().getAssets(), initialName);
         if (bw != null)
             ((DefaultListModel<BarrierWrapper>) barriersList.getModel()).addElement(bw);
+        barriersList.setSelectedIndex(barriersList.getModel().getSize()-1);
     }
 
     private void removeBarrierClicked()
     {
         Object selected = barriersList.getSelectedValue();
+        int index = barriersList.getSelectedIndex();
         if (barriersList.getSelectedValue() != null)
             ((DefaultListModel<BarrierWrapper>) barriersList.getModel()).removeElement(selected);
-    }
-
-    public String getInitialName()
-    {
-        return initialName;
-    }
-
-    public void setInitialName(String initialName)
-    {
-        this.initialName = initialName;
+        if (index > 0)
+            barriersList.setSelectedIndex(index-1);
+        else if (barriersList.getModel().getSize() > 0)
+            barriersList.setSelectedIndex(0);
     }
     
-    private String initialName;
+    public boolean isUsing(String asset)
+    {
+        ListModel model = barriersList.getModel();
+        for (int i = 0; i < model.getSize(); ++i)
+        {
+            BarrierWrapper bw = (BarrierWrapper) model.getElementAt(i);
+            if (bw.isUsing(asset))
+                return true;
+        }
+        return false;
+    }
+
+    Set<String> getUnderlyings()
+    {
+        ListModel model = barriersList.getModel();
+        Set <String> res = new HashSet<>();
+        for (int i = 0; i < model.getSize(); ++i)
+        {
+            BarrierWrapper bw = (BarrierWrapper) model.getElementAt(i);
+            res.add(bw.onAsset);
+        }
+        return res;
+    }
+
+    private String makeInitialName()
+    {
+        Set<String> set = parentInstrPanel.getSpecificPanel().getUnderlyings();
+        if (set.isEmpty())
+            return "";
+        else
+            return set.iterator().next();
+    }
+    
+    private InstrPanel parentInstrPanel;
 }

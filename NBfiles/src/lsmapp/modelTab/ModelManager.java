@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import lsmapp.Pair;
+import lsmapp.Pricer;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -135,6 +135,7 @@ public class ModelManager
         oap.addTableModelListener(tableModelListener);
         updateCorrelation(asset, oap);
         assetPanels.put(asset, oap);
+        Pricer.getApp().getInstrManager().updateAssetLists();
     }
 
     public void deleteAsset(String name)

@@ -1,25 +1,14 @@
 
 package lsmapp.instrPanels;
 
+import java.util.Set;
+
 /**
  *
- * @author glos
+ * @author Grzegorz Los
  */
 public class InstrPanel extends javax.swing.JPanel
 {
-
-    /** Creates new form InstrPanel */
-    public InstrPanel(SpecificInstrPanel specificPanel, String instrName)
-    {
-        initComponents();
-        this.instrName = instrName;
-        this.specificPanel = specificPanel;
-        this.barriersPanel = new BarriersPanel();
-        instrNameLabel.setText(instrName);
-        splitPane.setLeftComponent(specificPanel);
-        splitPane.setRightComponent(barriersPanel);
-    }
-
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -32,20 +21,21 @@ public class InstrPanel extends javax.swing.JPanel
         splitPane = new javax.swing.JSplitPane();
         instrNameLabel = new javax.swing.JLabel();
 
-        splitPane.setDividerLocation(250);
+        splitPane.setDividerLocation(400);
+        splitPane.setResizeWeight(0.5);
 
         instrNameLabel.setFont(new java.awt.Font("Tahoma", 1, 20)); // NOI18N
+        instrNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         instrNameLabel.setText("InstrName");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(splitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 563, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(instrNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(370, Short.MAX_VALUE))
-            .addComponent(splitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 561, Short.MAX_VALUE)
+                .addComponent(instrNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -60,6 +50,70 @@ public class InstrPanel extends javax.swing.JPanel
     private javax.swing.JSplitPane splitPane;
     // End of variables declaration//GEN-END:variables
 
+
+    /** Creates new form InstrPanel */
+    public InstrPanel(SpecificInstrPanel specificPanel, NewInstrInfo info)
+            throws NoAssetsException
+    {
+        initComponents();
+        this.instrName = info.instrName;
+        this.specificPanel = specificPanel;
+        makeBarrierPanel(info);
+        praparePanel(instrName, specificPanel);
+    }
+
+    private void makeBarrierPanel(NewInstrInfo info) throws NoAssetsException
+    {
+        try
+        {
+            this.barriersPanel = new BarriersPanel(this);
+        }
+        catch (NoAssetsException ex)
+        {
+            if (info.type != NewInstrInfo.InstrType.Bond)
+                throw ex;
+        }
+    }
+
+    private void praparePanel(String instrName, SpecificInstrPanel specificPanel)
+    {
+        instrNameLabel.setText(instrName);
+        splitPane.setLeftComponent(specificPanel);
+        splitPane.setRightComponent(barriersPanel);
+    }
+
+    public String getInstrName()
+    {
+        return instrName;
+    }
+
+    public BarriersPanel getBarriersPanel()
+    {
+        return barriersPanel;
+    }
+
+    public SpecificInstrPanel getSpecificPanel()
+    {
+        return specificPanel;
+    }
+    
+    public boolean isUsing(String name)
+    {
+        return specificPanel.isUsing(name) || 
+                (barriersPanel == null ? false : barriersPanel.isUsing(name));
+    }
+    
+    public Set<String> getUnderlyings()
+    {
+        Set<String> res = specificPanel.getUnderlyings();
+        res.addAll(barriersPanel.getUnderlyings());
+        return res;
+    }
+
+    public void updateAssetLists()
+    {
+        specificPanel.updateAssetLists();
+    }
 
     private String instrName;
     private SpecificInstrPanel specificPanel;

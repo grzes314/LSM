@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.util.Collection;
 import javax.swing.JOptionPane;
 import lsmapp.Pricer;
+import lsmapp.instrPanels.InstrManager;
 
 /**
  *
@@ -52,9 +53,12 @@ public class ModelPanel extends javax.swing.JPanel
     private void deleteAssetClicked()
     {
         if (modelManager.getNumberOfAssets() == 0)
+        {
             JOptionPane.showMessageDialog(this, "There is nothing to delete.",
                     "Warning", JOptionPane.WARNING_MESSAGE);
-        else if (modelManager.getNumberOfAssets() == 1)
+            return ;
+        }
+        if (modelManager.getNumberOfAssets() == 1)
             maybeDeleteTheOnlyAsset();
         else
             maybeDeleteAsset();
@@ -62,12 +66,48 @@ public class ModelPanel extends javax.swing.JPanel
 
     private void maybeDeleteAsset()
     {
+        String choice = chooseAssetToDelete();
+        if (choice != null)
+        {
+            InstrManager im = Pricer.getApp().getInstrManager();
+            Collection<String> instrs = im.getInstrsWhicheUseAsset(choice);
+            if (confirmInstrsDeletion(instrs))
+            {
+                deleteInstrs(instrs);
+                deleteAsset(choice);
+            }
+        }
+    }
+    
+    private String chooseAssetToDelete()
+    {
         String choice = (String) JOptionPane.showInputDialog(this,
                 "Which asset shall be deleted?", "Deleting",
                 JOptionPane.QUESTION_MESSAGE, null, modelManager.getAssets().toArray(),
                 assetsList.getSelectedItem());
-        if (choice != null)
-            deleteAsset(choice);
+        return choice;
+    }
+    
+    private boolean confirmInstrsDeletion(Collection<String> instrs)
+    {
+        if (instrs.isEmpty())
+            return true;
+        String str = "";
+        for (String instr: instrs)
+            str += instr + "\n";
+        int res = JOptionPane.showConfirmDialog(
+            this, "Following instruments depend on chosen asset and also must be removed:\n" + str,
+            "Confirm", JOptionPane.OK_CANCEL_OPTION);
+        if (res == JOptionPane.OK_OPTION)
+            return true;
+        else return false;
+    }
+    
+    private void deleteInstrs(Collection<String> instrs)
+    {
+        InstrManager im = Pricer.getApp().getInstrManager();
+        for (String instr: instrs)
+            im.removeInstr(instr);
     }
 
     private void deleteAsset(String name)
@@ -85,6 +125,18 @@ public class ModelPanel extends javax.swing.JPanel
             "Confirm", JOptionPane.YES_NO_OPTION);
         if (res == JOptionPane.YES_OPTION)
         {
+            deleteTheOnlyAsset();
+        }
+    }
+
+    private void deleteTheOnlyAsset()
+    {
+        InstrManager im = Pricer.getApp().getInstrManager();
+        String asset = modelManager.getAssets().iterator().next();
+        Collection<String> instrs = im.getInstrsWhicheUseAsset(asset);
+        if (confirmInstrsDeletion(instrs))
+        {
+            deleteInstrs(instrs);
             modelManager.clear();
             showStatusMessage("Model is now empty");
         }

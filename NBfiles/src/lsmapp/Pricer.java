@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
 import lsmapp.modelTab.ModelManager;
 import lsmapp.modelTab.ModelPanel;
@@ -40,7 +41,7 @@ public class Pricer extends JFrame
     
     private Pricer()
     {
-        setSize(800,600);
+        setSize(800,800);
         setTitle("The Pricer");
         setContentPane( createContent() );
         setJMenuBar( createMenuBar() );
@@ -75,7 +76,10 @@ public class Pricer extends JFrame
 
     private Component createInstrTab()
     {
-        return new InstrTab();
+        instrManager = new InstrManager();
+        InstrTab instrTab = new InstrTab(instrManager);
+        instrManager.setInstrTab(instrTab);
+        return instrTab;
     }
 
 
@@ -172,16 +176,38 @@ public class Pricer extends JFrame
     
     private void openModelClicked()
     {
+        if (!confirmClosingInstruments())
+            return ;
         File file = getFileToOpen(new String[]{"txt"});
         if (file != null)
+        {
+            clear();
             openModel(file);
+        }
     }
     
     private void readModelClicked()
     {
+        if (!confirmClosingInstruments())
+            return ;
         File file = getFileToOpen(new String[]{"csv"});
         if (file != null)
+        {
+            clear();
             readModel(file);
+        }
+    }
+
+    private boolean confirmClosingInstruments()
+    {
+        if (instrManager.getNumberOfInstrs() == 0)
+            return true;
+        int res = JOptionPane.showConfirmDialog(
+            this, "Opening a new model implies closing all instruments.",
+            "Confirm", JOptionPane.OK_CANCEL_OPTION);
+        if (res == JOptionPane.OK_OPTION)
+            return true;
+        else return false;
     }
     
     private void saveModelClicked()
@@ -281,6 +307,7 @@ public class Pricer extends JFrame
         io.write(modelManager.toParams(), out);
         setStatus("Model saved to file " + file.getName() + ".");
     }
+    
     private void openModel(File file)
     {
         ConcreteParamsIO io = new ConcreteParamsIO();
@@ -302,8 +329,20 @@ public class Pricer extends JFrame
     {
         return modelManager;
     }
+
+    public InstrManager getInstrManager()
+    {
+        return instrManager;
+    }
+    
+    private void clear()
+    {
+        instrManager.clear();
+        modelManager.clear();
+    }
     
     private JLabel statusBar;
     private ModelManager modelManager;
+    private InstrManager instrManager;
     private static Pricer application;
 }

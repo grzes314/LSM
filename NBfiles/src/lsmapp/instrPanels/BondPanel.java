@@ -3,6 +3,8 @@ package lsmapp.instrPanels;
 
 import finance.instruments.Bond;
 import finance.instruments.Instr;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -104,5 +106,21 @@ public class BondPanel extends SpecificInstrPanel
         double N = (Double) nominal.getValue();
         return new Bond(N, T);
     }
+
+    @Override
+    boolean isUsing(String asset)
+    {
+        return false;
+    }
     
+    @Override
+    public Set<String> getUnderlyings()
+    {
+        return new HashSet<>();
+    }
+
+    @Override
+    void updateAssetLists()
+    {
+    }
 }

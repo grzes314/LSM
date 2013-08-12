@@ -154,9 +154,9 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
 
     private NewInstrInfo makeNewInstrInfo()
     {
-        InstrTab.InstrType type;
-        if (bond.isSelected()) type = InstrTab.InstrType.Bond;
-        else if (vanilla.isSelected()) type = InstrTab.InstrType.Vanilla;
+        NewInstrInfo.InstrType type;
+        if (bond.isSelected()) type = NewInstrInfo.InstrType.Bond;
+        else if (vanilla.isSelected()) type = NewInstrInfo.InstrType.Vanilla;
         else throw new UnsupportedOperationException();
         return new NewInstrInfo( type, instrName.getText() );
     }

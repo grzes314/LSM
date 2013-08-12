@@ -2,11 +2,7 @@
 package lsmapp.instrPanels;
 
 import java.awt.BorderLayout;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import javax.swing.JOptionPane;
-import lsmapp.Pricer;
 
 /**
  *
@@ -14,6 +10,7 @@ import lsmapp.Pricer;
  */
 public class InstrTab extends javax.swing.JPanel
 {
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -164,14 +161,11 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
 
 
     /** Creates new form InstrTab */
-    public InstrTab()
+    public InstrTab(InstrManager instrManager)
     {
         initComponents();
+        this.instrManager = instrManager;
         instrPanel.setLayout(new BorderLayout());
-    }
-
-    public enum InstrType {
-        Bond, Vanilla, Basket, Asian, Lookback
     }
     
     private void addInstrClicked()
@@ -179,78 +173,75 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
         NewInstrInfo info = NewInstrDialog.showNewInstrDialog();
         if (info != null)
         {
-            createNewPanel(info);
-            addNewInstr(info.instrName);
+            try {
+                instrManager.addInstr(info);
+            } catch (NoAssetsException ex) {
+                JOptionPane.showMessageDialog(this, "You need to have assets first in "
+                        + "order to create a derivative.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (UnsupportedOperationException ex) {
+                JOptionPane.showMessageDialog(this, "Unsupported.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
-    private void addNewInstr(String instrName)
+    public void addNewInstr(String instrName)
     {
         instrCombo.addItem(instrName);
         instrCombo.setSelectedItem(instrName);
     }
-
-    private void createNewPanel(NewInstrInfo info)
-    {
-        SpecificInstrPanel panel;
-        if (!checkNewInstrNameOK(info.instrName))
-            return;
-        switch (info.type)
-        {
-            case Bond:
-                panel = new BondPanel();
-                break;
-            case Vanilla:
-                panel = new OptionPanel(Pricer.getApp().getModelManager().getAssets());
-                break;
-            default:
-                JOptionPane.showMessageDialog(this, "Unsupported.");
-                return;
-        }
-        instrPanels.put(info.instrName, new InstrPanel(panel, info.instrName));
-    }
     
-    private boolean checkNewInstrNameOK(String instrName)
-    {
-        if (instrName == null || "".equals(instrName.trim()))
-        {
-            JOptionPane.showMessageDialog(this, "Instrument name invalid.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (instrPanels.containsKey(instrName))
-        {
-            JOptionPane.showMessageDialog(this, "There is already an instrument with that name",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
-    }
-    
-
     private void deleteInstrClicked()
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        if (instrManager.getNumberOfInstrs() == 0)
+            JOptionPane.showMessageDialog(this, "There is nothing to delete.",
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+        else
+            maybeDeleteInstrument();
+    }
+    
+    private void maybeDeleteInstrument()
+    {
+        String choice = (String) JOptionPane.showInputDialog(this,
+                "Which instrument shall be deleted?", "Deleting",
+                JOptionPane.QUESTION_MESSAGE, null, instrManager.getInstrNames().toArray(),
+                instrCombo.getSelectedItem());
+        if (choice != null)
+        {
+            instrManager.removeInstr(choice);
+        }
+    }
+    
+    public void removeInstr(String name)
+    {
+        instrCombo.removeItem(name);
+        updateView();
     }
 
     private void instrSelected(String name)
     {
         instrPanel.removeAll();
-        instrPanel.add(instrPanels.get(name));
+        instrPanel.add(instrManager.getInstrPanel(name));
         updateView();
     }
     
     void updateView()
     {
-        numberOfInstrs.setText("" + instrPanels.size());
+        numberOfInstrs.setText("" + instrManager.getNumberOfInstrs());
         revalidate();
         repaint();
     }
     
-    private Collection<String> getInstrNames()
+    void clear()
     {
-        return instrPanels.keySet();
+        instrCombo.removeAllItems();
+        instrPanel.removeAll();
+        updateView();
     }
+    
+    InstrManager instrManager;
 
-    private Map<String, InstrPanel> instrPanels = new HashMap<>();
 }
