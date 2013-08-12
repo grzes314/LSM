@@ -1,6 +1,7 @@
 
 package lsmapp;
 
+import lsmapp.instrPanels.InstrTab;
 import finance.parameters.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -57,17 +58,24 @@ public class Pricer extends JFrame
     private Container createMain()
     {
         JTabbedPane pane = new JTabbedPane();
-        pane.add("Model", createModelPanel());
+        pane.add("Model", createModelTab());
+        pane.add("Instruments", createInstrTab());
         return pane;
     }
-
-    private Component createModelPanel()
+    
+    private Component createModelTab()
     {
         modelManager = new ModelManager();
         ModelPanel mp = new ModelPanel(modelManager);
         modelManager.setModelPanel(mp);
         return mp;
     }
+
+    private Component createInstrTab()
+    {
+        return new InstrTab();
+    }
+
 
     private JLabel createStatusBar()
     {
@@ -287,8 +295,13 @@ public class Pricer extends JFrame
             setStatus("File could not be opened.");
         }
     }
+
+    public ModelManager getModelManager()
+    {
+        return modelManager;
+    }
     
-    JLabel statusBar;
-    ModelManager modelManager;
-    static Pricer application;
+    private JLabel statusBar;
+    private ModelManager modelManager;
+    private static Pricer application;
 }

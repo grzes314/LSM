@@ -39,6 +39,11 @@ public class BarrierParams
         return type == Type.UAO || type == Type.DAO;
     }
     
+    public String toString()
+    {
+        return type + "@" + level;
+    }
+    
     public final Type type;
     public final double level;
 }

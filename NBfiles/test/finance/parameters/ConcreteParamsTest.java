@@ -2,7 +2,10 @@
 package finance.parameters;
 
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import math.matrices.Matrix;
+import math.matrices.NotPositiveDefiniteMatrixException;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +23,11 @@ public class ConcreteParamsTest
         makeR();
         makeBasicParams();
         makeCorrelation();
-        params = new ConcreteParams(basicParams, corr, r);
+        try {
+            params = new ConcreteParams(basicParams, corr, r);
+        } catch (NotPositiveDefiniteMatrixException ex) {
+            Logger.getLogger(ConcreteParamsTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void makeR()

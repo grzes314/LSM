@@ -17,14 +17,14 @@ import math.matrices.NotPositiveDefiniteMatrixException;
  *
  * @author Grzegorz Los
  */
-class ModelManager
+public class ModelManager
 {
-    ModelManager()
+    public ModelManager()
     {
         initTableModelListener();
     }
     
-    ModelManager(ModelParams mp)
+    public ModelManager(ModelParams mp)
     {
         readModelParams(mp);
         initTableModelListener();
@@ -47,17 +47,17 @@ class ModelManager
         assetPanels.get(assetChanged).changeCorrelation(assetSource, value);
     }
             
-    ModelPanel getModelPanel()
+    public ModelPanel getModelPanel()
     {
         return modelPanel;
     }
 
-    void setModelPanel(ModelPanel modelPanel)
+    public void setModelPanel(ModelPanel modelPanel)
     {
         this.modelPanel = modelPanel;
     }
     
-    ModelParams toParams() throws NotPositiveDefiniteMatrixException
+    public ModelParams toParams() throws NotPositiveDefiniteMatrixException
     {
         if (getNumberOfAssets() == 0)
             return null;
@@ -112,22 +112,22 @@ class ModelManager
     }
 
     
-    int getNumberOfAssets()
+    public int getNumberOfAssets()
     {
         return assetPanels.size();
     }
     
-    Collection<String> getAssets()
+    public Collection<String> getAssets()
     {
         return assetPanels.keySet();
     }
 
-    OneAssetPanel getAsset(String asset)
+    public OneAssetPanel getAsset(String asset)
     {
         return assetPanels.get(asset);
     }
     
-    void addAsset(String asset)
+    public void addAsset(String asset)
     {
         ensureNewAssetNameOK(asset);
         OneAssetPanel oap = new OneAssetPanel(asset);
@@ -136,7 +136,7 @@ class ModelManager
         assetPanels.put(asset, oap);
     }
 
-    void deleteAsset(String name)
+    public void deleteAsset(String name)
     {
         assetPanels.remove(name);
         for (OneAssetPanel oap: assetPanels.values())
@@ -160,13 +160,13 @@ class ModelManager
             throw new IllegalArgumentException("There is already an asset with that name.");
     }
 
-    void clear()
+    public void clear()
     {
         assetPanels.clear();
         modelPanel.reset();
     }
     
-    final void readModelParams(ModelParams mp)
+    public final void readModelParams(ModelParams mp)
     {
         assetPanels.clear();
         for (String asset: mp.getAssetsNames())
@@ -180,7 +180,7 @@ class ModelManager
         modelPanel.setR(mp.getR());
     }
     
-    final void readCorrelation(ModelParams mp)
+    public final void readCorrelation(ModelParams mp)
     {
         Matrix corr = mp.getCorrelation();
         for (int i = 1; i <= mp.getNumberOfAssets(); ++i)
