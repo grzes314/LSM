@@ -9,7 +9,7 @@ import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import lsmapp.MainFrame;
+import lsmapp.oldFrame.MainFrame;
 import lsmapp.controlPanels.MCPanel;
 import lsmapp.controlPanels.ResultHandler;
 import plot.PlotObject;

@@ -1,5 +1,5 @@
 
-package lsmapp;
+package lsmapp.modelTab;
 
 import finance.parameters.OneAssetParams;
 import java.util.ArrayList;
@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import lsmapp.Pair;
 
 
 

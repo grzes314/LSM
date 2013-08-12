@@ -1,20 +1,21 @@
 
-package lsmapp;
+package lsmapp.modelTab;
 
 import java.awt.BorderLayout;
 import java.util.Collection;
 import javax.swing.JOptionPane;
+import lsmapp.Pricer;
 
 /**
  *
  * @author Grzegorz Los
  */
-class ModelPanel extends javax.swing.JPanel
+public class ModelPanel extends javax.swing.JPanel
 {
     /**
      * Creates new form ModelPanel
      */
-    ModelPanel(ModelManager modelManager)
+    public ModelPanel(ModelManager modelManager)
     {
         initComponents();
         oneAssetContainer.setLayout( new BorderLayout() );
@@ -94,24 +95,24 @@ class ModelPanel extends javax.swing.JPanel
         Pricer.getApp().setStatus(mssg);
     }
     
-    void updateView()
+    public void updateView()
     {
         numberOfAssets.setText("" + modelManager.getNumberOfAssets());
         revalidate();
         repaint();
     }
     
-    void setR(double r)
+    public void setR(double r)
     {
         rate.setValue(r);
     }
     
-    double getR()
+    public double getR()
     {
         return (Double) rate.getValue();
     }
     
-    void reset()
+    public void reset()
     {
         oneAssetContainer.removeAll();
         assetsList.removeAllItems();

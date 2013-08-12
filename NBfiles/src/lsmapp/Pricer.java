@@ -1,7 +1,6 @@
 
 package lsmapp;
 
-import lsmapp.instrPanels.InstrTab;
 import finance.parameters.*;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -12,6 +11,9 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import lsmapp.instrPanels.InstrTab;
+import lsmapp.modelTab.ModelManager;
+import lsmapp.modelTab.ModelPanel;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package lsmapp;
+package lsmapp.oldFrame;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -75,7 +75,7 @@ public class ListChoicePanel extends javax.swing.JPanel
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 
-        mainPanel.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        mainPanel.setBorder(new javax.swing.border.SoftBevelBorder(0));
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);

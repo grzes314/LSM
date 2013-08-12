@@ -12,7 +12,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import lsmapp.MainFrame;
+import lsmapp.oldFrame.MainFrame;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
 import finance.methods.finitedifference.FiniteDifference;

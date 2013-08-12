@@ -1,6 +1,7 @@
 
-package lsmapp;
+package lsmapp.oldFrame;
 
+import lsmapp.oldFrame.ListChoicePanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -8,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import lsmapp.StatusBar;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.LSMPanel;

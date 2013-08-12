@@ -1,5 +1,5 @@
 
-package lsmapp;
+package lsmapp.modelTab;
 
 import finance.parameters.ConcreteParams;
 import finance.parameters.ModelParams;
@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import lsmapp.Pair;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
