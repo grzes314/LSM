@@ -14,6 +14,7 @@ import static finance.parameters.VanillaOptionParams.AmOrEu.EU;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import lsmapp.resultPanels.FD2GUI;
 
 /**
  *
@@ -21,17 +22,19 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
  */
 public class FDPanel extends ModelPanel
 {    
-    public FDPanel()
+    public FDPanel(FD2GUI toGui)
     {
+        super(toGui);
         initComponents();
+        this.toGui = toGui;
         progressDesc.setVisible(false);    
         progressBar.setVisible(false);
     }
     
     @Override
-    public FiniteDifference getModel()
+    public FiniteDifference getMethod()
     {
-        return model;
+        return method;
     }
 
     @Override
@@ -53,8 +56,9 @@ public class FDPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new FiniteDifference( new SimpleModelParams(S, v, r) );
-        return model;
+        method = new FiniteDifference( new SimpleModelParams(S, v, r) );
+        toGui.setMethod(method);
+        return method;
     }
     
     @Override
@@ -68,6 +72,7 @@ public class FDPanel extends ModelPanel
         if (euoption.isSelected())
             instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) );
         else instr = new Option(vop, SimpleModelParams.onlyAsset);
+        toGui.setInstr(instr);
         return instr;
     }
     
@@ -90,7 +95,7 @@ public class FDPanel extends ModelPanel
         AmOrEu AorE = amoption.isSelected() ? AM : EU;
         int I = (Integer) priceSteps.getValue();
         int K = (Integer) timeSteps.getValue();
-        return model.price(new VanillaOptionParams(E, T, CorP, AorE), I, K);
+        return method.price(new VanillaOptionParams(E, T, CorP, AorE), I, K);
     }
 
     @Override
@@ -108,7 +113,8 @@ public class FDPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private FiniteDifference model;
+    private FD2GUI toGui;
+    private FiniteDifference method;
     private Instr instr;
     
     /**

@@ -15,23 +15,18 @@ import finance.methods.common.ProgressObservable;
  */
 abstract public class ModelPanel extends JPanel
 {
-
-    public ModelPanel()
-    {
-    }
-
     public ModelPanel(ResultHandler handler)
     {
         this.handler = handler;
     }
     
     /**
-     * Returns model recently used for pricing. If so far no pricing task was
+     * Returns method recently used for pricing. If so far no pricing task was
      * executed returns null. Overriding methods musn't instantiate new 
      * model object in that method!
-     * @return model recently used for pricing.
+     * @return method recently used for pricing.
      */
-    abstract public ProgressObservable getModel();
+    abstract public ProgressObservable getMethod();
     
     /**
      * Returns instrument which was recently priced. If so far no pricing task
@@ -84,11 +79,6 @@ abstract public class ModelPanel extends JPanel
             
         }.execute();
     }
-
-    public void setResultHandler(ResultHandler handler)
-    {
-        this.handler = handler;
-    }
     
     /**
      * Instantiates new model from the parameters set on the panel.
@@ -127,5 +117,5 @@ abstract public class ModelPanel extends JPanel
      */
     abstract protected void cleanAfterTask();
     
-    private ResultHandler handler;
+    private final ResultHandler handler;
 }

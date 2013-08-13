@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package lsmapp.controlPanels;
 
 import finance.instruments.Bond;
@@ -15,16 +12,19 @@ import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import lsmapp.resultPanels.LSM2GUI;
 
 /**
  *
- * @author grzes
+ * @author Grzegorz Los
  */
 public class LSMPanel extends ModelPanel
 {
-    public LSMPanel()
+    public LSMPanel(LSM2GUI toGui)
     {
+        super(toGui);
         initComponents();
+        this.toGui = toGui;
         progressDesc.setVisible(false);
         progressBar.setVisible(false);
     }
@@ -36,9 +36,9 @@ public class LSMPanel extends ModelPanel
     }
     
     @Override
-    public LSM getModel()
+    public LSM getMethod()
     {
-        return model;
+        return method;
     }
     
     @Override
@@ -56,8 +56,9 @@ public class LSMPanel extends ModelPanel
         int N = (Integer) simulations.getValue();
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
-        model = new LSM(S,v,r,N,K,M);
-        return model;
+        method = new LSM(S,v,r,N,K,M);
+        toGui.setMethod(method);
+        return method;
     }
 
     
@@ -77,6 +78,7 @@ public class LSMPanel extends ModelPanel
                 instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) );
             else instr = new Option(vop, SimpleModelParams.onlyAsset);
         }
+        toGui.setInstr(instr);
         return instr;
     }
     
@@ -93,7 +95,7 @@ public class LSMPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        return model.price( instr );
+        return method.price( instr );
     }
 
     @Override
@@ -111,7 +113,8 @@ public class LSMPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private LSM model;
+    private LSM2GUI toGui;
+    private LSM method;
     private Instr instr;
     
     /**

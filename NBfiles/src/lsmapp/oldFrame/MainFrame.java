@@ -1,7 +1,6 @@
 
 package lsmapp.oldFrame;
 
-import lsmapp.oldFrame.ListChoicePanel;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -14,16 +13,13 @@ import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.LSMPanel;
 import lsmapp.controlPanels.MCPanel;
-import lsmapp.resultPanels.BS2GUI;
-import lsmapp.resultPanels.FD2GUI;
-import lsmapp.resultPanels.LSM2GUI;
-import lsmapp.resultPanels.MC2GUI;
+import lsmapp.resultPanels.*;
 
 /**
  *
  * @author grzes
  */
-public class MainFrame extends JFrame
+public class MainFrame extends JFrame implements ResultDisplay
 {
     public MainFrame()
     {
@@ -46,8 +42,7 @@ public class MainFrame extends JFrame
     
     public void addResults(String lbl, Component comp)
     {
-        results.addChoice(comp, lbl);     
-        
+        results.addChoice(comp, lbl);
     }
     
     private Container createContent()
@@ -72,20 +67,20 @@ public class MainFrame extends JFrame
     {
         ListChoicePanel panel = new ListChoicePanel();
       
-        LSMPanel lsmp = new LSMPanel();
-        lsmp.setResultHandler(new LSM2GUI(this, lsmp));
+        LSM2GUI lsm2gui = new LSM2GUI(this);
+        LSMPanel lsmp = new LSMPanel(lsm2gui);
         panel.addChoice(lsmp, "Longstaff-Schwartz");
         
-        BSPanel bsp = new BSPanel();
-        bsp.setResultHandler(new BS2GUI(this, bsp));    
+        BS2GUI bs2gui = new BS2GUI(this);
+        BSPanel bsp = new BSPanel(bs2gui);  
         panel.addChoice(bsp, "Black-Scholes");
         
-        FDPanel fdp = new FDPanel();
-        fdp.setResultHandler(new FD2GUI(this, fdp));     
+        FD2GUI fd2gui = new FD2GUI(this);
+        FDPanel fdp = new FDPanel(fd2gui);    
         panel.addChoice(fdp, "Finite Difference");
         
-        MCPanel mcp = new  MCPanel();
-        mcp.setResultHandler(new MC2GUI(this, mcp));     
+        MC2GUI mc2gui = new MC2GUI(this);
+        MCPanel mcp = new  MCPanel(mc2gui);
         panel.addChoice(mcp, "Monte Carlo");
         
         return panel;
@@ -129,7 +124,7 @@ public class MainFrame extends JFrame
     
     /*private void showResults(PriceInfo pi)
     {
-        Object model = pi.getModel();
+        Object model = pi.getMethod();
         Instr instr = pi.getInstr();
         if (model instanceof LSModel)
         {

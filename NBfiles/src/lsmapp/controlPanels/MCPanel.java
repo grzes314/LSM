@@ -15,6 +15,7 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import java.awt.Component;
 import javax.swing.JPanel;
+import lsmapp.resultPanels.MC2GUI;
 
 /**
  *
@@ -22,18 +23,20 @@ import javax.swing.JPanel;
  */
 public class MCPanel extends ModelPanel
 {    
-    public MCPanel()
+    public MCPanel(MC2GUI toGui)
     {
+        super(toGui);
         initComponents();
+        this.toGui = toGui;
         progressDesc.setVisible(false);    
         progressBar.setVisible(false);
         panelEnabled(barrierPanel, false);
     }
     
     @Override
-    public MonteCarlo getModel()
+    public MonteCarlo getMethod()
     {
-        return model;
+        return method;
     }
 
     @Override
@@ -57,10 +60,11 @@ public class MCPanel extends ModelPanel
         double S = (Double) spot.getValue();
         SimpleModelParams smp = new SimpleModelParams(S, v, r);
         if (useAnthi.isSelected())
-            model = new AV(smp);
+            method = new AV(smp);
         else
-            model = new CMC(smp);
-        return model;
+            method = new CMC(smp);
+        toGui.setMethod(method);
+        return method;
     }
     
     @Override
@@ -76,6 +80,7 @@ public class MCPanel extends ModelPanel
         else instr = new Bond(T);
         if (isBarrier.isSelected())
             instr = addBarrier(instr);
+        toGui.setInstr(instr);
         return instr;
     }
     
@@ -94,7 +99,7 @@ public class MCPanel extends ModelPanel
     {
         int N = (Integer) simulations.getValue();
         int K = (Integer) timeSteps.getValue();
-        return model.price(instr, N, K).result;
+        return method.price(instr, N, K).result;
     }
 
     @Override
@@ -115,7 +120,7 @@ public class MCPanel extends ModelPanel
     private Instr addBarrier(Instr instr)
     {
         double level = (Double) barrierPrice.getValue();
-        BarrierParams bp = null;
+        BarrierParams bp;
         if (upAndIn.isSelected()) 
             bp = new BarrierParams(Type.UAI, level);
          else if (upAndOut.isSelected()) 
@@ -135,7 +140,8 @@ public class MCPanel extends ModelPanel
             c.setEnabled(enabled);
     }
     
-    private MonteCarlo model;
+    private MC2GUI toGui;
+    private MonteCarlo method;
     private Instr instr;
     
     /**

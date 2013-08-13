@@ -1,9 +1,10 @@
 
 package lsmapp.resultPanels;
 
-import math.approx.Polynomial;
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.methods.lsm.LSM;
+import finance.parameters.VanillaOptionParams;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -13,11 +14,8 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import lsmapp.oldFrame.MainFrame;
-import lsmapp.controlPanels.LSMPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.methods.lsm.LSM;
-import finance.parameters.VanillaOptionParams;
+import math.approx.Polynomial;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -28,30 +26,62 @@ import plot.PlotPoint;
  */
 public class LSM2GUI implements ResultHandler
 {
-    public LSM2GUI(MainFrame frame, LSMPanel lsmPanel)
+    public LSM2GUI(ResultDisplay displayer)
     {
-        this.frame = frame;
-        this.lsmPanel = lsmPanel;
+        this.displayer = displayer;
+    }
+
+    public Instr getInstr()
+    {
+        return instr;
+    }
+
+    public void setInstr(Instr instr)
+    {
+        this.instr = instr;
+    }
+
+    public LSM getMethod()
+    {
+        return method;
+    }
+
+    public void setMethod(LSM method)
+    {
+        this.method = method;
+    }
+    
+    public void setMethodAndInstr(LSM method, Instr instr)
+    {
+        this.method = method;
+        this.instr = instr;        
     }
     
     @Override
     public void result(double price)
     {
-        showResults(lsmPanel.getModel(), lsmPanel.getInstr(), price);
+        showResults(price);
+        reset();
     }
     
-    private void showResults(LSM model, Instr instr, double price)
+    public void reset()
+    {
+        method = null;
+        instr = null;
+    }
+    
+    private void showResults(double price)
     {
         JTabbedPane results = new JTabbedPane();
         
-        results.addTab("Description", Auxiliary.basicInfo(model, instr, price));
+        results.addTab("Description", Auxiliary.basicInfo(method, instr, price));
         
         if (instr instanceof Option) {
-            results.addTab("Stopping", stoppingPlot(model, (Option) instr));
+            results.addTab("Stopping", stoppingPlot(method, (Option) instr));
         }
-        results.addTab("Regression", regressionView(model, instr));
+        results.addTab("Regression", regressionView(method, instr));
         
-        frame.addResults(instr.toString(), results);
+        displayer.addResults(instr.toString(), results);
     }
     
     private Component stoppingPlot(LSM model, Option opt)
@@ -166,6 +196,7 @@ public class LSM2GUI implements ResultHandler
         }
     }
     
-    private final MainFrame frame;
-    private final LSMPanel lsmPanel;
+    private final ResultDisplay displayer;
+    private LSM method;
+    private Instr instr;
 }

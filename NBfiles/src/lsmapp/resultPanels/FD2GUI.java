@@ -3,6 +3,8 @@ package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.methods.finitedifference.FiniteDifference;
+import finance.parameters.VanillaOptionParams;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -12,11 +14,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import lsmapp.oldFrame.MainFrame;
-import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.ResultHandler;
-import finance.methods.finitedifference.FiniteDifference;
-import finance.parameters.VanillaOptionParams;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;
@@ -27,39 +25,62 @@ import plot.PlotPoint;
  */
 public class FD2GUI implements ResultHandler
 {
-
-    public FD2GUI(MainFrame frame, FDPanel fdPanel)
+    public FD2GUI(ResultDisplay displayer)
     {
-        this.frame = frame;
-        this.fdPanel = fdPanel;
+        this.displayer = displayer;
     }
     
-    /*@Override
-    public void result(double price)
+    public Instr getInstr()
     {
-        FiniteDifference model = fdPanel.getModel();
-        Instr instr = fdPanel.getInstr();
-        frame.addResults(instr.toString(), Auxiliary.basicInfo(model, instr, price));
-    }*/
+        return instr;
+    }
+
+    public void setInstr(Instr instr)
+    {
+        this.instr = instr;
+    }
+
+    public FiniteDifference getMethod()
+    {
+        return method;
+    }
+
+    public void setMethod(FiniteDifference method)
+    {
+        this.method = method;
+    }
+    
+    public void setMethodAndInstr(FiniteDifference method, Instr instr)
+    {
+        this.method = method;
+        this.instr = instr;        
+    }
     
     @Override
     public void result(double price)
     {
-        showResults(fdPanel.getModel(), fdPanel.getInstr(), price);
+        showResults(price);
+        reset();
     }
     
-    private void showResults(FiniteDifference model, Instr instr, double price)
+    public void reset()
+    {
+        method = null;
+        instr = null;
+    }
+    
+    private void showResults(double price)
     {
         JTabbedPane results = new JTabbedPane();
         
-        results.addTab("Description", Auxiliary.basicInfo(model, instr, price));
+        results.addTab("Description", Auxiliary.basicInfo(method, instr, price));
         
         if (instr instanceof Option) {
-            results.addTab("Stopping", stoppingPlot(model, (Option) instr));
+            results.addTab("Stopping", stoppingPlot(method, (Option) instr));
         }
-        results.addTab("Price plot", pricePlot(model, instr));
+        results.addTab("Price plot", pricePlot(method, instr));
         
-        frame.addResults(instr.toString(), results);
+        displayer.addResults(instr.toString(), results);
     }
     
     private Component stoppingPlot(FiniteDifference model, Option opt)
@@ -170,6 +191,7 @@ public class FD2GUI implements ResultHandler
         }
     }
     
-    private final MainFrame frame;
-    private final FDPanel fdPanel;
+    private final ResultDisplay displayer;
+    FiniteDifference method;
+    Instr instr;
 }

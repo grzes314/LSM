@@ -9,8 +9,6 @@ import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import lsmapp.oldFrame.MainFrame;
-import lsmapp.controlPanels.MCPanel;
 import lsmapp.controlPanels.ResultHandler;
 import plot.PlotObject;
 import plot.PlotPanel;
@@ -23,34 +21,58 @@ import plot.PlotPoint;
 public class MC2GUI implements ResultHandler
 {
 
-    public MC2GUI(MainFrame frame, MCPanel mcPanel)
+    public MC2GUI(ResultDisplay displayer)
     {
-        this.frame = frame;
-        this.mcPanel = mcPanel;
+        this.displayer = displayer;
     }
-    
-    /*@Override
-    public void result(double price)
+
+    public Instr getInstr()
     {
-        FDModel model = fdPanel.getModel();
-        Instr instr = fdPanel.getInstr();
-        frame.addResults(instr.toString(), Auxiliary.basicInfo(model, instr, price));
-    }*/
+        return instr;
+    }
+
+    public void setInstr(Instr instr)
+    {
+        this.instr = instr;
+    }
+
+    public MonteCarlo getMethod()
+    {
+        return method;
+    }
+
+    public void setMethod(MonteCarlo method)
+    {
+        this.method = method;
+    }    
+    
+    public void setMethodAndInstr(MonteCarlo method, Instr instr)
+    {
+        this.method = method;
+        this.instr = instr;        
+    }
     
     @Override
     public void result(double price)
     {
-        showResults(mcPanel.getModel(), mcPanel.getInstr(), price);
+        showResults(price);
+        reset();
     }
     
-    private void showResults(MonteCarlo model, Instr instr, double price)
+    public void reset()
+    {
+        method = null;
+        instr = null;
+    }
+    
+    private void showResults(double price)
     {
         JTabbedPane results = new JTabbedPane();
         
-        results.addTab("Description", Auxiliary.basicInfo(model, instr, price));
-        results.addTab("Convergence plot", plotConvergence(model));
+        results.addTab("Description", Auxiliary.basicInfo(method, instr, price));
+        results.addTab("Convergence plot", plotConvergence(method));
         
-        frame.addResults(instr.toString(), results);
+        displayer.addResults(instr.toString(), results);
     }
     
     private Component plotConvergence(MonteCarlo model)
@@ -82,6 +104,7 @@ public class MC2GUI implements ResultHandler
         return po;
     }
     
-    private final MainFrame frame;
-    private final MCPanel mcPanel;
+    private final ResultDisplay displayer;
+    MonteCarlo method;
+    Instr instr;
 }

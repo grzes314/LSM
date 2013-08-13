@@ -15,6 +15,7 @@ import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import lsmapp.resultPanels.BS2GUI;
 
 /**
  *
@@ -22,16 +23,17 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
  */
 public class BSPanel extends ModelPanel
 {
-    public BSPanel()
+    public BSPanel(BS2GUI toGui)
     {
+        super(toGui);
         initComponents();
-        
+        this.toGui = toGui;
     }
     
     @Override
-    public BlackScholes getModel()
+    public BlackScholes getMethod()
     {
-        return model;
+        return method;
     }
     
     @Override
@@ -45,7 +47,7 @@ public class BSPanel extends ModelPanel
         double K = (Double) strike.getValue();
         double T = (Double) years.getValue();
         CallOrPut CP = put.isSelected() ? CallOrPut.PUT : CallOrPut.CALL;
-        return model.price(new VanillaOptionParams(K, T, CP));
+        return method.price(new VanillaOptionParams(K, T, CP));
     }
         
     @Override
@@ -54,8 +56,9 @@ public class BSPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        model = new BlackScholes( new SimpleModelParams(S,v,r) );
-        return model;
+        method = new BlackScholes( new SimpleModelParams(S,v,r) );
+        toGui.setMethod(method);
+        return method;
     }
     
     @Override
@@ -66,6 +69,7 @@ public class BSPanel extends ModelPanel
         double E = (Double) strike.getValue();
         VanillaOptionParams vop = new VanillaOptionParams(E, T, type);
         instr = new EuExercise( new Option(vop, SimpleModelParams.onlyAsset) ); 
+        toGui.setInstr(instr);
         return instr;
     }
 
@@ -88,7 +92,8 @@ public class BSPanel extends ModelPanel
         priceBttn.setEnabled(true);
     }
     
-    private BlackScholes model;
+    private BS2GUI toGui;
+    private BlackScholes method;
     private Instr instr;
     
     /**

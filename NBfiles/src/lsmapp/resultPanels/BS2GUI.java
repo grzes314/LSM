@@ -2,10 +2,8 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
-import lsmapp.oldFrame.MainFrame;
-import lsmapp.controlPanels.BSPanel;
-import lsmapp.controlPanels.ResultHandler;
 import finance.methods.blackscholes.BlackScholes;
+import lsmapp.controlPanels.ResultHandler;
 
 /**
  *
@@ -13,21 +11,56 @@ import finance.methods.blackscholes.BlackScholes;
  */
 public class BS2GUI implements ResultHandler
 {
-
-    public BS2GUI(MainFrame frame, BSPanel bsPanel)
+    public BS2GUI(ResultDisplay displayer)
     {
-        this.frame = frame;
-        this.bsPanel = bsPanel;
+        this.displayer = displayer;
+    }
+    
+    public Instr getInstr()
+    {
+        return instr;
     }
 
+    public void setInstr(Instr instr)
+    {
+        this.instr = instr;
+    }
+
+    public BlackScholes getMethod()
+    {
+        return method;
+    }
+
+    public void setMethod(BlackScholes method)
+    {
+        this.method = method;
+    }
+    
+    public void setMethodAndInstr(BlackScholes method, Instr instr)
+    {
+        this.method = method;
+        this.instr = instr;        
+    }
+    
     @Override
     public void result(double price)
-    {        
-        BlackScholes model = bsPanel.getModel();
-        Instr instr = bsPanel.getInstr();
-        frame.addResults(instr.toString(), Auxiliary.basicInfo(model, instr, price));
+    {
+        showResults(price);
+        reset();
     }
-
-    private final MainFrame frame;
-    private final BSPanel bsPanel;
+    
+    public void reset()
+    {
+        method = null;
+        instr = null;
+    }
+    
+    private void showResults(double price)
+    {
+        displayer.addResults(instr.toString(), Auxiliary.basicInfo(method, instr, price));
+    }
+        
+    private final ResultDisplay displayer;
+    private BlackScholes method;
+    private Instr instr;
 }
