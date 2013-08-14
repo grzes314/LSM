@@ -2,7 +2,12 @@
 package finance.methods.blackscholes;
 
 import finance.instruments.*;
+import finance.methods.common.Method;
+import finance.methods.common.WrongInstrException;
+import finance.methods.common.WrongModelException;
 import finance.parameters.BarrierParams;
+import finance.parameters.ModelParams;
+import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import java.util.ArrayList;
 
@@ -10,12 +15,26 @@ import java.util.ArrayList;
  * Allows the user to price {@code Instr} using Black-Scholes method if it is priceable.
  * @author Grzegorz Los
  */
-public class TranslatorToBS
+public class BSMethod implements Method
 {
-    public boolean mayBePriced(Instr instr)
+    @Override
+    public void setModelParams(ModelParams mp) throws WrongModelException
+    {
+        SimpleModelParams smp;
+        try {
+            smp = (SimpleModelParams) mp;
+        } catch (ClassCastException ex) {
+            throw new WrongModelException("Black-Scholes method can only be used"
+                    + "with model on single asset");
+        }
+        bs.setParams(smp);
+    }
+    
+    @Override
+    public boolean isPriceable(Instr instr)
     {
         Object[] wrapped = getAllWrapped(instr);
-        return mayBePriced(wrapped);
+        return mayBePriced(wrapped, instr);
     }
     
     private Object[] getAllWrapped(Instr instr)
@@ -39,15 +58,15 @@ public class TranslatorToBS
         return mod.getWrapped();
     }
     
-    private boolean mayBePriced(Object[] wrapped)
+    private boolean mayBePriced(Object[] wrapped, Instr instr)
     {
         Object core = getCore(wrapped);
         if (isOption(core))
         {
             if (wrapped.length == 3)
-            return hasEuExercise(wrapped) && hasBarrier(wrapped);
+                return instr.areYou("european") && instr.areYou("barrier");
             if (wrapped.length == 2)
-                return hasEuExercise(wrapped);
+                return instr.areYou("european");
         }
         if (isBond(core))
             return wrapped.length == 1;
@@ -69,48 +88,28 @@ public class TranslatorToBS
         return instr instanceof Bond;
     }
     
-    private boolean hasBarrier(Object[] wrapped)
-    {
-        for (Object ob: wrapped) {
-            try {
-                Barrier b = (Barrier) ob;
-                return true;
-            } catch (ClassCastException ex) {}
-        }
-        return false;
-    }
-    
-    private boolean hasEuExercise(Object[] wrapped)
-    {
-        for (Object ob: wrapped) {
-            try {
-                EuExercise b = (EuExercise) ob;
-                return true;
-            } catch (ClassCastException ex) {}
-        }
-        return false;
-    }
-
-    public double price(BlackScholes bs, Instr instr)
+    @Override
+    public double price(Instr instr) throws WrongInstrException
     {
         Object[] wrapped = getAllWrapped(instr);
-        if (!mayBePriced(wrapped))
-            throw new IllegalArgumentException();
-        return price(bs, wrapped);
+        if (!mayBePriced(wrapped, instr))
+            throw new WrongInstrException("BSMethod can price only european "
+                    + "vanilla and simple barrier options and bonds.");
+        return price(wrapped);
     }
 
-    private double price(BlackScholes bs, Object[] wrapped)
+    private double price(Object[] wrapped)
     {
         BarrierParams bp = getBarrierParams(wrapped);
-        return price(bs, bp, getCore(wrapped));
+        return price(bp, getCore(wrapped));
     }
     
-    private double price(BlackScholes bs, BarrierParams bp, Object instr)
+    private double price(BarrierParams bp, Object instr)
     {
         if (instr instanceof Option)
         {
             Option op = (Option) instr;
-            return price(bs, bp, op);
+            return price(bp, op);
         }
         else if (instr instanceof Bond)
         {
@@ -121,7 +120,7 @@ public class TranslatorToBS
         else throw new RuntimeException("Flow should not reach that statement");
     }
 
-    private double price(BlackScholes bs, BarrierParams bp, Option op)
+    private double price(BarrierParams bp, Option op)
     {
         VanillaOptionParams vop = op.vop;
         if (bp == null)
@@ -139,5 +138,7 @@ public class TranslatorToBS
             } catch (ClassCastException ex) {}
         }
         return null;
-    }    
+    }
+    
+    private BlackScholes bs;
 }
