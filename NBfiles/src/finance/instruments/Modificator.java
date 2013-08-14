@@ -43,6 +43,12 @@ public abstract class Modificator extends Instr
         return wrapped.intrisnicValue(x);
     }
     
+    @Override
+    public final int modificationsCount()
+    {
+        return 1 + wrapped.modificationsCount();
+    }
+    
     /**
      * Wrapped instrument.
      */

@@ -116,6 +116,12 @@ public class Option extends Instr
         else return false;
     }
     
+    @Override
+    public int modificationsCount()
+    {
+        return 0;
+    }
+    
     public final VanillaOptionParams vop;
 
     /**

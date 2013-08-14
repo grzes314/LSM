@@ -80,6 +80,12 @@ abstract public class Instr
     abstract public boolean areYou(String str);
     
     /**
+     * Returns number of modifications applied to this instrument.
+     * @return number of modifications applied to this instrument.
+     */
+    abstract public int modificationsCount();
+    
+    /**
      * Main contents of the method exAvail(). In overriding classes it may
      * be assumed that TimeSupports of the instrument and the scenario
      * are compatible.

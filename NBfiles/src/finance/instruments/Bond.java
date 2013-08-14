@@ -63,5 +63,11 @@ public class Bond extends Instr
         return nominal;
     }
     
+    @Override
+    public int modificationsCount()
+    {
+        return 0;
+    }
+    
     double nominal;
 }
