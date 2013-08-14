@@ -2,17 +2,14 @@
 package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
-import finance.methods.common.ObservableSupport;
-import finance.methods.common.Progress;
-import finance.methods.common.ProgressObservable;
-import finance.methods.common.ProgressObserver;
+import finance.methods.common.*;
 import finance.parameters.ModelParams;
 
 /**
  * Base for Monte Carlo Pricers.
  * @author Grzegorz Los
  */
-public abstract class MonteCarlo implements ProgressObservable
+public abstract class MonteCarlo implements ProgressObservable, Method
 {
     /**
      * Constructs MonteCarlo pricer using given parameters.
@@ -20,16 +17,28 @@ public abstract class MonteCarlo implements ProgressObservable
      */
     public MonteCarlo(ModelParams params) 
     {
-        setParams(params);
+        setModelParams(params);
+        N = K = 1;
     }
 
-    /**
-     * Sets model parameters.
-     * @param params model parameters.
-     */
-    public final void setParams(ModelParams params)
+
+    @Override
+    public final void setModelParams(ModelParams params)
     {
         this.params = params;
+    }
+    
+    /**
+     * Sets all parameters used by MonteCarlo pricer.
+     * @param mp modele parameters.
+     * @param N number of simulations.
+     * @param K number of timesteps. 
+     */
+    public void setParams(ModelParams mp, int N, int K)
+    {
+        params = mp;
+        this.N = N;
+        this.K = K;
     }
     
     @Override
@@ -76,6 +85,11 @@ public abstract class MonteCarlo implements ProgressObservable
     {
         return convergence;
     }
+
+    public Result getLastResult()
+    {
+        return lastResult;
+    }
     
     @Override
     public String toString()
@@ -88,34 +102,21 @@ public abstract class MonteCarlo implements ProgressObservable
         return sb.toString();
     }
     
-    /**
-     * Calculates value of given instrument using specified numbers of 
-     * replications and timesteps.
-     * @param instr instrument to be priced.
-     * @param N number of simulations.
-     * @param K number of timesteps. 
-     * @return result of pricing.
-     */
-    public Result price(Instr instr, int N, int K)
+    @Override
+    public boolean isPriceable(Instr instr)
     {
-        preparePricing(N, K);
-        return price(instr);
-    }
-
-    private void preparePricing(int N, int K)
-    {
-        this.N = N;
-        this.K = K;
-        convergence = new Convergence();
+        return instr.areYou("european");
     }
     
     /**
-     * Method doing real pricing. It may assume that {@code N} and {@code K} are already set.
+     * Calculates value of given instrument.
      * @param instr instrument to be priced.
      * @return result of pricing.
      */
-    protected Result price(Instr instr)
+    @Override
+    public double price(Instr instr)
     {
+        convergence = new Convergence();
         initPricing(instr);
         for (int i = 1 ; i <= N; ++i)
         {
@@ -123,7 +124,8 @@ public abstract class MonteCarlo implements ProgressObservable
             maybeNotify(i);
             maybeAddConvergencePoint(i);
         }
-        return currentResult(N);
+        lastResult = currentResult(N);
+        return lastResult.result;
     }
     
     /**
@@ -166,5 +168,6 @@ public abstract class MonteCarlo implements ProgressObservable
     protected ModelParams params;
     protected int N, K;
     private ObservableSupport os = new ObservableSupport();
+    protected Result lastResult;
     private Convergence convergence;
 }

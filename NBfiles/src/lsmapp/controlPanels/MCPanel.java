@@ -58,11 +58,14 @@ public class MCPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
+        int N = (Integer) simulations.getValue();
+        int K = (Integer) timeSteps.getValue();
         SimpleModelParams smp = new SimpleModelParams(S, v, r);
         if (useAnthi.isSelected())
             method = new AV(smp);
         else
             method = new CMC(smp);
+        method.setParams(smp, N, K);
         toGui.setMethod(method);
         return method;
     }
@@ -71,7 +74,6 @@ public class MCPanel extends ModelPanel
     protected Instr createInstr()
     {
         double T = (Double) years.getValue();
-        int K = (Integer) timeSteps.getValue();
         CallOrPut type = (put.isSelected() ? PUT : CALL);
         double E = (Double) strike.getValue();
         VanillaOptionParams vop = new VanillaOptionParams(E, T, type);
@@ -97,9 +99,7 @@ public class MCPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        int N = (Integer) simulations.getValue();
-        int K = (Integer) timeSteps.getValue();
-        return method.price(instr, N, K).result;
+        return method.price(instr);
     }
 
     @Override
