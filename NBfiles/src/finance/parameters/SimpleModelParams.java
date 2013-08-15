@@ -13,27 +13,33 @@ import math.matrices.Matrix;
  */
 public class SimpleModelParams implements ModelParams
 {
-    public SimpleModelParams(double S, double vol, double r)
+    public SimpleModelParams(String assetName, double S, double vol, double r)
     {
         checkArgs(S, vol, r);
         this.S = S;
         this.vol = vol;
         this.r = r;
+        this.name = assetName;
+    }
+    
+    public SimpleModelParams(double S, double vol, double r)
+    {
+        this(onlyAsset, S, vol, r);
     }
     
     public SimpleModelParams withS(double newS)
     {
-        return new SimpleModelParams(newS, vol, r);
+        return new SimpleModelParams(name, newS, vol, r);
     }
         
     public SimpleModelParams withVol(double newVol)
     {
-        return new SimpleModelParams(S, newVol, r);
+        return new SimpleModelParams(name, S, newVol, r);
     }    
         
     public SimpleModelParams withR(double newR)
     {
-        return new SimpleModelParams(S, vol, newR);
+        return new SimpleModelParams(name, S, vol, newR);
     }
     
     private void checkArgs(double S, double vol, double r)
@@ -56,7 +62,7 @@ public class SimpleModelParams implements ModelParams
     public Collection<String> getAssetsNames()
     {
         ArrayList<String> res = new ArrayList<>();
-        res.add(onlyAsset);
+        res.add(name);
         return res;
     }
 
@@ -64,7 +70,7 @@ public class SimpleModelParams implements ModelParams
     public OneAssetParams getParams(int nr)
     {
         ensureNrOK(nr);
-        return new OneAssetParams(onlyAsset, S, vol, 0);
+        return new OneAssetParams(name, S, vol, 0);
     }
     
     private void ensureNrOK(int nr)
@@ -77,12 +83,12 @@ public class SimpleModelParams implements ModelParams
     public OneAssetParams getParams(String name)
     {
         ensureNameOK(name);
-        return new OneAssetParams(onlyAsset, S, vol, 0);
+        return new OneAssetParams(name, S, vol, 0);
     }
     
     private void ensureNameOK(String name)
     {
-        if ( !onlyAsset.equalsIgnoreCase(name) )
+        if ( !this.name.equalsIgnoreCase(name) )
             throw new NoSuchAssetException("name = " + name);
     }
 
@@ -90,7 +96,7 @@ public class SimpleModelParams implements ModelParams
     public String getName(int nr)
     {
         ensureNrOK(nr);
-        return onlyAsset;
+        return name;
     }
 
     @Override
@@ -142,6 +148,11 @@ public class SimpleModelParams implements ModelParams
     {
         return "Model with single asset\n";
     }
+    
+    /**
+     * Asset's name.
+     */
+    public final String name;
     
     /**
      * Asset's spot price.

@@ -63,11 +63,21 @@ public class ModelManager
     {
         if (getNumberOfAssets() == 0)
             return new SimpleModelParams(0, 0, modelPanel.getR());
+        else if (getNumberOfAssets() == 1)
+            return makeSimpleModelParams();
         else
             return makeConcreteModelParams();
     }
 
-    private ModelParams makeConcreteModelParams() throws NotPositiveDefiniteMatrixException
+    private SimpleModelParams makeSimpleModelParams()
+    {
+        OneAssetParams[] oap = makeOneAssetParams();
+        return new SimpleModelParams(oap[0].name, oap[0].S,
+            oap[0].vol, modelPanel.getR());
+    }
+    
+    private ConcreteParams makeConcreteModelParams()
+        throws NotPositiveDefiniteMatrixException
     {
         OneAssetParams[] oap = makeOneAssetParams();
         Matrix corr = makeCorrelation(oap);
