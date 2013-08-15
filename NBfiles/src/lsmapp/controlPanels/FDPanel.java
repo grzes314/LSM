@@ -56,8 +56,11 @@ public class FDPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        method = new FiniteDifference( new SimpleModelParams(S, v, r) );
-        toGui.setMethod(method);
+        SimpleModelParams smp = new SimpleModelParams(S, v, r);
+        method = new FiniteDifference(smp);
+        toGui.setModelParams(smp);
+        //toGui.setMethod(method);
+        //TODO uncomment
         return method;
     }
     

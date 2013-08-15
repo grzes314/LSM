@@ -2,7 +2,9 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
-import finance.methods.blackscholes.BlackScholes;
+import finance.methods.blackscholes.BSMethod;
+import finance.methods.common.Method;
+import finance.parameters.ModelParams;
 
 /**
  *
@@ -20,25 +22,40 @@ public class BS2GUI implements ResultHandler
         return instr;
     }
 
+    @Override
     public void setInstr(Instr instr)
     {
         this.instr = instr;
     }
 
-    public BlackScholes getMethod()
+    public BSMethod getMethod()
     {
         return method;
     }
 
-    public void setMethod(BlackScholes method)
+    @Override
+    public void setMethod(Method method)
     {
-        this.method = method;
+        this.method = (BSMethod) method;
     }
-    
-    public void setMethodAndInstr(BlackScholes method, Instr instr)
+
+    public ModelParams getModelParams()
     {
-        this.method = method;
-        this.instr = instr;        
+        return modelParams;
+    }
+
+    @Override
+    public void setModelParams(ModelParams modelParams)
+    {
+        this.modelParams = modelParams;
+    }
+
+    @Override
+    public void setAll(Method method, ModelParams mp, Instr instr)
+    {
+        this.instr = instr;
+        this.modelParams = mp;
+        this.method = (BSMethod) method;
     }
     
     @Override
@@ -60,6 +77,7 @@ public class BS2GUI implements ResultHandler
     }
         
     private final ResultDisplay displayer;
-    private BlackScholes method;
+    private BSMethod method;
     private Instr instr;
+    private ModelParams modelParams;
 }

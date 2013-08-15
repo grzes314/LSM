@@ -2,8 +2,10 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
+import finance.methods.common.Method;
 import finance.methods.montecarlo.Convergence;
 import finance.methods.montecarlo.MonteCarlo;
+import finance.parameters.ModelParams;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -19,7 +21,6 @@ import plot.PlotPoint;
  */
 public class MC2GUI implements ResultHandler
 {
-
     public MC2GUI(ResultDisplay displayer)
     {
         this.displayer = displayer;
@@ -30,6 +31,7 @@ public class MC2GUI implements ResultHandler
         return instr;
     }
 
+    @Override
     public void setInstr(Instr instr)
     {
         this.instr = instr;
@@ -40,15 +42,29 @@ public class MC2GUI implements ResultHandler
         return method;
     }
 
-    public void setMethod(MonteCarlo method)
+    @Override
+    public void setMethod(Method method)
     {
-        this.method = method;
-    }    
-    
-    public void setMethodAndInstr(MonteCarlo method, Instr instr)
+        this.method = (MonteCarlo) method;
+    }
+
+    public ModelParams getModelParams()
     {
-        this.method = method;
-        this.instr = instr;        
+        return modelParams;
+    }
+
+    @Override
+    public void setModelParams(ModelParams modelParams)
+    {
+        this.modelParams = modelParams;
+    }
+
+    @Override
+    public void setAll(Method method, ModelParams mp, Instr instr)
+    {
+        this.instr = instr;
+        this.modelParams = mp;
+        this.method = (MonteCarlo) method;
     }
     
     @Override
@@ -104,6 +120,8 @@ public class MC2GUI implements ResultHandler
     }
     
     private final ResultDisplay displayer;
-    MonteCarlo method;
-    Instr instr;
+    private MonteCarlo method;
+    private Instr instr;
+    private ModelParams modelParams;
+
 }

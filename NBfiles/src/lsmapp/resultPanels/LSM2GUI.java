@@ -3,7 +3,9 @@ package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.methods.common.Method;
 import finance.methods.lsm.LSM;
+import finance.parameters.ModelParams;
 import finance.parameters.VanillaOptionParams;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -35,6 +37,7 @@ public class LSM2GUI implements ResultHandler
         return instr;
     }
 
+    @Override
     public void setInstr(Instr instr)
     {
         this.instr = instr;
@@ -45,16 +48,31 @@ public class LSM2GUI implements ResultHandler
         return method;
     }
 
-    public void setMethod(LSM method)
+    @Override
+    public void setMethod(Method method)
     {
-        this.method = method;
+        this.method = (LSM) method;
+    }
+
+    public ModelParams getModelParams()
+    {
+        return modelParams;
+    }
+
+    @Override
+    public void setModelParams(ModelParams modelParams)
+    {
+        this.modelParams = modelParams;
+    }
+
+    @Override
+    public void setAll(Method method, ModelParams mp, Instr instr)
+    {
+        this.instr = instr;
+        this.modelParams = mp;
+        this.method = (LSM) method;
     }
     
-    public void setMethodAndInstr(LSM method, Instr instr)
-    {
-        this.method = method;
-        this.instr = instr;        
-    }
     
     @Override
     public void result(double price)
@@ -198,4 +216,5 @@ public class LSM2GUI implements ResultHandler
     private final ResultDisplay displayer;
     private LSM method;
     private Instr instr;
+    private ModelParams modelParams;
 }

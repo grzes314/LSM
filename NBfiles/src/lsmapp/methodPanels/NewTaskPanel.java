@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import lsmapp.Pricer;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrNumberChangeObserver;
-import lsmapp.modelTab.Pair;
 import lsmapp.resultPanels.ResultHandler;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -145,15 +144,15 @@ public class NewTaskPanel extends javax.swing.JPanel
 
     private void prepareMethodCombo()
     {
-        for (String method: methodPanels.keySet())
-            methodCombo.addItem(method);
+        for (String name: methodPanels.keySet())
+            methodCombo.addItem(name);
     }
 
     private void methodSelected()
     {
-        String method = (String) methodCombo.getSelectedItem();
+        String name = (String) methodCombo.getSelectedItem();
         methodContainer.removeAll();
-        methodContainer.add(methodPanels.get(method));
+        methodContainer.add(methodPanels.get(name));
         methodContainer.revalidate();
         methodContainer.repaint();
     }
@@ -201,6 +200,7 @@ public class NewTaskPanel extends javax.swing.JPanel
         makeMethod();
         makeModelParams();
         makeInstr();
+        makeResultHandler();
         task = new PricingTask(method, modelParams, instr, resultHandler);
         makeProgressPanel();
     }
@@ -208,9 +208,7 @@ public class NewTaskPanel extends javax.swing.JPanel
     private void makeMethod()
     {
         String methodName = (String) methodCombo.getSelectedItem();
-        Pair<Method, ResultHandler> pair = methodPanels.get(methodName).makeMethod();    
-        method = pair.fst;
-        resultHandler = pair.snd;
+        method = methodPanels.get(methodName).makeMethod();
     }
     
     private void makeModelParams() throws NotPositiveDefiniteMatrixException
@@ -222,6 +220,13 @@ public class NewTaskPanel extends javax.swing.JPanel
     {
         String instrName = (String) instrCombo.getSelectedItem();
         instr = Pricer.getApp().getInstrManager().makeInstr(instrName);
+    }
+    
+    private void makeResultHandler()
+    {
+        String methodName = (String) methodCombo.getSelectedItem();
+        resultHandler =  methodPanels.get(methodName)
+            .makeResultHandler(method, modelParams, instr);
     }
 
     private void makeProgressPanel()

@@ -57,7 +57,9 @@ public class LSMPanel extends ModelPanel
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
         method = new LSM(S,v,r,N,K,M);
-        toGui.setMethod(method);
+        toGui.setModelParams(new SimpleModelParams(S,v,r));
+        //toGui.setMethod(method);
+        //TODO uncomment
         return method;
     }
 

@@ -1,12 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package lsmapp.controlPanels;
 
 import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.methods.blackscholes.BSMethod;
 import finance.methods.blackscholes.BlackScholes;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObservable;
@@ -56,8 +54,10 @@ public class BSPanel extends ModelPanel
         double v = (Double) volatility.getValue();
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
-        method = new BlackScholes( new SimpleModelParams(S,v,r) );
-        toGui.setMethod(method);
+        SimpleModelParams smp = new SimpleModelParams(S,v,r);
+        method = new BlackScholes(smp);
+        toGui.setMethod( new BSMethod(method) );
+        toGui.setModelParams(smp);
         return method;
     }
     

@@ -3,7 +3,9 @@ package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.methods.common.Method;
 import finance.methods.finitedifference.FiniteDifference;
+import finance.parameters.ModelParams;
 import finance.parameters.VanillaOptionParams;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -34,6 +36,7 @@ public class FD2GUI implements ResultHandler
         return instr;
     }
 
+    @Override
     public void setInstr(Instr instr)
     {
         this.instr = instr;
@@ -44,15 +47,29 @@ public class FD2GUI implements ResultHandler
         return method;
     }
 
-    public void setMethod(FiniteDifference method)
+    @Override
+    public void setMethod(Method method)
     {
-        this.method = method;
+        this.method = (FiniteDifference) method;
     }
-    
-    public void setMethodAndInstr(FiniteDifference method, Instr instr)
+
+    public ModelParams getModelParams()
     {
-        this.method = method;
-        this.instr = instr;        
+        return modelParams;
+    }
+
+    @Override
+    public void setModelParams(ModelParams modelParams)
+    {
+        this.modelParams = modelParams;
+    }
+
+    @Override
+    public void setAll(Method method, ModelParams mp, Instr instr)
+    {
+        this.instr = instr;
+        this.modelParams = mp;
+        this.method = (FiniteDifference) method;
     }
     
     @Override
@@ -82,7 +99,7 @@ public class FD2GUI implements ResultHandler
         displayer.addResults(instr.toString(), results);
     }
     
-    private Component stoppingPlot(FiniteDifference model, Option opt)
+    private Component stoppingPlot(FiniteDifference method, Option opt)
     {
         if (opt.getType() == VanillaOptionParams.CallOrPut.CALL)
             return new JLabel("It is always worth to not"
@@ -94,7 +111,7 @@ public class FD2GUI implements ResultHandler
         panel.add(plot.getLegend(), BorderLayout.EAST);
         panel.add(plot.getControls(), BorderLayout.SOUTH);
         
-        PlotObject po = stoppingPlotPut(model);
+        PlotObject po = stoppingPlotPut(method);
         plot.addPlotObject(po);
         
         plot.resetLimits();
@@ -103,9 +120,9 @@ public class FD2GUI implements ResultHandler
         return panel;
     }
     
-    private PlotObject stoppingPlotPut(FiniteDifference model)
+    private PlotObject stoppingPlotPut(FiniteDifference method)
     {
-        final FiniteDifference.Grid grid = model.getLastGrid();
+        final FiniteDifference.Grid grid = method.getLastGrid();
         PlotObject po = new PlotObject("Stopping price", Color.RED,
                 PlotObject.Type.Lines);
         double[] stopPrice = grid.getStopping();
@@ -191,6 +208,7 @@ public class FD2GUI implements ResultHandler
     }
     
     private final ResultDisplay displayer;
-    FiniteDifference method;
-    Instr instr;
+    private FiniteDifference method;
+    private Instr instr;
+    private ModelParams modelParams;
 }

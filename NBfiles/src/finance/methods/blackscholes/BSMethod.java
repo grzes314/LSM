@@ -17,6 +17,17 @@ import java.util.ArrayList;
  */
 public class BSMethod implements Method
 {
+
+    public BSMethod(BlackScholes method)
+    {
+        bs = method;
+    }
+
+    public BSMethod()
+    {
+        bs = new BlackScholes();
+    }
+    
     @Override
     public void setModelParams(ModelParams mp) throws WrongModelException
     {
@@ -140,5 +151,5 @@ public class BSMethod implements Method
         return null;
     }
     
-    private BlackScholes bs = new BlackScholes();
+    private BlackScholes bs;
 }

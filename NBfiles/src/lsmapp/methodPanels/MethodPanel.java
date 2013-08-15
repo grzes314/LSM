@@ -1,9 +1,10 @@
 
 package lsmapp.methodPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
+import finance.parameters.ModelParams;
 import javax.swing.JPanel;
-import lsmapp.modelTab.Pair;
 import lsmapp.resultPanels.ResultHandler;
 
 /**
@@ -12,5 +13,7 @@ import lsmapp.resultPanels.ResultHandler;
  */
 public abstract class MethodPanel extends JPanel
 {
-    abstract Pair<Method, ResultHandler> makeMethod();
+    abstract Method makeMethod();
+    
+    abstract ResultHandler makeResultHandler(Method method, ModelParams mp, Instr instr);
 }
