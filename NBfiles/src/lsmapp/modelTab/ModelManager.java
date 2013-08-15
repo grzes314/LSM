@@ -136,6 +136,7 @@ public class ModelManager
         oap.addTableModelListener(tableModelListener);
         updateCorrelation(asset, oap);
         assetPanels.put(asset, oap);
+        modelPanel.addAsset(asset);
         Pricer.getApp().getInstrManager().updateAssetLists();
     }
 

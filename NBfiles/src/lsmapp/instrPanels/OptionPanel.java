@@ -171,7 +171,7 @@ public class OptionPanel extends SpecificInstrPanel
     {
         CallOrPut callOrPut = call.isSelected() ? CALL : PUT;
         double E = (Double) strike.getValue();
-        double T = (Double) strike.getValue();
+        double T = (Double) expiry.getValue();
         String assetName = (String) assets.getSelectedItem();
         VanillaOptionParams vop = new VanillaOptionParams(E, T, callOrPut);
         if (american.isSelected())

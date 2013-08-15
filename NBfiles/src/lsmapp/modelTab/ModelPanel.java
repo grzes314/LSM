@@ -35,16 +35,15 @@ public class ModelPanel extends javax.swing.JPanel
         String name = JOptionPane.showInputDialog(this, "Name of the asset");
         try {
             if (name != null)
-                addAsset(name);
+                modelManager.addAsset(name);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
-    private void addAsset(String name) throws IllegalArgumentException
+    public void addAsset(String name) throws IllegalArgumentException
     {
-        modelManager.addAsset(name);
         assetsList.addItem(name);
         showStatusMessage("New asset added: " + name);
         assetsList.setSelectedItem(name);
