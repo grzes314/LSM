@@ -100,7 +100,9 @@ public class InstrPanel extends javax.swing.JPanel
 
     public Instr makeInstr()
     {
-        return specificPanel.makeInstr();
+        Instr instr = specificPanel.makeInstr();
+        instr.setName(instrName);
+        return instr;
     }
     
     public boolean isUsing(String assetName)

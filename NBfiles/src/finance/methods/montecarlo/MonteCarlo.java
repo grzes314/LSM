@@ -2,14 +2,17 @@
 package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
-import finance.methods.common.*;
+import finance.methods.common.Method;
+import finance.methods.common.ObservableSupport;
+import finance.methods.common.Progress;
+import finance.methods.common.ProgressObserver;
 import finance.parameters.ModelParams;
 
 /**
  * Base for Monte Carlo Pricers.
  * @author Grzegorz Los
  */
-public abstract class MonteCarlo implements ProgressObservable, Method
+public abstract class MonteCarlo implements Method
 {
     /**
      * Constructs MonteCarlo pricer using given parameters.

@@ -2,9 +2,7 @@
 package finance.methods.blackscholes;
 
 import finance.instruments.*;
-import finance.methods.common.Method;
-import finance.methods.common.WrongInstrException;
-import finance.methods.common.WrongModelException;
+import finance.methods.common.*;
 import finance.parameters.BarrierParams;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
@@ -162,6 +160,25 @@ public class BSMethod implements Method
     {
         return "Analitical formula";
     }
+
+    @Override
+    public void removeObserver(ProgressObserver ob)
+    {
+        bs.removeObserver(ob);
+    }
+
+    @Override
+    public void notifyObservers(Progress pr)
+    {
+        bs.notifyObservers(pr);
+    }
+
+    @Override
+    public void addObserver(ProgressObserver ob)
+    {
+        bs.addObserver(ob);
+    }
+    
     
     private BlackScholes bs;
 }

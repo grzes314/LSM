@@ -18,6 +18,19 @@ abstract public class Instr
     public Instr(double T)
     {
         this.T = T;
+        name = "noname";
+    }
+    
+    /**
+     * Construct named Instrument with given time horizon -- expiracy
+     * of the instrument.
+     * @param T time horizon.
+     * @param name name of the instrument;
+     */
+    public Instr(double T, String name)
+    {
+        this.T = T;
+        this.name = name;
     }
     
     /**
@@ -58,6 +71,16 @@ abstract public class Instr
     public double getT()
     {
         return T;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 
     public abstract double intrisnicValue(double x);
@@ -107,4 +130,9 @@ abstract public class Instr
      * Time horizon -- expiracy of the instrument.
      */
     private final double T;
+    
+    /**
+     * Name of the instrument;
+     */
+    private String name;
 }

@@ -233,6 +233,7 @@ public class NewTaskPanel extends javax.swing.JPanel
     {
         panel = new ProgressPanel(progressesContainer, task);
         task.setProgressPanel(panel);
+        method.addObserver(panel);
         progressesContainer.add(panel);
         progressesContainer.revalidate();
         progressesContainer.repaint();

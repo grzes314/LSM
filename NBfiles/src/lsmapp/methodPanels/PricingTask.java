@@ -31,6 +31,12 @@ public class PricingTask extends SwingWorker<Double, Void>
     {
         this.progressPanel = progressPanel;
     }
+    
+    public String getDesc()
+    {
+        return "Pricing " + instr.getName() + " using " + method.toString() +
+            "in a " + mp.toString();
+    }
 
     @Override
     protected Double doInBackground()

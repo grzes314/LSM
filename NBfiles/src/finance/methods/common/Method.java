@@ -8,7 +8,7 @@ import finance.parameters.ModelParams;
  *
  * @author Grzegorz Los
  */
-public interface Method
+public interface Method extends ProgressObservable
 {
     /**
      * Sets model parameters.

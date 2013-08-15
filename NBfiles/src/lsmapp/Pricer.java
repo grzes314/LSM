@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
+import lsmapp.instrPanels.NewInstrInfo;
+import lsmapp.instrPanels.NoAssetsException;
 import lsmapp.methodPanels.NewTaskTab;
 import lsmapp.modelTab.ModelManager;
 import lsmapp.modelTab.ModelPanel;
@@ -32,6 +34,7 @@ public class Pricer extends JFrame
             @Override
             public void run() {
                 application = new Pricer();
+                addAssetsAndInstrs();
                 application.setVisible(true);
             }
         });
@@ -40,6 +43,21 @@ public class Pricer extends JFrame
     public static Pricer getApp()
     {
         return application;
+    }
+    
+    private static void addAssetsAndInstrs()
+    {
+        try {
+            ModelManager mm = application.getModelManager();
+            InstrManager im = application.getInstrManager();
+            mm.addAsset("aktywo");
+            im.addInstr( new NewInstrInfo(
+                NewInstrInfo.InstrType.Bond, "obligacja"));
+            im.addInstr( new NewInstrInfo(
+                NewInstrInfo.InstrType.Vanilla, "wanilia"));
+        } catch (        IllegalArgumentException | NoAssetsException | UnsupportedOperationException ex) {
+            Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     private Pricer()
