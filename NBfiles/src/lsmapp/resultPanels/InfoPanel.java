@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package lsmapp.resultPanels;
 
 /**
@@ -10,19 +7,12 @@ package lsmapp.resultPanels;
  */
 public class InfoPanel extends javax.swing.JPanel
 {
-
-    /**
-     * Creates new form InfoPanel
-     */
-    public InfoPanel()
-    {
-        initComponents();
-    }
-    
-    public InfoPanel(String modelDesc, String instrDesc, double price)
+    public InfoPanel(String methodDesc, String modelDesc,
+                     String instrDesc, double price)
     {
         initComponents();
         modelField.setText(modelDesc);
+        methodField.setText(methodDesc);
         instrField.setText(instrDesc);
         priceField.setText("" + price);
     }
@@ -33,6 +23,10 @@ public class InfoPanel extends javax.swing.JPanel
     
     void setInstrDesc(String instrDesc) {
         instrField.setText(instrDesc);
+    }
+    
+    void setMethodDesc(String instrDesc) {
+        methodField.setText(instrDesc);
     }
     
     void priceField(double price) {
@@ -51,14 +45,17 @@ public class InfoPanel extends javax.swing.JPanel
         modelPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         modelField = new javax.swing.JTextPane();
-        instrPanel = new javax.swing.JPanel();
+        methodPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        instrField = new javax.swing.JTextPane();
+        methodField = new javax.swing.JTextPane();
         pricePanel = new javax.swing.JPanel();
         priceField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        instrPanel = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        instrField = new javax.swing.JTextPane();
 
-        modelPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Model", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+        modelPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Model", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
 
         modelField.setEditable(false);
         jScrollPane1.setViewportView(modelField);
@@ -67,30 +64,30 @@ public class InfoPanel extends javax.swing.JPanel
         modelPanel.setLayout(modelPanelLayout);
         modelPanelLayout.setHorizontalGroup(
             modelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
         );
         modelPanelLayout.setVerticalGroup(
             modelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
         );
 
-        instrPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Instrument", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+        methodPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Method", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
 
-        instrField.setEditable(false);
-        jScrollPane2.setViewportView(instrField);
+        methodField.setEditable(false);
+        jScrollPane2.setViewportView(methodField);
 
-        javax.swing.GroupLayout instrPanelLayout = new javax.swing.GroupLayout(instrPanel);
-        instrPanel.setLayout(instrPanelLayout);
-        instrPanelLayout.setHorizontalGroup(
-            instrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout methodPanelLayout = new javax.swing.GroupLayout(methodPanel);
+        methodPanel.setLayout(methodPanelLayout);
+        methodPanelLayout.setHorizontalGroup(
+            methodPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2)
         );
-        instrPanelLayout.setVerticalGroup(
-            instrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
+        methodPanelLayout.setVerticalGroup(
+            methodPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
         );
 
-        pricePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Price", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+        pricePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Price", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
 
         priceField.setEditable(false);
         priceField.setFont(new java.awt.Font("Cantarell", 1, 18)); // NOI18N
@@ -110,6 +107,22 @@ public class InfoPanel extends javax.swing.JPanel
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Result Summary");
 
+        instrPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Instrument", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+
+        instrField.setEditable(false);
+        jScrollPane4.setViewportView(instrField);
+
+        javax.swing.GroupLayout instrPanelLayout = new javax.swing.GroupLayout(instrPanel);
+        instrPanel.setLayout(instrPanelLayout);
+        instrPanelLayout.setHorizontalGroup(
+            instrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4)
+        );
+        instrPanelLayout.setVerticalGroup(
+            instrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -119,9 +132,11 @@ public class InfoPanel extends javax.swing.JPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(modelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(modelPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(methodPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(pricePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -129,10 +144,13 @@ public class InfoPanel extends javax.swing.JPanel
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(modelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(methodPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(pricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -140,10 +158,16 @@ public class InfoPanel extends javax.swing.JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextPane instrField;
+    private javax.swing.JTextPane instrField1;
     private javax.swing.JPanel instrPanel;
+    private javax.swing.JPanel instrPanel1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextPane methodField;
+    private javax.swing.JPanel methodPanel;
     private javax.swing.JTextPane modelField;
     private javax.swing.JPanel modelPanel;
     private javax.swing.JTextField priceField;

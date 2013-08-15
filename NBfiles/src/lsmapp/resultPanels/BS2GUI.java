@@ -73,7 +73,9 @@ public class BS2GUI implements ResultHandler
     
     private void showResults(double price)
     {
-        displayer.addResults(instr.toString(), Auxiliary.basicInfo(method, instr, price));
+        InfoPanel ip = new InfoPanel(method.getDesc(), modelParams.getDesc(),
+                                     instr.getDesc(), price);
+        displayer.addResults(instr.toString() + ": " + method.toString(), ip);
     }
         
     private final ResultDisplay displayer;

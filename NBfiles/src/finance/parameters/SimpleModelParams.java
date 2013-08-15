@@ -129,12 +129,18 @@ public class SimpleModelParams implements ModelParams
     }
     
     @Override
-    public String toString()
+    public String getDesc()
     {
         return "Model with single asset\n" +
                 "S = " + S + "\n" +
                 "vol = " + vol + "\n" +
                 "r = " + r + "\n";
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Model with single asset\n";
     }
     
     /**

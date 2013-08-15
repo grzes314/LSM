@@ -83,4 +83,11 @@ public interface ModelParams
      * @throws NoSuchAssetException if there is no asset with given name.
      */
     public double getCorrelation(String name1, String name2);
+    
+    /**
+     * Returns detailed description of the parameters. On the other hand {@code
+     * toString} should return very short String representing parameters.
+     * @return detailed description of the parameters.
+     */
+    public String getDesc();
 }

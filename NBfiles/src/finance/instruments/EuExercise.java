@@ -20,9 +20,9 @@ public class EuExercise extends Modificator
     }
     
     @Override
-    public String desc()
+    public String getDesc()
     {
-        return wrapped.desc() + "\nEuropean exercise";
+        return wrapped.getDesc() + "\nEuropean exercise";
     }
     
     @Override

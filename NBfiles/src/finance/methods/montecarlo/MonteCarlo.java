@@ -96,12 +96,18 @@ public abstract class MonteCarlo implements ProgressObservable, Method
     @Override
     public String toString()
     {
+        return methodName();
+    }
+    
+    @Override
+    public String getDesc()
+    {
         StringBuilder sb = new StringBuilder();
         sb.append(methodName()).append("\n")
-          .append(params.toString()).append("\n")
+          .append(params.getDesc()).append("\n")
           .append("N = ").append(N).append("\n")
           .append("K = ").append(K).append("\n");
-        return sb.toString();
+        return sb.toString();        
     }
     
     @Override

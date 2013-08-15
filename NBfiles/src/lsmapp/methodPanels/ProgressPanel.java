@@ -132,6 +132,8 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private void removeFromContainer()
     {
         container.remove(this);
+        container.revalidate();
+        container.repaint();
     }
     
     private Container container;

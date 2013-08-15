@@ -89,7 +89,9 @@ public class FD2GUI implements ResultHandler
     {
         JTabbedPane results = new JTabbedPane();
         
-        results.addTab("Description", Auxiliary.basicInfo(method, instr, price));
+        InfoPanel ip = new InfoPanel(method.toString(), modelParams.getDesc(),
+                                     instr.getDesc(), price);
+        results.addTab("Description", ip);
         
         if (instr instanceof Option) {
             results.addTab("Stopping", stoppingPlot(method, (Option) instr));

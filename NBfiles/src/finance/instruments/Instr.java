@@ -11,7 +11,6 @@ import math.utils.Numerics;
  */
 abstract public class Instr
 {
-
     /**
      * Construct Instrument with given time horizon -- expiracy of the instrument.
      * @param T time horizon.
@@ -67,7 +66,7 @@ abstract public class Instr
      * Detailed description of the financial instrument.
      * @return string with description of the instrument.
      */
-    abstract public String desc();
+    abstract public String getDesc();
     
     @Override
     abstract public String toString();

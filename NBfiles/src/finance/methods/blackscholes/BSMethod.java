@@ -150,6 +150,18 @@ public class BSMethod implements Method
         }
         return null;
     }
+
+    @Override
+    public String getDesc()
+    {
+        return "Black-Scholes or other analitical formula";
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Analitical formula";
+    }
     
     private BlackScholes bs;
 }

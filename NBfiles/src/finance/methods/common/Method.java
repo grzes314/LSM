@@ -32,4 +32,12 @@ public interface Method
      * @return 
      */
     abstract boolean isPriceable(Instr instr);
+    
+    /**
+     * Return description of the method. It may contain several lines and in general
+     * be quite long. On the other hand {@code toString} called on method should return a 
+     * very brief, one-line description of the method.
+     * @return description of the method.
+     */
+    abstract String getDesc();
 }

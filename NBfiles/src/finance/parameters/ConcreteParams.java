@@ -172,6 +172,26 @@ public class ConcreteParams implements ModelParams
         hash = 19 * hash + Objects.hashCode(this.corr);
         return hash;
     }
+
+    @Override
+    public String getDesc()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Model with ").append(basicParams.length).append(" assets.\n");
+        for (int i = 0; i < basicParams.length; ++i)
+            sb.append(i+1).append(". ").append(basicParams[i].getDesc()).append("\n");
+        if (corr != null) {
+            sb.append("Correlation:\n");
+            sb.append(corr.toString());
+        }
+        return sb.toString();
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Model with " + basicParams.length + " assets.";
+    }
     
     private double r = 0;
     private OneAssetParams[] basicParams;

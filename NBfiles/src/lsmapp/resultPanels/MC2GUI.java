@@ -84,7 +84,9 @@ public class MC2GUI implements ResultHandler
     {
         JTabbedPane results = new JTabbedPane();
         
-        results.addTab("Description", Auxiliary.basicInfo(method, instr, price));
+        InfoPanel ip = new InfoPanel(method.getDesc(), modelParams.getDesc(),
+                                     instr.getDesc(), price);
+        results.addTab("Description", ip);
         results.addTab("Convergence plot", plotConvergence(method));
         
         displayer.addResults(instr.toString(), results);

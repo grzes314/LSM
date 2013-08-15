@@ -64,6 +64,22 @@ public class OneAssetParams
         return hash;
     }
     
+    public String getDesc()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(": ")
+                .append("spot = ").append(S)
+                .append(", volatility =").append(vol)
+                .append(", drift = ").append(mu);
+        return sb.toString();
+    }
+    
+    @Override
+    public String toString()
+    {
+        return "Params of " + name;
+    }
+    
     /**
      * Asset's spot price.
      */

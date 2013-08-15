@@ -59,13 +59,13 @@ public class Barrier extends Modificator
 
 
     @Override
-    public String desc()
+    public String getDesc()
     {
         String mssg = "\nBarrier on asset ";
         mssg += assetName() + "\n";
         mssg += barrierType();
         mssg += ", level=" + bp.level;
-        return wrapped.desc() + mssg;
+        return wrapped.getDesc() + mssg;
     }
 
     @Override

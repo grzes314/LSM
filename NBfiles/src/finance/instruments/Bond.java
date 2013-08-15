@@ -21,9 +21,9 @@ public class Bond extends Instr
     }
 
     @Override
-    public String desc()
+    public String getDesc()
     {
-        return "Bond paying " + nominal + " after" + getT() + " years";
+        return "Bond paying " + nominal + " after " + getT() + " years";
     }
     
     @Override

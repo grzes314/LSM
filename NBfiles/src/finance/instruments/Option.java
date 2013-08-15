@@ -44,7 +44,7 @@ public class Option extends Instr
     }    
     
     @Override
-    public String desc()
+    public String getDesc()
     {
         return "An option\n" +
                 "Type: " + (vop.callOrPut == CALL ? "call" : "put") +
