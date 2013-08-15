@@ -36,7 +36,9 @@ public abstract class MonteCarloTest extends TestCase
                     new Option(vop, SimpleModelParams.onlyAsset) );
             int K = 1;
             int N = 100000;
-            return method.price(instr, N, K).result;
+            method.setK(K);
+            method.setN(N);
+            return method.price(instr);
         }       
     }
     
@@ -62,7 +64,9 @@ public abstract class MonteCarloTest extends TestCase
             instr = new Barrier(bp, SimpleModelParams.onlyAsset, instr);
             int K = 100;
             int N = 10000;
-            return method.price(instr, N, K).result;
+            method.setK(K);
+            method.setN(N);
+            return method.price(instr);
         }        
     }
     

@@ -92,9 +92,10 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 
     /** Creates new form ProgressPanel */
-    public ProgressPanel(Container container)
+    public ProgressPanel(Container container, PricingTask pricingTask)
     {
         this.container = container;
+        this.pricingTask = pricingTask;
         initComponents();
     }
 
@@ -118,6 +119,8 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
             }
         });
         add(close, BorderLayout.SOUTH);
+        revalidate();
+        repaint();
     }
     
     public void die()

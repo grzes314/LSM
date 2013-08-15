@@ -34,11 +34,31 @@ public abstract class MonteCarlo implements ProgressObservable, Method
      * @param N number of simulations.
      * @param K number of timesteps. 
      */
-    public void setParams(ModelParams mp, int N, int K)
+    public void setAllParams(ModelParams mp, int N, int K)
     {
         params = mp;
         this.N = N;
         this.K = K;
+    }
+
+    public int getK()
+    {
+        return K;
+    }
+
+    public void setK(int K)
+    {
+        this.K = K;
+    }
+
+    public int getN()
+    {
+        return N;
+    }
+
+    public void setN(int N)
+    {
+        this.N = N;
     }
     
     @Override
@@ -57,24 +77,6 @@ public abstract class MonteCarlo implements ProgressObservable, Method
     public void addObserver(ProgressObserver ob)
     {
         os.addObserver(ob);
-    }
-    
-    /**
-     * Returns {@code K} -- number of timesteps in the last pricing.
-     * @return number of timesteps in the last pricing.
-     */
-    public int getLastK()
-    {
-        return K;
-    }
-    
-    /**
-     * Returns {@code N} -- number of simulations in the last pricing.
-     * @return number of simulations in the last pricing.
-     */
-    public int getLastN()
-    {
-        return N;
     }
 
     /**

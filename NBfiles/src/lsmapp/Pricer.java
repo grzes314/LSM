@@ -13,8 +13,11 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
+import lsmapp.methodPanels.NewTaskTab;
 import lsmapp.modelTab.ModelManager;
 import lsmapp.modelTab.ModelPanel;
+import lsmapp.resultPanels.ResultDisplay;
+import lsmapp.resultPanels.ResultPanel;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
@@ -41,7 +44,7 @@ public class Pricer extends JFrame
     
     private Pricer()
     {
-        setSize(800,800);
+        setSize(800,600);
         setTitle("The Pricer");
         setContentPane( createContent() );
         setJMenuBar( createMenuBar() );
@@ -63,6 +66,8 @@ public class Pricer extends JFrame
         JTabbedPane pane = new JTabbedPane();
         pane.add("Model", createModelTab());
         pane.add("Instruments", createInstrTab());
+        pane.add("Tasks", createTaskTab());
+        pane.add("Results", createResultsPanel());
         return pane;
     }
     
@@ -82,6 +87,18 @@ public class Pricer extends JFrame
         return instrTab;
     }
 
+    private Component createTaskTab()
+    {
+        assert instrManager != null;
+        return new NewTaskTab(instrManager);
+    }
+
+    private Component createResultsPanel()
+    {
+        ResultPanel resultPanel = new ResultPanel();
+        resultDisplay = resultPanel;
+        return resultPanel;
+    }
 
     private JLabel createStatusBar()
     {
@@ -334,6 +351,11 @@ public class Pricer extends JFrame
     {
         return instrManager;
     }
+
+    public ResultDisplay getResultDisplay()
+    {
+        return resultDisplay;
+    }
     
     private void clear()
     {
@@ -344,5 +366,6 @@ public class Pricer extends JFrame
     private JLabel statusBar;
     private ModelManager modelManager;
     private InstrManager instrManager;
+    private ResultDisplay resultDisplay;
     private static Pricer application;
 }

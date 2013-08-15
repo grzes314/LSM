@@ -1,28 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * BSPanel.java
- *
- * Created on Aug 14, 2013, 2:49:00 PM
- */
+    
 package lsmapp.methodPanels;
+
+import finance.methods.blackscholes.BSMethod;
+import finance.methods.common.Method;
+import lsmapp.Pricer;
+import lsmapp.modelTab.Pair;
+import lsmapp.resultPanels.BS2GUI;
+import lsmapp.resultPanels.ResultHandler;
 
 /**
  *
  * @author glos
  */
-public class BSPanel extends javax.swing.JPanel
+public class BSPanel extends MethodPanel
 {
-
-    /** Creates new form BSPanel */
-    public BSPanel()
-    {
-        initComponents();
-    }
-
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -33,12 +24,12 @@ public class BSPanel extends javax.swing.JPanel
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        label = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Analitical formulas");
 
-        jLabel2.setText("No extra parameters to set.");
+        label.setText("No extra parameters to set.");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -46,22 +37,36 @@ public class BSPanel extends javax.swing.JPanel
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(label, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addComponent(label, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel label;
     // End of variables declaration//GEN-END:variables
+
+    /** Creates new form BSPanel */
+    public BSPanel()
+    {
+        initComponents();
+        label.setText("<html>" + label.getText());
+    }
+
+    @Override
+    Pair<Method, ResultHandler> makeMethod()
+    {
+        ResultHandler handler = new BS2GUI(Pricer.getApp().getResultDisplay());
+        Method method = new BSMethod();
+        return new Pair<>(method, handler);
+    }
 }

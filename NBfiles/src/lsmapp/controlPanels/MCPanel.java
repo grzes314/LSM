@@ -65,7 +65,7 @@ public class MCPanel extends ModelPanel
             method = new AV(smp);
         else
             method = new CMC(smp);
-        method.setParams(smp, N, K);
+        method.setAllParams(smp, N, K);
         toGui.setMethod(method);
         return method;
     }

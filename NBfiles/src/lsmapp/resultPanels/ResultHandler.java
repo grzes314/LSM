@@ -1,5 +1,5 @@
 
-package lsmapp.controlPanels;
+package lsmapp.resultPanels;
 
 /**
  * Interface for classes elaborating pricing results. Note that in the only 

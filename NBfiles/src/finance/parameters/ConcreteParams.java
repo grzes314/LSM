@@ -38,6 +38,8 @@ public class ConcreteParams implements ModelParams
     private void ensureIsCorrMatrixOK(OneAssetParams[] basicParams, Matrix corr)
             throws NotPositiveDefiniteMatrixException
     {
+        if (basicParams.length == 0 && corr == null)
+            return; // model only for pricing bonds
         if (corr.getRows() != basicParams.length)
             throw new IllegalArgumentException("Sizes of the correlation matrix"
                     + " and array of basic parameteres are not suitable");

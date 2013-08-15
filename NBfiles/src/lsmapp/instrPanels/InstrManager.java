@@ -1,16 +1,14 @@
 
 package lsmapp.instrPanels;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import finance.instruments.Instr;
+import java.util.*;
 
 /**
  *
  * @author Grzegorz Los
  */
-public class InstrManager
+public class InstrManager implements InstrNumberChangeInfo
 {
     public Collection<String> getInstrsWhicheUseAsset(String name)
     {
@@ -38,6 +36,7 @@ public class InstrManager
         InstrPanel instrPanel = createNewPanel(info);
         instrTab.addNewInstr(info.instrName);
         instrPanels.put(instrPanel.getInstrName(), instrPanel);
+        informAboutAddition(info.instrName);
     }
 
     private InstrPanel createNewPanel(NewInstrInfo info)
@@ -75,6 +74,7 @@ public class InstrManager
         instrPanels.remove(instr);
         instrTab.removeInstr(instr);
         updateAssetLists();
+        informAboutAddition(instr);
     }
 
     public int getNumberOfInstrs()
@@ -99,6 +99,42 @@ public class InstrManager
         instrTab.clear();
     }
     
+    @Override
+    public void addInstrNumberChangeObserver(InstrNumberChangeObserver observer)
+    {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeInstrNumberChangeObserver(InstrNumberChangeObserver observer)
+    {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void informAboutDeletion(String instrName)
+    {
+        for (InstrNumberChangeObserver ob: observers)
+            ob.delInstr(instrName);
+    }
+
+    @Override
+    public void informAboutAddition(String instrName)
+    {
+        for (InstrNumberChangeObserver ob: observers)
+            ob.addInstr(instrName);
+    }
+
+    public Instr makeInstr(String instrName)
+    {
+        InstrPanel panel = instrPanels.get(instrName);
+        if (panel == null)
+            throw new RuntimeException("There is no such instrument: \"" +
+                instrName + "\".");
+        return panel.makeInstr();
+    }
+    
     private InstrTab instrTab;
     private Map<String, InstrPanel> instrPanels = new HashMap<>();
+    private List<InstrNumberChangeObserver> observers = new ArrayList<>();
 }

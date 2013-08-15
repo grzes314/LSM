@@ -4,6 +4,7 @@ package lsmapp.modelTab;
 import finance.parameters.ConcreteParams;
 import finance.parameters.ModelParams;
 import finance.parameters.OneAssetParams;
+import finance.parameters.SimpleModelParams;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,7 +62,7 @@ public class ModelManager
     public ModelParams toParams() throws NotPositiveDefiniteMatrixException
     {
         if (getNumberOfAssets() == 0)
-            return null;
+            return new SimpleModelParams(0, 0, modelPanel.getR());
         else
             return makeConcreteModelParams();
     }

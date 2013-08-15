@@ -9,7 +9,6 @@ import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import lsmapp.controlPanels.ResultHandler;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;

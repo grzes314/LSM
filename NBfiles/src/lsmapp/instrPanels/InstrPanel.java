@@ -1,6 +1,7 @@
 
 package lsmapp.instrPanels;
 
+import finance.instruments.Instr;
 import java.util.Set;
 
 /**
@@ -96,11 +97,16 @@ public class InstrPanel extends javax.swing.JPanel
     {
         return specificPanel;
     }
-    
-    public boolean isUsing(String name)
+
+    public Instr makeInstr()
     {
-        return specificPanel.isUsing(name) || 
-                (barriersPanel == null ? false : barriersPanel.isUsing(name));
+        return specificPanel.makeInstr();
+    }
+    
+    public boolean isUsing(String assetName)
+    {
+        return specificPanel.isUsing(assetName) || 
+                (barriersPanel == null ? false : barriersPanel.isUsing(assetName));
     }
     
     public Set<String> getUnderlyings()

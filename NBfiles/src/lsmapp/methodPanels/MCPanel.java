@@ -1,8 +1,9 @@
 
 package lsmapp.methodPanels;
 
-import lsmapp.controlPanels.ResultHandler;
+import finance.methods.common.Method;
 import lsmapp.modelTab.Pair;
+import lsmapp.resultPanels.ResultHandler;
 
 /**
  *
@@ -126,7 +127,7 @@ public class MCPanel extends MethodPanel
     }
 
     @Override
-    Pair<Method, ResultHandler> getMethod()
+    Pair<Method, ResultHandler> makeMethod()
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

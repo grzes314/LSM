@@ -140,5 +140,5 @@ public class BSMethod implements Method
         return null;
     }
     
-    private BlackScholes bs;
+    private BlackScholes bs = new BlackScholes();
 }

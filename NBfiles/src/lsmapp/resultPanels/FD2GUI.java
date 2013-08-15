@@ -14,7 +14,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import lsmapp.controlPanels.ResultHandler;
 import plot.PlotObject;
 import plot.PlotPanel;
 import plot.PlotPoint;

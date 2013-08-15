@@ -3,7 +3,6 @@ package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
 import finance.methods.blackscholes.BlackScholes;
-import lsmapp.controlPanels.ResultHandler;
 
 /**
  *

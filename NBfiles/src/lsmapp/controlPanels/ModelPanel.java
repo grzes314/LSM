@@ -1,6 +1,7 @@
 
 package lsmapp.controlPanels;
 
+import lsmapp.resultPanels.ResultHandler;
 import finance.instruments.Instr;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
