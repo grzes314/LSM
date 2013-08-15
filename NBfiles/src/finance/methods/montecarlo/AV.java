@@ -19,6 +19,10 @@ public class AV extends MonteCarlo
         super(params);
     }
 
+    public AV()
+    {
+    }
+
     @Override
     public String methodName()
     {

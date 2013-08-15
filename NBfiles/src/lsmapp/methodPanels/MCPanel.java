@@ -3,7 +3,12 @@ package lsmapp.methodPanels;
 
 import finance.instruments.Instr;
 import finance.methods.common.Method;
+import finance.methods.montecarlo.AV;
+import finance.methods.montecarlo.CMC;
+import finance.methods.montecarlo.MonteCarlo;
 import finance.parameters.ModelParams;
+import lsmapp.Pricer;
+import lsmapp.resultPanels.MC2GUI;
 import lsmapp.resultPanels.ResultHandler;
 
 /**
@@ -60,6 +65,8 @@ public class MCPanel extends MethodPanel
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, timeSteps, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel4, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
         bindingGroup.addBinding(binding);
 
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(1, 1, 10000, 10));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -68,18 +75,21 @@ public class MCPanel extends MethodPanel
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(timeSteps)
                             .addComponent(simulations, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)))
-                    .addComponent(anthiteticVariates)
-                    .addComponent(controlVariates)
-                    .addComponent(crudeMonteCarlo)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(anthiteticVariates)
+                            .addComponent(controlVariates)
+                            .addComponent(crudeMonteCarlo))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -125,17 +135,27 @@ public class MCPanel extends MethodPanel
     public MCPanel()
     {
         initComponents();
-    }
-
+    }    
+    
     @Override
     Method makeMethod()
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        MonteCarlo mc;
+        if (crudeMonteCarlo.isSelected())
+            mc = new CMC();
+        else if (anthiteticVariates.isSelected())
+            mc = new AV();
+        else throw new UnsupportedOperationException(); // TODO support
+        mc.setN((Integer) simulations.getValue());
+        mc.setK((Integer) timeSteps.getValue());
+        return mc;
     }
 
     @Override
     ResultHandler makeResultHandler(Method method, ModelParams mp, Instr instr)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ResultHandler handler = new MC2GUI(Pricer.getApp().getResultDisplay());
+        handler.setAll(method, mp, instr);
+        return handler;
     }
 }

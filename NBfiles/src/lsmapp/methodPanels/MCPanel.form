@@ -24,8 +24,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="jLabel3" pref="172" max="32767" attributes="1"/>
                           <Component id="jLabel4" max="32767" attributes="1"/>
-                          <Component id="jLabel3" alignment="0" pref="0" max="32767" attributes="1"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -33,13 +33,18 @@
                           <Component id="simulations" alignment="0" pref="118" max="32767" attributes="1"/>
                       </Group>
                   </Group>
-                  <Component id="anthiteticVariates" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="controlVariates" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="crudeMonteCarlo" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="jLabel2" alignment="0" min="-2" pref="119" max="-2" attributes="0"/>
                   <Component id="jLabel1" alignment="0" min="-2" pref="226" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="0" min="-2" pref="243" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="anthiteticVariates" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="controlVariates" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="crudeMonteCarlo" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
               </Group>
-              <EmptySpace pref="19" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -133,6 +138,11 @@
       </BindingProperties>
     </Component>
     <Component class="javax.swing.JSpinner" name="timeSteps">
+      <Properties>
+        <Property name="model" type="javax.swing.SpinnerModel" editor="org.netbeans.modules.form.editors2.SpinnerModelEditor">
+          <SpinnerModel initial="1" maximum="10000" minimum="1" numberType="java.lang.Integer" stepSize="10" type="number"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

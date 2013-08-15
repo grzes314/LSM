@@ -20,6 +20,11 @@ public class CMC extends MonteCarlo
         super(params);
     }
     
+    public CMC()
+    {
+        
+    }
+    
     @Override
     public String methodName()
     {

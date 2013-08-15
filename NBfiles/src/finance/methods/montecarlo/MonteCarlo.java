@@ -21,6 +21,10 @@ public abstract class MonteCarlo implements ProgressObservable, Method
         N = K = 1;
     }
 
+    public MonteCarlo() 
+    {
+        N = K = 1;
+    }
 
     @Override
     public final void setModelParams(ModelParams params)
@@ -104,9 +108,8 @@ public abstract class MonteCarlo implements ProgressObservable, Method
     {
         StringBuilder sb = new StringBuilder();
         sb.append(methodName()).append("\n")
-          .append(params.getDesc()).append("\n")
-          .append("N = ").append(N).append("\n")
-          .append("K = ").append(K).append("\n");
+          .append("number of simulations: ").append(N).append("\n")
+          .append("number of timesteps: ").append(K).append("\n");
         return sb.toString();        
     }
     
