@@ -25,7 +25,7 @@ public class OneTrGenerator extends GeneratorRoot
         {
             case REAL:
                 dm = params.getParams(1).mu * ts.getDt();
-                break; // TODO Upewnic sie ze break jest potrzebny
+                break;
             case MART:
                 dm = params.getR() * ts.getDt();
         }

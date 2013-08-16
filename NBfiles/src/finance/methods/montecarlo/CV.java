@@ -76,7 +76,7 @@ public class CV extends MonteCarlo
             case VanillaPut:
                 expectedValueOfCV = calcExpectedValueOfOption(
                         T, VanillaOptionParams.CallOrPut.PUT );
-                break; //TODO
+                break;
             case VanillaCall:
                 expectedValueOfCV = calcExpectedValueOfOption(
                         T, VanillaOptionParams.CallOrPut.CALL );
@@ -131,7 +131,7 @@ public class CV extends MonteCarlo
         {
             case VanillaCall:
                 controls.set(simulation, discount * Math.max(S - strike, 0));
-                break; // TODO ensure its necessary
+                break;
             case VanillaPut:
                 controls.set(simulation, discount * Math.max(strike - S, 0));
                 break;

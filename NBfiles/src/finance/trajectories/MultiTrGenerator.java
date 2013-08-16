@@ -72,7 +72,7 @@ public class MultiTrGenerator extends GeneratorRoot
             {
                 case REAL:
                     dm[i] = params.getParams(i).mu * ts.getDt();
-                    break; // TODO Upewnic sie ze break jest potrzebny
+                    break;
                 case MART:
                     dm[i] = params.getR() * ts.getDt();                    
             }

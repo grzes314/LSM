@@ -332,7 +332,7 @@ public class MCPanel extends ModelPanel
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(years, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(169, Short.MAX_VALUE))
         );
         optionPanelLayout.setVerticalGroup(
             optionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -383,7 +383,7 @@ public class MCPanel extends ModelPanel
                             .addComponent(simulations, javax.swing.GroupLayout.DEFAULT_SIZE, 101, Short.MAX_VALUE)
                             .addComponent(timeSteps)))
                     .addComponent(useAnthi))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(73, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -428,11 +428,6 @@ public class MCPanel extends ModelPanel
         buttonGroup3.add(upAndIn);
         upAndIn.setSelected(true);
         upAndIn.setText("Up-and-in");
-        upAndIn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                upAndInActionPerformed(evt);
-            }
-        });
 
         buttonGroup3.add(upAndOut);
         upAndOut.setText("Up-and-out");
@@ -442,11 +437,6 @@ public class MCPanel extends ModelPanel
 
         buttonGroup3.add(downAndOut);
         downAndOut.setText("Down-and-out");
-        downAndOut.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                downAndOutActionPerformed(evt);
-            }
-        });
 
         jLabel6.setText("Barrier price");
 
@@ -455,19 +445,20 @@ public class MCPanel extends ModelPanel
         barrierPanelLayout.setHorizontalGroup(
             barrierPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(barrierPanelLayout.createSequentialGroup()
-                .addGap(0, 12, 12)
-                .addComponent(jLabel6)
-                .addGap(2, 2, 2)
-                .addComponent(barrierPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
-            .addGroup(barrierPanelLayout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(barrierPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upAndIn)
-                    .addComponent(upAndOut)
-                    .addComponent(downAndIn)
-                    .addComponent(downAndOut))
-                .addContainerGap())
+                    .addGroup(barrierPanelLayout.createSequentialGroup()
+                        .addGap(0, 12, 12)
+                        .addComponent(jLabel6)
+                        .addGap(2, 2, 2)
+                        .addComponent(barrierPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(barrierPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(barrierPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(upAndIn)
+                            .addComponent(upAndOut)
+                            .addComponent(downAndIn)
+                            .addComponent(downAndOut))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         barrierPanelLayout.setVerticalGroup(
             barrierPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -477,7 +468,7 @@ public class MCPanel extends ModelPanel
                     .addComponent(jLabel6))
                 .addGap(4, 4, 4)
                 .addComponent(upAndIn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
                 .addComponent(upAndOut)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(downAndIn)
@@ -492,17 +483,17 @@ public class MCPanel extends ModelPanel
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressDesc, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
                     .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))
                 .addGap(228, 228, 228)
                 .addComponent(priceBttn, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(barrierPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -519,9 +510,9 @@ public class MCPanel extends ModelPanel
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(barrierPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(barrierPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(progressDesc)
@@ -535,16 +526,6 @@ public class MCPanel extends ModelPanel
     {//GEN-HEADEREND:event_priceBttnActionPerformed
         execute();
     }//GEN-LAST:event_priceBttnActionPerformed
-
-    private void upAndInActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_upAndInActionPerformed
-    {//GEN-HEADEREND:event_upAndInActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_upAndInActionPerformed
-
-    private void downAndOutActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_downAndOutActionPerformed
-    {//GEN-HEADEREND:event_downAndOutActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_downAndOutActionPerformed
 
     private void useAnthiActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_useAnthiActionPerformed
     {//GEN-HEADEREND:event_useAnthiActionPerformed
