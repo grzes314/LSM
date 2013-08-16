@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lsmapp.Pricer;
-import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrCountObserver;
+import lsmapp.instrPanels.InstrManager;
 import lsmapp.resultPanels.ResultHandler;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -190,6 +190,7 @@ public class NewTaskPanel extends javax.swing.JPanel
     {
         try {
             preparePricingTask();
+            Pricer.getApp().setStatus("New task started: " + task.getDesc());
             task.execute();
         } catch (NotPositiveDefiniteMatrixException ex) {
             Logger.getLogger(NewTaskPanel.class.getName()).log(Level.SEVERE, null, ex);

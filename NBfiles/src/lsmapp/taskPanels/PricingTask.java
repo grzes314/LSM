@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
+import lsmapp.Pricer;
 import lsmapp.resultPanels.ResultHandler;
 
 /**
@@ -64,13 +65,21 @@ public class PricingTask extends SwingWorker<Double, Void>
             resultHandler.result(get());
             if (progressPanel != null)
                 progressPanel.die();
+            showStatusMessage("Task finished: " + getDesc());
         } catch (ExecutionException ex) {
             if (progressPanel != null)
                 progressPanel.showError(ex.getMessage());
+            showStatusMessage("Task failed: " + getDesc());
         } catch (InterruptedException | CancellationException ex) {
             if (progressPanel != null)
                 progressPanel.die();
+            showStatusMessage("Task cancelled: " + getDesc());
         }
+    }
+        
+    private void showStatusMessage(String mssg)
+    {
+        Pricer.getApp().setStatus(mssg);
     }
     
     Method method;

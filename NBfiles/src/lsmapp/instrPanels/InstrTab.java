@@ -3,6 +3,7 @@ package lsmapp.instrPanels;
 
 import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
+import lsmapp.Pricer;
 
 /**
  *
@@ -193,6 +194,7 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
     {
         instrCombo.addItem(instrName);
         instrCombo.setSelectedItem(instrName);
+        showStatusMessage("Instrument \"" + instrName + "\" added.");
     }
     
     private void deleteInstrClicked()
@@ -222,6 +224,7 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
         instrCombo.removeItem(name);
         if (instrCombo.getSelectedItem() == null)
             instrPanel.removeAll();
+        showStatusMessage("Instrument \"" + name + "\" deleted.");
         updateView();
     }
 
@@ -244,6 +247,11 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
         instrCombo.removeAllItems();
         instrPanel.removeAll();
         updateView();
+    }
+        
+    private void showStatusMessage(String mssg)
+    {
+        Pricer.getApp().setStatus(mssg);
     }
     
     InstrManager instrManager;

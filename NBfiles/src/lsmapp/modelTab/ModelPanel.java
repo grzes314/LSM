@@ -46,7 +46,7 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
     public void assetAdded(String name)
     {
         assetsList.addItem(name);
-        showStatusMessage("New asset added: " + name);
+        showStatusMessage("Asset \"" + name +"\" added.");
         assetsList.setSelectedItem(name);
     }
     
