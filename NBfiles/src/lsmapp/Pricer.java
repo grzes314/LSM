@@ -55,7 +55,7 @@ public class Pricer extends JFrame
                 NewInstrInfo.InstrType.Bond, "obligacja"));
             im.addInstr( new NewInstrInfo(
                 NewInstrInfo.InstrType.Vanilla, "wanilia"));
-        } catch (        IllegalArgumentException | NoAssetsException | UnsupportedOperationException ex) {
+        } catch (IllegalArgumentException | NoAssetsException | UnsupportedOperationException ex) {
             Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

@@ -98,7 +98,7 @@ public class FD2GUI implements ResultHandler
         }
         results.addTab("Price plot", pricePlot(method, instr));
         
-        displayer.addResults(instr.toString(), results);
+        displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
     
     private Component stoppingPlot(FiniteDifference method, Option opt)

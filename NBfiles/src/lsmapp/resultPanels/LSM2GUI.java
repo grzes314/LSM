@@ -100,7 +100,7 @@ public class LSM2GUI implements ResultHandler
         }
         results.addTab("Regression", regressionView(method, instr));
         
-        displayer.addResults(instr.toString(), results);
+        displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
     
     private Component stoppingPlot(LSM model, Option opt)

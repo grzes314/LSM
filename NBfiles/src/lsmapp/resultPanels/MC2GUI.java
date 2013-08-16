@@ -89,7 +89,7 @@ public class MC2GUI implements ResultHandler
         results.addTab("Description", ip);
         results.addTab("Convergence plot", plotConvergence(method));
         
-        displayer.addResults(instr.toString(), results);
+        displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
     
     private Component plotConvergence(MonteCarlo model)
