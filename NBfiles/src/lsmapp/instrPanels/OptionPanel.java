@@ -4,6 +4,7 @@ package lsmapp.instrPanels;
 import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
+import finance.parameters.OneAssetParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import lsmapp.Pricer;
+import lsmapp.modelTab.OneAssetPanel;
 
 /**
  *
@@ -45,7 +47,7 @@ public class OptionPanel extends SpecificInstrPanel
         assets = new javax.swing.JComboBox();
         strike = new javax.swing.JSpinner();
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Option");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -76,6 +78,12 @@ public class OptionPanel extends SpecificInstrPanel
 
         jLabel6.setText("On asset:");
 
+        assets.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                assetsItemStateChanged(evt);
+            }
+        });
+
         strike.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(1.0d)));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -88,7 +96,7 @@ public class OptionPanel extends SpecificInstrPanel
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 69, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel4)
                             .addComponent(jLabel6)
                             .addGroup(layout.createSequentialGroup()
@@ -141,6 +149,12 @@ public class OptionPanel extends SpecificInstrPanel
                 .addContainerGap(188, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void assetsItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_assetsItemStateChanged
+    {//GEN-HEADEREND:event_assetsItemStateChanged
+        underlyingSelected();
+    }//GEN-LAST:event_assetsItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton american;
     private javax.swing.JComboBox assets;
@@ -212,5 +226,17 @@ public class OptionPanel extends SpecificInstrPanel
     void assetDeleted(String assetName)
     {
         assets.removeItem(assetName);
+    }
+
+    private void underlyingSelected()
+    {
+        String assetName = (String) assets.getSelectedItem();
+        OneAssetPanel oap = Pricer.getApp().getModelManager().getAsset(assetName);
+        fillDefaultValues( oap.makeOneAssetParams() );
+    }
+
+    private void fillDefaultValues(OneAssetParams oap)
+    {
+        strike.setValue(oap.S);
     }
 }

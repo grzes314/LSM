@@ -5,6 +5,7 @@ import finance.parameters.BarrierParams;
 import finance.parameters.PartialBarrierParams;
 import java.util.Collection;
 import lsmapp.Pricer;
+import lsmapp.modelTab.OneAssetPanel;
 
 /**
  *
@@ -168,6 +169,12 @@ public class NewBarrierDialog extends javax.swing.JDialog
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel7.setText("On asset:");
 
+        assetCombo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                assetComboItemStateChanged(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -259,6 +266,11 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     setVisible(false);
 }//GEN-LAST:event_OKActionPerformed
 
+    private void assetComboItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_assetComboItemStateChanged
+    {//GEN-HEADEREND:event_assetComboItemStateChanged
+        assetSelected();
+    }//GEN-LAST:event_assetComboItemStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OK;
     private javax.swing.JComboBox assetCombo;
@@ -335,7 +347,18 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
         assetCombo.setSelectedItem(initialName);
     }
     
+    private void assetSelected()
+    {
+        String assetName = (String) assetCombo.getSelectedItem();
+        OneAssetPanel oap = Pricer.getApp().getModelManager().getAsset(assetName);
+        fillDefaultLevel( oap.makeOneAssetParams().S );
+    }
+
+    private void fillDefaultLevel(double spot)
+    {
+        level.setValue(spot);
+    }
+    
     private boolean OK_hit;
-    private String selectedAsset;
     private boolean partialEnabled = false;
 }

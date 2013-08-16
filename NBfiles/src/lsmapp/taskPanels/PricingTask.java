@@ -37,7 +37,7 @@ public class PricingTask extends SwingWorker<Double, Void>
     public String getDesc()
     {
         return "Pricing " + instr.getName() + " using " + method.toString() +
-            "in a " + mp.toString();
+            " in a " + mp.toString();
     }
 
     @Override
