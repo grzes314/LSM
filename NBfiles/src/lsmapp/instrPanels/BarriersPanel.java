@@ -1,6 +1,7 @@
 
 package lsmapp.instrPanels;
 
+import finance.instruments.Instr;
 import java.util.HashSet;
 import java.util.Set;
 import javax.swing.DefaultListModel;
@@ -193,6 +194,17 @@ private void removeBarrierActionPerformed(java.awt.event.ActionEvent evt) {//GEN
             return "";
         else
             return set.iterator().next();
+    }
+    
+    public Instr wrapInBarriers(Instr instr)
+    {
+        ListModel model = barriersList.getModel();
+        for (int i = 0; i < model.getSize(); ++i)
+        {
+            BarrierWrapper bw = (BarrierWrapper) model.getElementAt(i);
+            instr = bw.addBarrier(instr);
+        }
+        return instr;
     }
     
     private InstrPanel parentInstrPanel;

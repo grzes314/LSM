@@ -101,6 +101,7 @@ public class InstrPanel extends javax.swing.JPanel
     public Instr makeInstr()
     {
         Instr instr = specificPanel.makeInstr();
+        instr = barriersPanel.wrapInBarriers(instr);
         instr.setName(instrName);
         return instr;
     }

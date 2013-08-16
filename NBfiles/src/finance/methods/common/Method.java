@@ -24,7 +24,7 @@ public interface Method extends ProgressObservable
      * @return value of the instrument.
      * @throws WrongInstrException when implementarion cannot price this instrument.
      */
-    abstract double price(Instr instr) throws WrongInstrException;
+    abstract double price(Instr instr) throws WrongInstrException, InterruptedException;
     
     /**
      * Answers if method can price given instrument.

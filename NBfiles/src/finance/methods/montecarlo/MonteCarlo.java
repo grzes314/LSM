@@ -128,13 +128,15 @@ public abstract class MonteCarlo implements Method
      * @return result of pricing.
      */
     @Override
-    public double price(Instr instr)
+    public double price(Instr instr) throws InterruptedException
     {
         convergence = new Convergence();
         initPricing(instr);
         for (int i = 1 ; i <= N; ++i)
         {
             oneSimulation(instr);
+            if (Thread.interrupted())
+                throw new InterruptedException();
             maybeNotify(i);
             maybeAddConvergencePoint(i);
         }

@@ -99,7 +99,11 @@ public class MCPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        return method.price(instr);
+        try {
+            return method.price(instr);
+        } catch (InterruptedException ex) {
+            return -1;
+        }
     }
 
     @Override

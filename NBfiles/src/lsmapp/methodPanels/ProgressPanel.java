@@ -4,7 +4,6 @@ package lsmapp.methodPanels;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObserver;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,8 +32,10 @@ public class ProgressPanel extends JPanel implements ProgressObserver
         jScrollPane1 = new javax.swing.JScrollPane();
         taskDesc = new javax.swing.JTextArea();
 
-        setBorder(javax.swing.BorderFactory.createBevelBorder(0));
-        setMaximumSize(new java.awt.Dimension(32767, 500));
+        setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        setMaximumSize(new java.awt.Dimension(32767, 120));
+        setMinimumSize(new java.awt.Dimension(200, 80));
+        setPreferredSize(new java.awt.Dimension(300, 100));
 
         progressBar.setStringPainted(true);
 
@@ -59,13 +60,13 @@ public class ProgressPanel extends JPanel implements ProgressObserver
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(progressDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
-                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE))
+                    .addComponent(progressDesc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -96,7 +97,7 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 
     /** Creates new form ProgressPanel */
-    public ProgressPanel(Container container, PricingTask pricingTask)
+    public ProgressPanel(ProgressesContainer container, PricingTask pricingTask)
     {
         this.container = container;
         this.pricingTask = pricingTask;
@@ -137,11 +138,11 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     
     private void removeFromContainer()
     {
-        container.remove(this);
+        container.removeProgress(this);
         container.revalidate();
         container.repaint();
     }
     
-    private Container container;
+    private ProgressesContainer container;
     private PricingTask pricingTask;
 }

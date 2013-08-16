@@ -6,6 +6,7 @@ import finance.methods.common.Method;
 import finance.methods.common.WrongInstrException;
 import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,20 +40,18 @@ public class PricingTask extends SwingWorker<Double, Void>
     }
 
     @Override
-    protected Double doInBackground()
+    protected Double doInBackground() throws InterruptedException
     {
         try {
             return doPricing();
-        } catch (WrongInstrException ex) {
-            Logger.getLogger(PricingTask.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (WrongModelException ex) {
+        } catch (WrongInstrException | WrongModelException ex) {
             Logger.getLogger(PricingTask.class.getName()).log(Level.SEVERE, null, ex);
         }
         throw new RuntimeException("Nie wiem co zrobic z tym wyjatkiem");
         //TODO zastanowic sie jak handlowac te bledy
     }
 
-    private Double doPricing() throws WrongInstrException, WrongModelException
+    private Double doPricing() throws WrongInstrException, WrongModelException, InterruptedException
     {
         method.setModelParams(mp);
         return method.price(instr);
@@ -65,9 +64,12 @@ public class PricingTask extends SwingWorker<Double, Void>
             resultHandler.result(get());
             if (progressPanel != null)
                 progressPanel.die();
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (ExecutionException ex) {
             if (progressPanel != null)
                 progressPanel.showError();
+        } catch (InterruptedException | CancellationException ex) {
+            if (progressPanel != null)
+                progressPanel.die();
         }
     }
     
