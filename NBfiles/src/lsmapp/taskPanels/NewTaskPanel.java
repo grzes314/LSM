@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import lsmapp.Pricer;
 import lsmapp.instrPanels.InstrCountObserver;
 import lsmapp.instrPanels.InstrManager;
@@ -20,6 +21,13 @@ import math.matrices.NotPositiveDefiniteMatrixException;
  */
 public class NewTaskPanel extends javax.swing.JPanel
 {
+
+    private void addProgressPanelToContainer()
+    {
+        progressesContainer.addProgress(panel);
+        progressesContainer.revalidate();
+        progressesContainer.repaint();
+    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -190,11 +198,13 @@ public class NewTaskPanel extends javax.swing.JPanel
     {
         try {
             preparePricingTask();
-            Pricer.getApp().setStatus("New task started: " + task.getDesc());
-            task.execute();
+            if (checkIfPricingMayBeDone())
+            {
+                addProgressPanelToContainer();
+                Pricer.getApp().setStatus("New task started: " + task.getDesc());
+                task.execute();
+            }
         } catch (NotPositiveDefiniteMatrixException ex) {
-            Logger.getLogger(NewTaskPanel.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
             Logger.getLogger(NewTaskPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -238,9 +248,15 @@ public class NewTaskPanel extends javax.swing.JPanel
         panel = new ProgressPanel(progressesContainer, task);
         task.setProgressPanel(panel);
         method.addObserver(panel);
-        progressesContainer.addProgress(panel);
-        progressesContainer.revalidate();
-        progressesContainer.repaint();
+    }
+
+    private boolean checkIfPricingMayBeDone()
+    {
+        boolean res = method.isPriceable(instr);
+        if (!res)
+            JOptionPane.showMessageDialog(this, "Chosen instrument cannot be priced "
+                + "with selected method", "Pricing impossible", JOptionPane.ERROR_MESSAGE);
+        return res;
     }
     
     private Method method;

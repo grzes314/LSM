@@ -46,10 +46,8 @@ public class PricingTask extends SwingWorker<Double, Void>
         try {
             return doPricing();
         } catch (WrongInstrException | WrongModelException ex) {
-            Logger.getLogger(PricingTask.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex.getMessage());
         }
-        throw new RuntimeException("Nie wiem co zrobic z tym wyjatkiem");
-        //TODO zastanowic sie jak handlowac te bledy
     }
 
     private Double doPricing() throws WrongInstrException, WrongModelException, InterruptedException
