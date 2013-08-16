@@ -1,5 +1,5 @@
 
-package lsmapp.methodPanels;
+package lsmapp.taskPanels;
 
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObserver;
@@ -32,7 +32,7 @@ public class ProgressPanel extends JPanel implements ProgressObserver
         jScrollPane1 = new javax.swing.JScrollPane();
         taskDesc = new javax.swing.JTextArea();
 
-        setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        setBorder(javax.swing.BorderFactory.createBevelBorder(0));
         setMaximumSize(new java.awt.Dimension(32767, 120));
         setMinimumSize(new java.awt.Dimension(200, 80));
         setPreferredSize(new java.awt.Dimension(300, 100));

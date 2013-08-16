@@ -1,5 +1,5 @@
 
-package lsmapp.methodPanels;
+package lsmapp.taskPanels;
 
 import java.awt.BorderLayout;
 import lsmapp.instrPanels.InstrManager;
@@ -30,7 +30,7 @@ public class NewTaskTab extends javax.swing.JPanel
 
         containerOfProgressesContainer.setLayout(new java.awt.BorderLayout());
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Running tasks");
         containerOfProgressesContainer.add(jLabel1, java.awt.BorderLayout.NORTH);
@@ -40,7 +40,7 @@ public class NewTaskTab extends javax.swing.JPanel
         containerOfNewTaskPanel.setPreferredSize(new java.awt.Dimension(300, 391));
         containerOfNewTaskPanel.setLayout(new java.awt.BorderLayout());
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 16));
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Add new task");
         containerOfNewTaskPanel.add(jLabel2, java.awt.BorderLayout.NORTH);

@@ -1,5 +1,5 @@
 
-package lsmapp.methodPanels;
+package lsmapp.taskPanels;
 
 import java.awt.Component;
 

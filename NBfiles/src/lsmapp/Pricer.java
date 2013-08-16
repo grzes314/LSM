@@ -15,7 +15,7 @@ import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
 import lsmapp.instrPanels.NewInstrInfo;
 import lsmapp.instrPanels.NoAssetsException;
-import lsmapp.methodPanels.NewTaskTab;
+import lsmapp.taskPanels.NewTaskTab;
 import lsmapp.modelTab.ModelManager;
 import lsmapp.modelTab.ModelPanel;
 import lsmapp.resultPanels.ResultDisplay;

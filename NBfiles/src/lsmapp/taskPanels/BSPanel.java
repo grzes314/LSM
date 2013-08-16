@@ -1,5 +1,5 @@
     
-package lsmapp.methodPanels;
+package lsmapp.taskPanels;
 
 import finance.instruments.Instr;
 import finance.methods.blackscholes.BSMethod;
