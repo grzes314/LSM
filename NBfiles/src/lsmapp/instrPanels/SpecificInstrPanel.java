@@ -33,8 +33,14 @@ public abstract class SpecificInstrPanel extends JPanel
     abstract Set<String> getUnderlyings();
 
     /**
-     * Calling this method means that number of assets in application has changed
-     * and {@code SpecificInstrPanel} should update it.
+     * Calling this method means that new asset has been add
+     * and {@code SpecificInstrPanel} should update its list.
      */
-    abstract void updateAssetLists();
+    abstract void assetAdded(String assetName);
+    
+    /**
+     * Calling this method means that given asset has been deleted
+     * and {@code SpecificInstrPanel} should update its list.
+     */
+    abstract void assetDeleted(String assetName);
 }

@@ -201,10 +201,16 @@ public class OptionPanel extends SpecificInstrPanel
         res.add((String) assets.getSelectedItem());
         return res;
     }
+    
+    @Override
+    void assetAdded(String assetName)
+    {
+        assets.addItem(assetName);
+    }
 
     @Override
-    void updateAssetLists()
+    void assetDeleted(String assetName)
     {
-        fillAssetsCombo();
+        assets.removeItem(assetName);
     }
 }

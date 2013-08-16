@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
  *
  * @author Grzegorz Los
  */
-public class InstrTab extends javax.swing.JPanel
+public class InstrTab extends javax.swing.JPanel implements InstrCountObserver
 {
 
     /** This method is called from within the constructor to
@@ -188,7 +188,8 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
         }
     }
 
-    public void addNewInstr(String instrName)
+    @Override
+    public void instrAdded(String instrName)
     {
         instrCombo.addItem(instrName);
         instrCombo.setSelectedItem(instrName);
@@ -215,9 +216,12 @@ private void instrComboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIR
         }
     }
     
-    public void removeInstr(String name)
+    @Override
+    public void instrDeleted(String name)
     {
         instrCombo.removeItem(name);
+        if (instrCombo.getSelectedItem() == null)
+            instrPanel.removeAll();
         updateView();
     }
 

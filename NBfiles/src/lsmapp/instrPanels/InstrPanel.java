@@ -119,9 +119,14 @@ public class InstrPanel extends javax.swing.JPanel
         return res;
     }
 
-    public void updateAssetLists()
+    void assetDeleted(String assetName)
     {
-        specificPanel.updateAssetLists();
+        specificPanel.assetDeleted(assetName);
+    }
+
+    void assetAdded(String assetName)
+    {
+        specificPanel.assetAdded(assetName);
     }
 
     private String instrName;

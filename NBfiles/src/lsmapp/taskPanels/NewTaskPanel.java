@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lsmapp.Pricer;
 import lsmapp.instrPanels.InstrManager;
-import lsmapp.instrPanels.InstrNumberChangeObserver;
+import lsmapp.instrPanels.InstrCountObserver;
 import lsmapp.resultPanels.ResultHandler;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -162,12 +162,12 @@ public class NewTaskPanel extends javax.swing.JPanel
 
     private void prepareInstrCombo(InstrManager instrManager)
     {
-        instrManager.addInstrNumberChangeObserver(
-            new InstrNumberChangeObserver() {
-                @Override public void addInstr(String name) {
+        instrManager.addInstrCountObserver(
+            new InstrCountObserver() {
+                @Override public void instrAdded(String name) {
                     NewTaskPanel.this.addInstr(name);
                 }
-                @Override public void delInstr(String name) {
+                @Override public void instrDeleted(String name) {
                     NewTaskPanel.this.delInstr(name);
                 }
             });

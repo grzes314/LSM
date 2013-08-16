@@ -66,7 +66,7 @@ public class PricingTask extends SwingWorker<Double, Void>
                 progressPanel.die();
         } catch (ExecutionException ex) {
             if (progressPanel != null)
-                progressPanel.showError();
+                progressPanel.showError(ex.getMessage());
         } catch (InterruptedException | CancellationException ex) {
             if (progressPanel != null)
                 progressPanel.die();

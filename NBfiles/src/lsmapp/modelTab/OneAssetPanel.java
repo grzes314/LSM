@@ -8,17 +8,14 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-
-
-
-
+import lsmapp.Pricer;
 
 
 /**
  *
  * @author Grzegorz Los
  */
-public class OneAssetPanel extends javax.swing.JPanel
+public class OneAssetPanel extends javax.swing.JPanel implements AssetCountObserver
 {
     public OneAssetPanel(String asset)
     {
@@ -26,9 +23,10 @@ public class OneAssetPanel extends javax.swing.JPanel
         assetName.setText(asset);
         tableModel = (MyTableModel) table.getModel();
         tableModel.setAssetName(asset);
+        initCorrelations();
     }
 
-    OneAssetPanel(OneAssetParams params)
+    public OneAssetPanel(OneAssetParams params)
     {
         initComponents();
         assetName.setText(params.name);
@@ -37,34 +35,43 @@ public class OneAssetPanel extends javax.swing.JPanel
         spot.setValue( (Double) params.S );
         volatility.setValue( (Double) params.vol );
         drift.setValue( (Double) params.mu );
+        initCorrelations();
+    }
+        
+    private void initCorrelations()
+    {
+        Collection<String> coll = Pricer.getApp().getModelManager().getAssets();
+        zeroCorrelations(coll);
     }
 
-    void zeroCorrelations(Collection<String> assetsNames)
+    public void zeroCorrelations(Collection<String> assetsNames)
     {
         tableModel.zeroCorrelations(assetsNames);
     }
 
-    void resetCorrelations(Collection<Pair<String, Double>> corrs)
+    public void resetCorrelations(Collection<Pair<String, Double>> corrs)
     {
         tableModel.resetCorrelations(corrs);
     }
     
-    Collection<Pair<String, Double>> getCorrelations()
+    public Collection<Pair<String, Double>> getCorrelations()
     {
         return tableModel.getCorrelations();
     }
 
-    void addNewAsset(String assetName)
+    @Override
+    public void assetAdded(String assetName)
     {
         tableModel.addNewAsset(assetName);
     }
     
-    void assetDeleted(String assetName)
+    @Override
+    public void assetDeleted(String assetName)
     {
         tableModel.assetDeleted(assetName);
     }
     
-    OneAssetParams makeOneAssetParams()
+    public OneAssetParams makeOneAssetParams()
     {
         return new OneAssetParams(
                 assetName.getText(),
@@ -89,7 +96,7 @@ public class OneAssetPanel extends javax.swing.JPanel
                 "Information", JOptionPane.WARNING_MESSAGE);
     }
     
-    void changeCorrelation(String asset, double value)
+    public void changeCorrelation(String asset, double value)
     {
         tableModel.changeCorrelation(asset, value);
     }

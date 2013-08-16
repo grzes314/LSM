@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import lsmapp.Pricer;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
@@ -19,7 +18,7 @@ import math.matrices.NotPositiveDefiniteMatrixException;
  *
  * @author Grzegorz Los
  */
-public class ModelManager
+public class ModelManager implements AssetCountInfo
 {
     public ModelManager()
     {
@@ -28,7 +27,7 @@ public class ModelManager
     
     public ModelManager(ModelParams mp)
     {
-        readModelParams(mp);
+        fromModelParams(mp);
         initTableModelListener();
     }
 
@@ -56,7 +55,12 @@ public class ModelManager
 
     public void setModelPanel(ModelPanel modelPanel)
     {
+        if (this.modelPanel != null)
+            removeAssetCountObserver(this.modelPanel);
+        
         this.modelPanel = modelPanel;
+        if (!observers.contains(modelPanel))
+            addAssetCountObserver(modelPanel);
     }
     
     public ModelParams toParams() throws NotPositiveDefiniteMatrixException
@@ -141,27 +145,28 @@ public class ModelManager
     
     public void addAsset(String asset)
     {
-        ensureNewAssetNameOK(asset);
         OneAssetPanel oap = new OneAssetPanel(asset);
-        oap.addTableModelListener(tableModelListener);
-        updateCorrelation(asset, oap);
-        assetPanels.put(asset, oap);
-        modelPanel.addAsset(asset);
-        Pricer.getApp().getInstrManager().updateAssetLists();
+        addAsset(asset, oap);
+    }
+    
+    private void addAsset(String asset, OneAssetPanel newPanel)
+    {
+        ensureNewAssetNameOK(asset);
+        newPanel.addTableModelListener(tableModelListener);
+        assetPanels.put(asset, newPanel);
+        informAboutAddition(asset);
+        addAssetCountObserver(newPanel);        
     }
 
     public void deleteAsset(String name)
     {
-        assetPanels.remove(name);
-        for (OneAssetPanel oap: assetPanels.values())
-            oap.assetDeleted(name);
-    }
-    
-    private void updateCorrelation(String newAsset, OneAssetPanel newPanel)
-    {
-        newPanel.zeroCorrelations(assetPanels.keySet());
-        for (String asset: assetPanels.keySet())
-            assetPanels.get(asset).addNewAsset(newAsset);
+        OneAssetPanel oap = assetPanels.get(name);
+        if (oap != null)
+        {
+            removeAssetCountObserver(oap);
+            assetPanels.remove(name);
+            informAboutDeletion(name);
+        }
     }
 
     private void ensureNewAssetNameOK(String asset)
@@ -176,18 +181,17 @@ public class ModelManager
 
     public void clear()
     {
-        assetPanels.clear();
-        modelPanel.reset();
+        for (String name: assetPanels.keySet())
+            deleteAsset(name);
     }
     
-    public final void readModelParams(ModelParams mp)
+    public final void fromModelParams(ModelParams mp)
     {
         assetPanels.clear();
         for (String asset: mp.getAssetsNames())
         {
             OneAssetPanel oap = new OneAssetPanel(mp.getParams(asset));
-            assetPanels.put( asset, oap );
-            oap.addTableModelListener(tableModelListener);
+            addAsset(asset, oap);
         }
         readCorrelation(mp);
         modelPanel.reset();
@@ -207,8 +211,35 @@ public class ModelManager
             assetPanels.get(asset).resetCorrelations(arr);
         }
     }
+
+    @Override
+    public void addAssetCountObserver(AssetCountObserver observer)
+    {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeAssetCountObserver(AssetCountObserver observer)
+    {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void informAboutDeletion(String assetName)
+    {
+        for (AssetCountObserver ob: observers)
+            ob.assetDeleted(assetName);
+    }
+
+    @Override
+    public void informAboutAddition(String assetName)
+    {
+        for (AssetCountObserver ob: observers)
+            ob.assetAdded(assetName);
+    }
     
     private ModelPanel modelPanel;
     private Map<String, OneAssetPanel> assetPanels = new HashMap<>();
     private  TableModelListener tableModelListener;
+    private ArrayList<AssetCountObserver> observers = new ArrayList<>();
 }

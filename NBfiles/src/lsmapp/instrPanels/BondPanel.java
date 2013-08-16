@@ -118,9 +118,14 @@ public class BondPanel extends SpecificInstrPanel
     {
         return new HashSet<>();
     }
+    
+    @Override
+    void assetAdded(String assetName)
+    {
+    }
 
     @Override
-    void updateAssetLists()
+    void assetDeleted(String assetName)
     {
     }
 }

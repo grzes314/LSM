@@ -113,12 +113,12 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         progressBar.setValue(pr.percent);
     }
 
-    void showError()
+    void showError(String errMssg)
     {
         removeAll();
         setLayout(new BorderLayout());
         add(taskDesc, BorderLayout.NORTH);
-        add(new JLabel("Error while pricing"), BorderLayout.CENTER);
+        add(new JLabel("<html> Error while pricing: " + errMssg), BorderLayout.CENTER);
         JButton close = new JButton("Close");
         close.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent arg0) {

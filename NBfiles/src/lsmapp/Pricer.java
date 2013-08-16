@@ -15,11 +15,11 @@ import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
 import lsmapp.instrPanels.NewInstrInfo;
 import lsmapp.instrPanels.NoAssetsException;
-import lsmapp.taskPanels.NewTaskTab;
 import lsmapp.modelTab.ModelManager;
 import lsmapp.modelTab.ModelPanel;
 import lsmapp.resultPanels.ResultDisplay;
 import lsmapp.resultPanels.ResultPanel;
+import lsmapp.taskPanels.NewTaskTab;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
@@ -100,8 +100,9 @@ public class Pricer extends JFrame
     private Component createInstrTab()
     {
         instrManager = new InstrManager();
+        modelManager.addAssetCountObserver(instrManager);
         InstrTab instrTab = new InstrTab(instrManager);
-        instrManager.setInstrTab(instrTab);
+        instrManager.addInstrCountObserver(instrTab);
         return instrTab;
     }
 
@@ -302,7 +303,7 @@ public class Pricer extends JFrame
     {
         InputStream in = new FileInputStream(file);
         ModelParams mp = io.read(in);
-        modelManager.readModelParams(mp);
+        modelManager.fromModelParams(mp);
         setStatus("Model from file " + file.getName() + " opened.");
     }
 
@@ -314,7 +315,7 @@ public class Pricer extends JFrame
         cc.readAndCalc(in);
         ModelParams mp = new ConcreteParams(cc.getOneAssetParams(),
                 cc.getCorrelation(), 0.0);
-        modelManager.readModelParams(mp);
+        modelManager.fromModelParams(mp);
         setStatus("Model calibrated basing on data from file " + file.getName() + ".");
     }
 

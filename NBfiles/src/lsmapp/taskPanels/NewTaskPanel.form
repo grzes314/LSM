@@ -33,7 +33,7 @@
                       </Group>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="instrCombo" pref="221" max="32767" attributes="0"/>
+                          <Component id="instrCombo" pref="148" max="32767" attributes="0"/>
                           <Component id="methodCombo" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -65,7 +65,7 @@
                   <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-              <Component id="methodContainer" pref="204" max="32767" attributes="0"/>
+              <Component id="methodContainer" pref="119" max="32767" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="price" min="-2" pref="30" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>

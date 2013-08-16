@@ -3,27 +3,14 @@ package lsmapp.instrPanels;
 
 import finance.instruments.Instr;
 import java.util.*;
+import lsmapp.modelTab.AssetCountObserver;
 
 /**
  *
  * @author Grzegorz Los
  */
-public class InstrManager implements InstrNumberChangeInfo
-{
-    public Collection<String> getInstrsWhicheUseAsset(String name)
-    {
-        ArrayList<String> res = new ArrayList<>();
-        for (InstrPanel panel: instrPanels.values())
-            if (panel.isUsing(name))
-                res.add(panel.getInstrName());
-        return res;
-    }
-
-    public void setInstrTab(InstrTab instrTab)
-    {
-        this.instrTab = instrTab;
-    }
-    
+public class InstrManager implements InstrCountInfo, AssetCountObserver
+{    
     public InstrPanel getInstrPanel(String instrName)
     {
         return instrPanels.get(instrName);
@@ -34,7 +21,6 @@ public class InstrManager implements InstrNumberChangeInfo
     {
         ensureNewInstrNameOK(info.instrName);
         InstrPanel instrPanel = createNewPanel(info);
-        instrTab.addNewInstr(info.instrName);
         instrPanels.put(instrPanel.getInstrName(), instrPanel);
         informAboutAddition(info.instrName);
     }
@@ -72,9 +58,7 @@ public class InstrManager implements InstrNumberChangeInfo
     public void removeInstr(String instr)
     {
         instrPanels.remove(instr);
-        instrTab.removeInstr(instr);
-        updateAssetLists();
-        informAboutAddition(instr);
+        informAboutDeletion(instr);
     }
 
     public int getNumberOfInstrs()
@@ -87,26 +71,21 @@ public class InstrManager implements InstrNumberChangeInfo
         return instrPanels.keySet();
     }
     
-    public void updateAssetLists()
-    {
-        for (InstrPanel ip: instrPanels.values())
-            ip.updateAssetLists();
-    }
-    
     public void clear()
     {
-        instrPanels.clear();
-        instrTab.clear();
+        Object[] names = instrPanels.keySet().toArray();
+        for (Object name: names)
+            removeInstr((String) name);
     }
     
     @Override
-    public void addInstrNumberChangeObserver(InstrNumberChangeObserver observer)
+    public void addInstrCountObserver(InstrCountObserver observer)
     {
         observers.add(observer);
     }
 
     @Override
-    public void removeInstrNumberChangeObserver(InstrNumberChangeObserver observer)
+    public void removeInstrCountObserver(InstrCountObserver observer)
     {
         observers.remove(observer);
     }
@@ -114,15 +93,15 @@ public class InstrManager implements InstrNumberChangeInfo
     @Override
     public void informAboutDeletion(String instrName)
     {
-        for (InstrNumberChangeObserver ob: observers)
-            ob.delInstr(instrName);
+        for (InstrCountObserver ob: observers)
+            ob.instrDeleted(instrName);
     }
 
     @Override
     public void informAboutAddition(String instrName)
     {
-        for (InstrNumberChangeObserver ob: observers)
-            ob.addInstr(instrName);
+        for (InstrCountObserver ob: observers)
+            ob.instrAdded(instrName);
     }
 
     public Instr makeInstr(String instrName)
@@ -133,8 +112,37 @@ public class InstrManager implements InstrNumberChangeInfo
                 instrName + "\".");
         return panel.makeInstr();
     }
+
+    @Override
+    public void assetAdded(String name)
+    {
+        for (InstrPanel ip: instrPanels.values())
+            ip.assetAdded(name);
+    }
+
+    @Override
+    public void assetDeleted(String name)
+    {
+        deleteInstrs( getInstrsWhicheUseAsset(name) );
+        for (InstrPanel ip: instrPanels.values())
+            ip.assetDeleted(name);
+    }    
     
-    private InstrTab instrTab;
+    public Collection<String> getInstrsWhicheUseAsset(String name)
+    {
+        ArrayList<String> res = new ArrayList<>();
+        for (InstrPanel panel: instrPanels.values())
+            if (panel.isUsing(name))
+                res.add(panel.getInstrName());
+        return res;
+    }
+    
+    private void deleteInstrs(Collection<String> instrs)
+    {
+        for (String instr: instrs)
+            removeInstr(instr);
+    }
+    
     private Map<String, InstrPanel> instrPanels = new HashMap<>();
-    private List<InstrNumberChangeObserver> observers = new ArrayList<>();
+    private List<InstrCountObserver> observers = new ArrayList<>();
 }

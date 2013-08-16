@@ -11,7 +11,7 @@ import lsmapp.instrPanels.InstrManager;
  *
  * @author Grzegorz Los
  */
-public class ModelPanel extends javax.swing.JPanel
+public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
 {
     /**
      * Creates new form ModelPanel
@@ -42,7 +42,8 @@ public class ModelPanel extends javax.swing.JPanel
         }
     }
     
-    public void addAsset(String name) throws IllegalArgumentException
+    @Override
+    public void assetAdded(String name)
     {
         assetsList.addItem(name);
         showStatusMessage("New asset added: " + name);
@@ -71,10 +72,7 @@ public class ModelPanel extends javax.swing.JPanel
             InstrManager im = Pricer.getApp().getInstrManager();
             Collection<String> instrs = im.getInstrsWhicheUseAsset(choice);
             if (confirmInstrsDeletion(instrs))
-            {
-                deleteInstrs(instrs);
-                deleteAsset(choice);
-            }
+                modelManager.deleteAsset(choice);
         }
     }
     
@@ -100,18 +98,11 @@ public class ModelPanel extends javax.swing.JPanel
         if (res == JOptionPane.OK_OPTION)
             return true;
         else return false;
-    }
-    
-    private void deleteInstrs(Collection<String> instrs)
-    {
-        InstrManager im = Pricer.getApp().getInstrManager();
-        for (String instr: instrs)
-            im.removeInstr(instr);
-    }
+    }   
 
-    private void deleteAsset(String name)
+    @Override
+    public void assetDeleted(String name)
     {
-        modelManager.deleteAsset(name);
         assetsList.removeItem(name);
         showStatusMessage("Asset \"" + name +"\" deleted.");
         updateView();
@@ -123,9 +114,7 @@ public class ModelPanel extends javax.swing.JPanel
             this, "Are you sure you want to delete the only asset?",
             "Confirm", JOptionPane.YES_NO_OPTION);
         if (res == JOptionPane.YES_OPTION)
-        {
             deleteTheOnlyAsset();
-        }
     }
 
     private void deleteTheOnlyAsset()
@@ -134,11 +123,7 @@ public class ModelPanel extends javax.swing.JPanel
         String asset = modelManager.getAssets().iterator().next();
         Collection<String> instrs = im.getInstrsWhicheUseAsset(asset);
         if (confirmInstrsDeletion(instrs))
-        {
-            deleteInstrs(instrs);
             modelManager.clear();
-            showStatusMessage("Model is now empty");
-        }
     }
     
     private void showStatusMessage(String mssg)
