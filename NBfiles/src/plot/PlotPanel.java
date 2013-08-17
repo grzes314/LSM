@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package plot;
 
@@ -11,18 +7,14 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
- * @author grzes
+ * @author Grzegorz Los
  */
 public class PlotPanel extends JPanel
 {
@@ -31,10 +23,10 @@ public class PlotPanel extends JPanel
         legend = new JPanel();
         legend.setLayout( new BoxLayout(legend, BoxLayout.Y_AXIS) );
         createControls();
-        pobjects = new Vector<PlotObject>();
+        pobjects = new ArrayList<>();
         minX = minY = -1;
         maxX = maxY = 1;
-        showGrid = false;
+        showGrid = true;
         setBackground(Color.WHITE);
     }
 
@@ -100,15 +92,35 @@ public class PlotPanel extends JPanel
         minY = minY();
         maxX = maxX();
         maxY = maxY();
+        validateIntervalX();
+        validateIntervalY();
         
         if (minX == Double.POSITIVE_INFINITY || minX == Double.NaN) minX = -1;
-        if (minX == Double.NEGATIVE_INFINITY) minX = -1000;
+        if (minX == Double.NEGATIVE_INFINITY) minX = -100000;
         if (minY == Double.POSITIVE_INFINITY || minY == Double.NaN) minY = -1;
-        if (minY == Double.NEGATIVE_INFINITY) minY = -1000;
+        if (minY == Double.NEGATIVE_INFINITY) minY = -100000;
         if (maxX == Double.NEGATIVE_INFINITY || maxX == Double.NaN) maxX = 1;
-        if (maxX == Double.POSITIVE_INFINITY) maxX = 1000;
+        if (maxX == Double.POSITIVE_INFINITY) maxX = 100000;
         if (maxY == Double.NEGATIVE_INFINITY || maxY == Double.NaN) maxY = 1;
-        if (maxY == Double.POSITIVE_INFINITY) maxY = 1000;
+        if (maxY == Double.POSITIVE_INFINITY) maxY = 100000;
+    }
+
+    private void validateIntervalX()
+    {
+        if (maxX - minX < minimalIntervalX)
+        {
+            maxX = minX + minimalIntervalX;
+            resetSpinners();
+        }
+    }
+    
+    private void validateIntervalY()
+    {
+        if (maxY - minY < minimalIntervalY)
+        {
+            maxY = minY + minimalIntervalY;
+            resetSpinners();
+        }
     }
 
     public JPanel getLegend()
@@ -170,44 +182,28 @@ public class PlotPanel extends JPanel
         return res;
     }
 
-    public boolean setMinX(double d)
+    public void setMinX(double d)
     {
-        if (d <= maxX-1)
-        {
-            minX = d;
-            return true;
-        }
-        else return false;
+        minX = d;
+        validateIntervalX();
     }
     
-    public boolean setMinY(double d)
+    public void setMinY(double d)
     {
-        if (d <= maxY-1)
-        {
-            minY = d;
-            return true;
-        }
-        else return false;
+        minY = d;
+        validateIntervalY();
     }
     
-    public boolean setMaxX(double d)
+    public void setMaxX(double d)
     {
-        if (d >= minX+1)
-        {
-            maxX = d;
-            return true;
-        }
-        else return false;
+        maxX = d;
+        validateIntervalX();
     }
     
-    public boolean setMaxY(double d)
+    public void setMaxY(double d)
     {
-        if (d >= minY+1)
-        {
-            maxY = d;
-            return true;
-        }
-        else return false;
+        maxY = d;
+        validateIntervalY();
     }
 
     public void showGrid(boolean b)
@@ -234,10 +230,27 @@ public class PlotPanel extends JPanel
                jpMaxX = new JPanel( new GridLayout(2,0) ),
                jpMinY = new JPanel( new GridLayout(2,0) ),
                jpMaxY = new JPanel( new GridLayout(2,0) );
-        jsMinX = new JSpinner( new SpinnerNumberModel(-1.0, -1000000.0, 1000000.0, 1.0) );
-        jsMaxX = new JSpinner( new SpinnerNumberModel(1.0, -1000000.0, 1000000.0, 1.0) );
-        jsMinY = new JSpinner( new SpinnerNumberModel(-1.0, -1000000.0, 1000000.0, 1.0) );
-        jsMaxY = new JSpinner( new SpinnerNumberModel(1.0, -1000000.0, 1000000.0, 1.0) );
+        jsMinX = new JSpinner( new SpinnerNumberModel(-1.0, -1000000.0, 1000000.0, 1000) );
+        jsMaxX = new JSpinner( new SpinnerNumberModel(1.0, -1000000.0, 1000000.0, 1000) );
+        jsMinY = new JSpinner( new SpinnerNumberModel(-1.0, -1000000.0, 1000000.0, 0.1) );
+        jsMaxY = new JSpinner( new SpinnerNumberModel(1.0, -1000000.0, 1000000.0, 0.1) );
+
+        jsMinX.addChangeListener( new ChangeListener() {
+            @Override public void stateChanged(ChangeEvent e) {
+                minXChanged();
+            } } );
+        jsMaxX.addChangeListener( new ChangeListener() {
+            @Override public void stateChanged(ChangeEvent e) {
+                maxXChanged();
+            } } );
+        jsMinY.addChangeListener( new ChangeListener() {
+            @Override public void stateChanged(ChangeEvent e) {
+                minYChanged();
+            } } );
+        jsMaxY.addChangeListener( new ChangeListener() {
+            @Override public void stateChanged(ChangeEvent e) {
+                maxYChanged();
+            } } );
         
         jpMinX.add( new JLabel("Min X") );
         jpMinX.add(jsMinX);
@@ -248,33 +261,34 @@ public class PlotPanel extends JPanel
         jpMaxY.add( new JLabel("Max Y") );
         jpMaxY.add(jsMaxY);
 
-        final JCheckBox check = new JCheckBox("show gird");
+        final JCheckBox check = new JCheckBox("show gird", true);
         check.addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 showGrid( check.isSelected() );
+                repaint();
             }
         });
 
         JPanel buttons = new JPanel();
-        JButton refresh = new JButton("Refresh");
+        /*JButton refresh = new JButton("Refresh");
         refresh.addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
-                setMinX( (Double) jsMinX.getValue() );
-                setMaxX( (Double) jsMaxX.getValue() );
-                setMinY( (Double) jsMinY.getValue() );
-                setMaxY( (Double) jsMaxY.getValue() );
+                setLimitsFromSpinners(  );
                 repaint();
             }
         } );
-        buttons.add(refresh);
+        buttons.add(refresh);*/
         
         JButton reset = new JButton("Reset");
         reset.addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 resetLimits();
@@ -292,6 +306,49 @@ public class PlotPanel extends JPanel
         controls.add(jpMinY);
         controls.add(jpMaxY);
         controls.add(buttons);
+    }
+    
+    private void minXChanged()
+    {
+        minX = (Double) jsMinX.getValue();
+        if (maxX - minX < minimalIntervalX)
+            jsMinX.setValue(maxX - minimalIntervalX);
+        repaint();
+    }
+    
+    private void maxXChanged()
+    {
+        maxX = (Double) jsMaxX.getValue();
+        if (maxX - minX < minimalIntervalX)
+            jsMaxX.setValue(minX + minimalIntervalX);
+        repaint();
+    }
+    
+    private void minYChanged()
+    {
+        minY = (Double) jsMinY.getValue();
+        if (maxY - minY < minimalIntervalY)
+            jsMinY.setValue(maxY - minimalIntervalY);
+        repaint();
+    }
+    
+    private void maxYChanged()
+    {
+        maxY = (Double) jsMaxY.getValue();
+        if (maxY - minY < minimalIntervalY)
+            jsMaxY.setValue(minY + minimalIntervalY);
+        repaint();
+    }
+
+
+    private void setLimitsFromSpinners()
+    {
+        minX = (Double) jsMinX.getValue();
+        maxX = (Double) jsMaxX.getValue();
+        minY = (Double) jsMinY.getValue();
+        maxY = (Double) jsMaxY.getValue();
+        validateIntervalX();
+        validateIntervalY();
     }
 
     private void addToLegend(String label, Color col)
@@ -395,10 +452,11 @@ public class PlotPanel extends JPanel
         return interval;
     }
 
-
+    private double minimalIntervalX = 0.01;
+    private double minimalIntervalY = 0.01;
     private double minX, minY, maxX, maxY;
     JSpinner jsMinX, jsMinY, jsMaxX, jsMaxY;
-    private Vector<PlotObject> pobjects;
+    private ArrayList<PlotObject> pobjects;
     private JPanel legend, controls;
     private boolean showGrid;
 }

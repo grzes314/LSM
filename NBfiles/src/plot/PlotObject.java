@@ -1,17 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package plot;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  *
- * @author grzes
+ * @author Grzegorz Los
  */
 public class PlotObject implements Iterable<PlotPoint>
 {
@@ -21,16 +17,20 @@ public class PlotObject implements Iterable<PlotPoint>
         {
             it = points.iterator();            
         }
+        
+        @Override
         public boolean hasNext()
         {
             return it.hasNext();
         }
 
+        @Override
         public PlotPoint next()
         {
             return it.next();
         }
 
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException("Not supported yet.");
@@ -53,9 +53,10 @@ public class PlotObject implements Iterable<PlotPoint>
         this.label = label;
         this.col = col;
         this.type = type;
-        points = new Vector<PlotPoint>();
+        points = new ArrayList<>();
     }
 
+    @Override
     public Iterator<PlotPoint> iterator()
     {
         return new POIterator();
@@ -148,7 +149,7 @@ public class PlotObject implements Iterable<PlotPoint>
         points.clear();
     }
     
-    private Vector<PlotPoint> points;
+    private ArrayList<PlotPoint> points;
     private String label;
     private Color col;
     private Type type;
