@@ -1,6 +1,7 @@
 
 package lsmapp.modelTab;
 
+import finance.instruments.Instr;
 import finance.parameters.ConcreteParams;
 import finance.parameters.ModelParams;
 import finance.parameters.OneAssetParams;
@@ -63,60 +64,104 @@ public class ModelManager implements AssetCountInfo
             addAssetCountObserver(modelPanel);
     }
     
+    /**
+     * Collects the data from all the panels containing model data and returns the ModelParams.
+     * It uses all assets in the model manager.
+     * @return ModelPanels emerging from the settings in the panels.
+     * @throws NotPositiveDefiniteMatrixException when correlation data in the panels is invalid.
+     */
     public ModelParams toParams() throws NotPositiveDefiniteMatrixException
     {
-        if (getNumberOfAssets() == 0)
-            return new SimpleModelParams(0, 0, modelPanel.getR());
-        else if (getNumberOfAssets() == 1)
-            return makeSimpleModelParams();
-        else
-            return makeConcreteModelParams();
-    }
-
-    private SimpleModelParams makeSimpleModelParams()
-    {
-        OneAssetParams[] oap = makeOneAssetParams();
-        return new SimpleModelParams(oap[0].name, oap[0].S,
-            oap[0].vol, modelPanel.getR());
+        return toParams(assetPanels.keySet());
     }
     
-    private ConcreteParams makeConcreteModelParams()
+    /**
+     * Collects the data from all the panels containing model data and returns the ModelParams.
+     * It uses only those assets which are necessary to price given instrument.
+     * @param instr instrument for which the assets will be chosen.
+     * @return ModelPanels emerging from the settings in the panels.
+     * @throws NotPositiveDefiniteMatrixException when correlation data in the panels is invalid.
+     */
+    public ModelParams toParams(Instr instr)  throws NotPositiveDefiniteMatrixException
+    {
+        return toParams(instr.getUnderlyings());
+    }
+        
+    /**
+     * Collects the data from all the panels containing model data and returns the ModelParams.
+     * It uses only those assets whose names are specified by the given collection.
+     * @param assetNames collection containing names of the assets which should be included
+     * in the model parameters.
+     * @return ModelPanels emerging from the settings in the panels.
+     * @throws NotPositiveDefiniteMatrixException when correlation data in the panels is invalid.
+     */
+    public ModelParams toParams(Collection<String> assetNames)
         throws NotPositiveDefiniteMatrixException
     {
-        OneAssetParams[] oap = makeOneAssetParams();
+        if (assetNames.isEmpty())
+            return new SimpleModelParams(0, 0, modelPanel.getR());
+        else if (assetNames.size() == 1)
+            return makeSimpleModelParams(assetNames.iterator().next());
+        else
+            return makeConcreteModelParams(assetNames);
+        
+    }
+
+    private SimpleModelParams makeSimpleModelParams(String asset)
+    {
+        OneAssetPanel panel = assetPanels.get(asset);
+        OneAssetParams oap = panel.makeOneAssetParams();
+        return new SimpleModelParams(oap.name, oap.S, oap.vol, oap.mu, modelPanel.getR());
+    }
+    
+    private ConcreteParams makeConcreteModelParams(Collection<String> assetNames)
+        throws NotPositiveDefiniteMatrixException
+    {
+        OneAssetParams[] oap = makeOneAssetParams(assetNames);
         Matrix corr = makeCorrelation(oap);
         return new ConcreteParams(oap, corr, modelPanel.getR());
     }
 
-    private OneAssetParams[] makeOneAssetParams()
+    private OneAssetParams[] makeOneAssetParams(Collection<String> assetNames)
     {
-        OneAssetParams[] oap = new OneAssetParams[getNumberOfAssets()];
+        OneAssetParams[] oap = new OneAssetParams[assetNames.size()];
         int i = 0;
-        for (Map.Entry<String, OneAssetPanel> entry: assetPanels.entrySet())
-            oap[i++] = entry.getValue().makeOneAssetParams();
+        for (String name: assetNames)
+            oap[i++] = assetPanels.get(name).makeOneAssetParams();
         return oap;
     }
 
     private Matrix makeCorrelation(OneAssetParams[] oap)
     {
-        Matrix corr = new Matrix(getNumberOfAssets(), getNumberOfAssets());
+        Matrix corr = new Matrix(oap.length, oap.length);
         for (int i = 0; i < oap.length; ++i)
         {
-            Collection<Pair<String, Double>> col =
+            Collection<Pair<String, Double>> coll =
                     assetPanels.get(oap[i].name).getCorrelations();
-            fillOneRowOfCorrelation(i+1, oap, corr, col);
+            fillOneRowOfCorrelation(i+1, oap, corr, coll);
         }
         return corr;
     }
 
     private void fillOneRowOfCorrelation(int row, OneAssetParams[] oap,
-            Matrix corr, Collection<Pair<String, Double>> col)
+            Matrix corr, Collection<Pair<String, Double>> coll)
     {
-        for (Pair<String, Double> p: col)
+        for (Pair<String, Double> p: coll)
         {
-            int j = indexOfName(oap, p.fst);
-            corr.set(row, j+1, p.snd);
+            if (hasName(oap, p.fst))
+            {
+                int j = indexOfName(oap, p.fst);
+                corr.set(row, j+1, p.snd);
+            }
         }
+    }
+    
+    private boolean hasName(OneAssetParams[] oap, String name)
+    {
+        for (int i = 0; i < oap.length; ++i)
+            if (name.equals(oap[i].name))
+                return true;
+        return false;
     }
     
     private int indexOfName(OneAssetParams[] oap, String name)

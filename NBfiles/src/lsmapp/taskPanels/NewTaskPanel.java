@@ -212,8 +212,8 @@ public class NewTaskPanel extends javax.swing.JPanel
     private void preparePricingTask() throws NotPositiveDefiniteMatrixException
     {
         makeMethod();
-        makeModelParams();
         makeInstr();
+        makeModelParams();
         makeResultHandler();
         task = new PricingTask(method, modelParams, instr, resultHandler);
         makeProgressPanel();
@@ -227,7 +227,7 @@ public class NewTaskPanel extends javax.swing.JPanel
     
     private void makeModelParams() throws NotPositiveDefiniteMatrixException
     {
-        modelParams = Pricer.getApp().getModelManager().toParams();
+        modelParams = Pricer.getApp().getModelManager().toParams(instr);
     }
 
     private void makeInstr()

@@ -8,8 +8,6 @@ import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import lsmapp.Pricer;
 import lsmapp.resultPanels.ResultHandler;
