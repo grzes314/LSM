@@ -1,7 +1,6 @@
 
 package finance.methods.finitedifference;
 
-import finance.methods.finitedifference.FiniteDifference;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import junit.framework.TestCase;
@@ -27,7 +26,11 @@ public class FiniteDiffrenceTest extends TestCase
             int KI = 10000000;
             int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
-            return model.price(vop, I, K);
+            try {
+                return model.price(vop, I, K);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException();
+            }
         }     
     }
     
@@ -46,7 +49,11 @@ public class FiniteDiffrenceTest extends TestCase
             int KI = 10000000;
             int I = (int) Math.pow(0.9*KI / (vop.T*vol*vol), 1./3);
             int K = KI / I;
-            return model.price(vop, I, K);
+            try {
+                return model.price(vop, I, K);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException();
+            }
         }   
     }
           
