@@ -8,8 +8,6 @@ import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import lsmapp.Pricer;
 import lsmapp.resultPanels.ResultHandler;
@@ -59,13 +57,15 @@ public class PricingTask extends SwingWorker<Double, Void>
         try {
             handleResult();
         } catch (ExecutionException ex) {
-            handleExecutionException(ex);
+            handleOtherException(ex);
         } catch (InterruptedException | CancellationException ex) {
             handleTaskCancellation();
+        } catch (Throwable ex) {
+             handleOtherException(ex);
         }
     }
 
-    private void handleExecutionException(ExecutionException ex)
+    private void handleOtherException(Throwable ex)
     {
         try {
             throw ex.getCause();
@@ -78,7 +78,7 @@ public class PricingTask extends SwingWorker<Double, Void>
         } catch (Throwable ex2)
         {
             if (progressPanel != null)
-                progressPanel.showError(ex.getMessage());
+                progressPanel.showError(ex.toString());
             showStatusMessage("Task failed: " + getDesc());
         }
     }

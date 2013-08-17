@@ -2,9 +2,11 @@
 package finance.methods.lsm;
 
 import finance.instruments.Instr;
+import finance.methods.common.Method;
 import finance.methods.common.Progress;
-import finance.methods.common.ProgressObservable;
 import finance.methods.common.ProgressObserver;
+import finance.methods.common.WrongModelException;
+import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.Generator;
 import finance.trajectories.OneTrGenerator;
@@ -18,17 +20,22 @@ import java.util.List;
 import math.approx.Approx;
 import math.approx.Point;
 import math.approx.Polynomial;
-import math.utils.RandomTools;
+
 
 
 
 /**
- *
- * @author grzes
+ * Class calculating option prices using Longstaff-Schwartz method. This implementation allows
+ * only to price instruments depending on one asset.
+ * @author Grzegorz Los
  */
-public class LSM implements ProgressObservable
+public class LSM implements Method
 {
 
+    public LSM()
+    {
+    }
+    
     public LSM(double S, double vol, double r, int N, int K, int M) 
     {
         this.S = S;
@@ -38,17 +45,37 @@ public class LSM implements ProgressObservable
         this.K = K;
         this.M = M;
     }
+
+    @Override
+    public void setModelParams(ModelParams mp) throws WrongModelException
+    {
+        SimpleModelParams smp;
+        try {
+            smp = (SimpleModelParams) mp;
+        } catch (ClassCastException ex) {
+            throw new WrongModelException("Finite Diffrence method can price instruments"
+                + " only in one asset models.");
+        }
+        S = smp.S;
+        vol = smp.vol;
+        r = smp.r;
+    }
     
     @Override
     public String toString()
     {
-        return "LONGSTAFF-SCHWARTZ MODEL\n" +
-               "S = "+ S + "\n" +
-               "vol = " + vol + "\n" +
-               "r = " + r + "\n" +             
-               "N = " + N + "\n" +             
-               "K = " + K + "\n" +             
-               "M = " + M + "\n";                
+        return "Longstaff-Schwartz method";
+    }
+
+    @Override
+    public String getDesc()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Longstaff-Schwartz method").append("\n")
+          .append("number of trajectories: ").append(N).append("\n")
+          .append("number of time steps: ").append(K).append("\n")
+          .append("degree of approximating polynomial: ").append(M).append("\n");
+        return sb.toString();  
     }
     
     public int getK()
@@ -116,16 +143,22 @@ public class LSM implements ProgressObservable
         return est;
     }
     
-    public double price(Instr instr)
+
+    @Override
+    public boolean isPriceable(Instr instr)
+    {
+        return instr.getUnderlyings().size() <= 1;
+    }
+    
+    @Override
+    public double price(Instr instr) throws InterruptedException
     {        
         est = new Polynomial[K];
         ts = new TimeSupport(instr.getT(), K);
         OneTrGenerator gen = new OneTrGenerator(new SimpleModelParams(S, vol, r),
                 Generator.Measure.MART, ts);
         gen.addObserver( new ProgressObserver() {
-            @Override
-            public void update(Progress pr)
-            {
+            @Override public void update(Progress pr) {
                 notifyObservers(pr);
             }
         } );
@@ -156,7 +189,7 @@ public class LSM implements ProgressObservable
             ob.update(pr);
     }
     
-    private CF[] bestCFlows(Scenario[] paths, Instr instr)
+    private CF[] bestCFlows(Scenario[] paths, Instr instr) throws InterruptedException
     {
         CF[] res = new CF[N];
         for (int i = 0; i < N; ++i)
@@ -165,6 +198,8 @@ public class LSM implements ProgressObservable
         }
         for (int j = K-1; j > 0; --j)
         {
+            if (Thread.interrupted())
+                throw new InterruptedException();
             Collection<Point> points = prepareRegression(paths, res, j, instr);
             est[j] = regress(points);
             updateBestCFlows(paths, instr, res, est[j], j);
@@ -233,9 +268,9 @@ public class LSM implements ProgressObservable
 
     private List<ProgressObserver> observers = new LinkedList<>();
 }
+
 class CF
 {
-
     public CF(double x, int t)
     {
         this.x = x;

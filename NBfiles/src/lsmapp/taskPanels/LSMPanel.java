@@ -2,16 +2,16 @@
 package lsmapp.taskPanels;
 
 import finance.methods.common.Method;
-import finance.methods.finitedifference.FDMethod;
+import finance.methods.lsm.LSM;
 import lsmapp.Pricer;
-import lsmapp.resultPanels.FD2GUI;
+import lsmapp.resultPanels.LSM2GUI;
 import lsmapp.resultPanels.ResultHandler;
 
 /**
  *
  * @author glos
  */
-public class FDPanel extends MethodPanel
+public class LSMPanel extends MethodPanel
 {
     /** This method is called from within the constructor to
      * initialize the form.
@@ -25,19 +25,21 @@ public class FDPanel extends MethodPanel
 
         varianceGroup = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
-        priceSteps = new javax.swing.JSpinner();
+        simulations = new javax.swing.JSpinner();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         timeSteps = new javax.swing.JSpinner();
+        jLabel5 = new javax.swing.JLabel();
+        degree = new javax.swing.JSpinner();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        jLabel1.setText("Finite Difference");
+        jLabel1.setText("Longstaff-Schwartz");
 
-        priceSteps.setModel(new javax.swing.SpinnerNumberModel(200, 10, 10000, 100));
+        simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(10000), Integer.valueOf(100), null, Integer.valueOf(10000)));
 
-        jLabel3.setText("Number of price steps: ");
+        jLabel3.setText("Number of simulations: ");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, priceSteps, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel3, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, simulations, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel3, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
         bindingGroup.addBinding(binding);
 
         jLabel4.setText("Number of time steps: ");
@@ -45,7 +47,11 @@ public class FDPanel extends MethodPanel
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, timeSteps, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel4, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
         bindingGroup.addBinding(binding);
 
-        timeSteps.setModel(new javax.swing.SpinnerNumberModel(10000, 100, 1000000, 1000));
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(252, 1, 10000, 10));
+
+        jLabel5.setText("<html>Degree of approximating polynomial:");
+
+        degree.setModel(new javax.swing.SpinnerNumberModel(3, 1, 20, 1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -60,9 +66,13 @@ public class FDPanel extends MethodPanel
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(timeSteps)
-                            .addComponent(priceSteps)))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(simulations, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -71,21 +81,27 @@ public class FDPanel extends MethodPanel
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(priceSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(timeSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JSpinner degree;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JSpinner priceSteps;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JSpinner simulations;
     private javax.swing.JSpinner timeSteps;
     private javax.swing.ButtonGroup varianceGroup;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
@@ -93,7 +109,7 @@ public class FDPanel extends MethodPanel
 
 
     /** Creates new form MCPanel */
-    public FDPanel()
+    public LSMPanel()
     {
         initComponents();
     }
@@ -101,15 +117,17 @@ public class FDPanel extends MethodPanel
     @Override
     Method makeMethod()
     {
-        FDMethod fd = new FDMethod();
-        fd.setI((Integer) priceSteps.getValue());
-        fd.setK((Integer) timeSteps.getValue());
-        return fd;
+        LSM lsm = new LSM();
+        lsm.setN( (Integer) simulations.getValue() );
+        lsm.setK( (Integer) timeSteps.getValue() );
+        lsm.setM( (Integer) degree.getValue() );
+        return lsm;
     }
 
     @Override
     ResultHandler makeResultHandler()
     {
-        return new FD2GUI(Pricer.getApp().getResultDisplay());
+        return new LSM2GUI(Pricer.getApp().getResultDisplay());
     }
+    
 }

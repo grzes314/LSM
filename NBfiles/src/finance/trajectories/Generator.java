@@ -24,7 +24,7 @@ public interface Generator extends ProgressObservable
      * @param n number of scenarios.
      * @return generated market scenarios.
      */
-    public Scenario[] generate(int n);
+    public Scenario[] generate(int n) throws InterruptedException;
     
     /**
      * Generates n scenarios.
@@ -32,7 +32,7 @@ public interface Generator extends ProgressObservable
      * @param anthi should the anthitetic paths be included?
      * @return generated market scenarios.
      */
-    public Scenario[] generate(int n, Anthi anthi);
+    public Scenario[] generate(int n, Anthi anthi) throws InterruptedException;
     
     /**
      * Generates a single scenario (without anthitetic path).

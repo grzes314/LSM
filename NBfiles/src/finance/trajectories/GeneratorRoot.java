@@ -12,7 +12,7 @@ import finance.methods.common.ProgressObserver;
 public abstract class GeneratorRoot implements Generator
 {
     @Override
-    public Scenario[] generate(int n)
+    public Scenario[] generate(int n) throws InterruptedException
     {
         return generate(n, Anthi.NO);
     }
@@ -24,13 +24,15 @@ public abstract class GeneratorRoot implements Generator
     }
 
     @Override
-    public Scenario[] generate(int n, Anthi anthi)
+    public Scenario[] generate(int n, Anthi anthi) throws InterruptedException
     {
         Scenario[] res = new Scenario[n];
         for (int i = 0; i < n; ++i)
         {
             res[i] = generate(anthi);
             maybeNotify(i, n);
+            if (Thread.interrupted())
+                throw new InterruptedException();
         }
         return res;
     }

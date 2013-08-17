@@ -152,6 +152,7 @@ public class NewTaskPanel extends javax.swing.JPanel
         methodPanels.put("Analitical formulas", new BSPanel());
         methodPanels.put("Monte Carlo", new MCPanel());
         methodPanels.put("Finite difference", new FDPanel());
+        methodPanels.put("LSM", new LSMPanel());
     }
 
     private void prepareMethodCombo()
@@ -240,8 +241,8 @@ public class NewTaskPanel extends javax.swing.JPanel
     private void makeResultHandler()
     {
         String methodName = (String) methodCombo.getSelectedItem();
-        resultHandler =  methodPanels.get(methodName)
-            .makeResultHandler(method, modelParams, instr);
+        resultHandler =  methodPanels.get(methodName).makeResultHandler();
+        resultHandler.setAll(method, modelParams, instr);
     }
 
     private void makeProgressPanel()

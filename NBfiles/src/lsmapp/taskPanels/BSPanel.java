@@ -1,12 +1,9 @@
     
 package lsmapp.taskPanels;
 
-import finance.instruments.Instr;
 import finance.methods.blackscholes.BSMethod;
 import finance.methods.common.Method;
-import finance.parameters.ModelParams;
 import lsmapp.Pricer;
-import lsmapp.modelTab.Pair;
 import lsmapp.resultPanels.BS2GUI;
 import lsmapp.resultPanels.ResultHandler;
 
@@ -71,10 +68,8 @@ public class BSPanel extends MethodPanel
     }
 
     @Override
-    ResultHandler makeResultHandler(Method method, ModelParams mp, Instr instr)
+    ResultHandler makeResultHandler()
     {
-        ResultHandler handler = new BS2GUI(Pricer.getApp().getResultDisplay());
-        handler.setAll(method, mp, instr);
-        return handler;
+        return new BS2GUI(Pricer.getApp().getResultDisplay());
     }
 }

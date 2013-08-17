@@ -15,5 +15,5 @@ public abstract class MethodPanel extends JPanel
 {
     abstract Method makeMethod();
     
-    abstract ResultHandler makeResultHandler(Method method, ModelParams mp, Instr instr);
+    abstract ResultHandler makeResultHandler();
 }

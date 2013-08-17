@@ -1,12 +1,10 @@
 
 package lsmapp.taskPanels;
 
-import finance.instruments.Instr;
 import finance.methods.common.Method;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
 import finance.methods.montecarlo.MonteCarlo;
-import finance.parameters.ModelParams;
 import lsmapp.Pricer;
 import lsmapp.resultPanels.MC2GUI;
 import lsmapp.resultPanels.ResultHandler;
@@ -152,10 +150,8 @@ public class MCPanel extends MethodPanel
     }
 
     @Override
-    ResultHandler makeResultHandler(Method method, ModelParams mp, Instr instr)
+    ResultHandler makeResultHandler()
     {
-        ResultHandler handler = new MC2GUI(Pricer.getApp().getResultDisplay());
-        handler.setAll(method, mp, instr);
-        return handler;
+        return new MC2GUI(Pricer.getApp().getResultDisplay());
     }
 }

@@ -97,7 +97,11 @@ public class LSMPanel extends ModelPanel
     @Override
     protected double calculate()
     {
-        return method.price( instr );
+        try {
+            return method.price( instr );
+        } catch (InterruptedException ex) {
+            throw new RuntimeException();
+        }
     }
 
     @Override
