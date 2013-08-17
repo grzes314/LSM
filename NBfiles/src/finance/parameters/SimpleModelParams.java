@@ -13,33 +13,39 @@ import math.matrices.Matrix;
  */
 public class SimpleModelParams implements ModelParams
 {
-    public SimpleModelParams(String assetName, double S, double vol, double r)
+    public SimpleModelParams(String assetName, double S, double vol, double drift, double r)
     {
         checkArgs(S, vol, r);
         this.S = S;
         this.vol = vol;
+        this.mu = drift;
         this.r = r;
         this.name = assetName;
     }
     
     public SimpleModelParams(double S, double vol, double r)
     {
-        this(onlyAsset, S, vol, r);
+        this(onlyAsset, S, vol, 0, r);
     }
     
     public SimpleModelParams withS(double newS)
     {
-        return new SimpleModelParams(name, newS, vol, r);
+        return new SimpleModelParams(name, newS, vol, mu, r);
     }
         
     public SimpleModelParams withVol(double newVol)
     {
-        return new SimpleModelParams(name, S, newVol, r);
+        return new SimpleModelParams(name, S, newVol, mu, r);
+    }    
+         
+    public SimpleModelParams withMu(double newMu)
+    {
+        return new SimpleModelParams(name, S, vol, newMu, r);
     }    
         
     public SimpleModelParams withR(double newR)
     {
-        return new SimpleModelParams(name, S, vol, newR);
+        return new SimpleModelParams(name, S, vol, mu, newR);
     }
     
     private void checkArgs(double S, double vol, double r)
@@ -163,6 +169,11 @@ public class SimpleModelParams implements ModelParams
      * Asset's volatility.
      */
     public final double vol;
+    
+    /**
+     * Asset's drift.
+     */
+    public final double mu;
     
     /**
      * Interest rate in the market.
