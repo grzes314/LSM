@@ -2,6 +2,7 @@
 package finance.instruments;
 
 import finance.trajectories.Scenario;
+import java.util.Collection;
 
 /**
  * Instrument modificator which changes exercise availability to European.
@@ -43,5 +44,11 @@ public class EuExercise extends Modificator
         if (str.equalsIgnoreCase("european")) return true;
         else if (str.equalsIgnoreCase("american")) return false;
         else return wrapped.areYou(str);
+    }
+
+    @Override
+    public Collection<String> getUnderlyings()
+    {
+        return wrapped.getUnderlyings();
     }
 }

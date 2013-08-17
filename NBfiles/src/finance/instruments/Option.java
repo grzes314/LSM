@@ -6,6 +6,8 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Option is a class extending Instrument to represent an American option.
@@ -120,6 +122,14 @@ public class Option extends Instr
     public int modificationsCount()
     {
         return 0;
+    }
+
+    @Override
+    public Collection<String> getUnderlyings()
+    {
+        ArrayList<String> coll = new ArrayList<>();
+        coll.add(underlying);
+        return coll;
     }
     
     public final VanillaOptionParams vop;

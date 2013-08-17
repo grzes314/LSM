@@ -3,6 +3,7 @@ package finance.instruments;
 
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeIncompatibleException;
+import java.util.Collection;
 import math.utils.Numerics;
 
 /**
@@ -125,6 +126,12 @@ abstract public class Instr
      * @return payoff from the instrument.
      */
     abstract protected double payoff_(Scenario s, int k);
+    
+    /**
+     * Returns names of all the assets on which this instrument depend. 
+     * @return names of all the assets on which this instrument depend.
+     */
+    public abstract Collection<String> getUnderlyings();
         
     /**
      * Time horizon -- expiracy of the instrument.

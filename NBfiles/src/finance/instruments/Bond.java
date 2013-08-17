@@ -2,6 +2,8 @@
 package finance.instruments;
 
 import finance.trajectories.Scenario;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -67,6 +69,12 @@ public class Bond extends Instr
     public int modificationsCount()
     {
         return 0;
+    }
+
+    @Override
+    public Collection<String> getUnderlyings()
+    {
+        return new ArrayList<>();
     }
     
     double nominal;

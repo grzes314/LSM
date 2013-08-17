@@ -4,6 +4,7 @@ package finance.instruments;
 import finance.parameters.BarrierParams;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
+import java.util.Collection;
 
 /**
  * Class providing a way to add barrier to instrument.
@@ -112,6 +113,16 @@ public class Barrier extends Modificator
             return (bp.type == BarrierParams.Type.DAI);
         else return wrapped.areYou(str);
     }
+
+    @Override
+    public Collection<String> getUnderlyings()
+    {
+        Collection<String> coll = wrapped.getUnderlyings();
+        if (!coll.contains(underlying))
+            coll.add(underlying);
+        return coll;
+    }
+
     
     public final BarrierParams bp;
     
@@ -125,5 +136,4 @@ public class Barrier extends Modificator
      * Number of underlying of the option.
      */
     public final Integer underlyingNr;
-
 }
