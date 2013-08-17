@@ -33,7 +33,7 @@ public class FDPanel extends MethodPanel
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Finite Difference");
 
-        priceSteps.setModel(new javax.swing.SpinnerNumberModel(200, 10, 10000, 100));
+        priceSteps.setModel(new javax.swing.SpinnerNumberModel(500, 10, 10000, 100));
 
         jLabel3.setText("Number of price steps: ");
 
@@ -45,7 +45,7 @@ public class FDPanel extends MethodPanel
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, timeSteps, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel4, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
         bindingGroup.addBinding(binding);
 
-        timeSteps.setModel(new javax.swing.SpinnerNumberModel(10000, 100, 1000000, 1000));
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(200000, 100, 10000000, 10000));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);

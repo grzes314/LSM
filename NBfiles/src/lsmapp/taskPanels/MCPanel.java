@@ -51,7 +51,7 @@ public class MCPanel extends MethodPanel
         varianceGroup.add(anthiteticVariates);
         anthiteticVariates.setText("Anthitetic variates");
 
-        simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(10000), Integer.valueOf(100), null, Integer.valueOf(10000)));
+        simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000000), Integer.valueOf(100), null, Integer.valueOf(10000)));
 
         jLabel3.setText("Number of simulations: ");
 
