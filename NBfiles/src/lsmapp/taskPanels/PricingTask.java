@@ -8,6 +8,8 @@ import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import lsmapp.Pricer;
 import lsmapp.resultPanels.ResultHandler;
@@ -39,13 +41,10 @@ public class PricingTask extends SwingWorker<Double, Void>
     }
 
     @Override
-    protected Double doInBackground() throws InterruptedException
+    protected Double doInBackground() throws InterruptedException, WrongInstrException,
+                                             WrongModelException
     {
-        try {
             return doPricing();
-        } catch (WrongInstrException | WrongModelException ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
     }
 
     private Double doPricing() throws WrongInstrException, WrongModelException, InterruptedException
@@ -58,19 +57,45 @@ public class PricingTask extends SwingWorker<Double, Void>
     public void done()
     {
         try {
-            resultHandler.result(get());
-            if (progressPanel != null)
-                progressPanel.die();
-            showStatusMessage("Task finished: " + getDesc());
+            handleResult();
         } catch (ExecutionException ex) {
+            handleExecutionException(ex);
+        } catch (InterruptedException | CancellationException ex) {
+            handleTaskCancellation();
+        }
+    }
+
+    private void handleExecutionException(ExecutionException ex)
+    {
+        try {
+            throw ex.getCause();
+        } catch (WrongInstrException | WrongModelException ex2) {
+            if (progressPanel != null)
+            {
+                progressPanel.showErrorDialog(ex2.getMessage());
+                progressPanel.die();
+            }
+        } catch (Throwable ex2)
+        {
             if (progressPanel != null)
                 progressPanel.showError(ex.getMessage());
             showStatusMessage("Task failed: " + getDesc());
-        } catch (InterruptedException | CancellationException ex) {
-            if (progressPanel != null)
-                progressPanel.die();
-            showStatusMessage("Task cancelled: " + getDesc());
         }
+    }
+
+    private void handleTaskCancellation()
+    {
+        if (progressPanel != null)
+            progressPanel.die();
+        showStatusMessage("Task cancelled: " + getDesc());
+    }
+
+    private void handleResult() throws InterruptedException, ExecutionException
+    {
+        resultHandler.result(get());
+        if (progressPanel != null)
+            progressPanel.die();
+        showStatusMessage("Task finished: " + getDesc());
     }
         
     private void showStatusMessage(String mssg)

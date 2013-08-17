@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -140,6 +141,12 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
         container.removeProgress(this);
         container.revalidate();
         container.repaint();
+    }
+
+    void showErrorDialog(String message)
+    {
+        JOptionPane.showMessageDialog(container, "Error while pricing: " +
+            pricingTask.getDesc() + "\n" + message, "Pricing error", JOptionPane.ERROR_MESSAGE);
     }
     
     private ProgressesContainer container;
