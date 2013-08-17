@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  *
  * @author Grzegorz Los
  */
-public abstract class MonteCarloTest extends TestCase
+public abstract class MonteCarloTestBase extends TestCase
 {
     class EuOptionSupport extends finance.methods.testsupports.EuOption
     {
@@ -38,7 +38,11 @@ public abstract class MonteCarloTest extends TestCase
             int N = 100000;
             method.setK(K);
             method.setN(N);
-            return method.price(instr);
+            try {
+                return method.price(instr);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException();
+            }
         }       
     }
     
@@ -66,7 +70,11 @@ public abstract class MonteCarloTest extends TestCase
             int N = 10000;
             method.setK(K);
             method.setN(N);
-            return method.price(instr);
+            try {
+                return method.price(instr);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException();
+            }
         }        
     }
     

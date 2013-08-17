@@ -7,7 +7,7 @@ import finance.parameters.SimpleModelParams;
  *
  * @author Grzegorz Los
  */
-public class CVTest extends MonteCarloTest
+public class CVTest extends MonteCarloTestBase
 {
     @Override
     protected void makeMethod(SimpleModelParams smp)
