@@ -129,5 +129,11 @@ public class LSMPanel extends MethodPanel
     {
         return new LSM2GUI(Pricer.getApp().getResultDisplay());
     }
+
+    @Override
+    String getPriceableDesc()
+    {
+        return "LSM can price only those instruments whose payoff depends on a single underlying.";
+    }
     
 }

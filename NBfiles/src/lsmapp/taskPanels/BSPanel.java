@@ -72,4 +72,10 @@ public class BSPanel extends MethodPanel
     {
         return new BS2GUI(Pricer.getApp().getResultDisplay());
     }
+
+    @Override
+    String getPriceableDesc()
+    {
+        return "Analitical formulas can price bonds, european vanilla and barrier options.";
+    }
 }

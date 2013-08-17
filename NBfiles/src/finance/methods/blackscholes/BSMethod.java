@@ -73,7 +73,8 @@ public class BSMethod implements Method
         if (isOption(core))
         {
             if (wrapped.length == 3)
-                return instr.areYou("european") && instr.areYou("barrier");
+                return instr.areYou("european") && instr.areYou("barrier")
+                    && instr.getUnderlyings().size() == 1;
             if (wrapped.length == 2)
                 return instr.areYou("european");
         }

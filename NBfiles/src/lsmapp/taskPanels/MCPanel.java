@@ -154,4 +154,10 @@ public class MCPanel extends MethodPanel
     {
         return new MC2GUI(Pricer.getApp().getResultDisplay());
     }
+
+    @Override
+    String getPriceableDesc()
+    {
+        return "Monte Carlo can price only instruments with european exercise.";
+    }
 }

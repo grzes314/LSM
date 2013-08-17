@@ -256,8 +256,13 @@ public class NewTaskPanel extends javax.swing.JPanel
     {
         boolean res = method.isPriceable(instr);
         if (!res)
+        {
+            String methodName = (String) methodCombo.getSelectedItem();
+            MethodPanel methodPanel = methodPanels.get(methodName);
             JOptionPane.showMessageDialog(this, "Chosen instrument cannot be priced "
-                + "with selected method", "Pricing impossible", JOptionPane.ERROR_MESSAGE);
+                + "with selected method.\n" + methodPanel.getPriceableDesc(),
+                "Pricing impossible", JOptionPane.ERROR_MESSAGE);
+        }
         return res;
     }
     

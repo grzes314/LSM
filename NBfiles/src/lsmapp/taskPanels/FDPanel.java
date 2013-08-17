@@ -112,4 +112,10 @@ public class FDPanel extends MethodPanel
     {
         return new FD2GUI(Pricer.getApp().getResultDisplay());
     }
+
+    @Override
+    String getPriceableDesc()
+    {
+        return "Finite difference can price only vanilla options (european and american).";
+    }
 }
