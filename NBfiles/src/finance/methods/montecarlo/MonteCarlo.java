@@ -119,7 +119,7 @@ public abstract class MonteCarlo implements Method
     @Override
     public boolean isPriceable(Instr instr)
     {
-        return instr.areYou("european");
+        return instr.areYou("european") || instr.areYou("bond");
     }
     
     /**
