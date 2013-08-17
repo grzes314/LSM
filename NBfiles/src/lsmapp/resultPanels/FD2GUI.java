@@ -4,6 +4,7 @@ package lsmapp.resultPanels;
 import finance.instruments.Instr;
 import finance.instruments.Option;
 import finance.methods.common.Method;
+import finance.methods.finitedifference.FDMethod;
 import finance.methods.finitedifference.FiniteDifference;
 import finance.parameters.ModelParams;
 import finance.parameters.VanillaOptionParams;
@@ -42,7 +43,7 @@ public class FD2GUI implements ResultHandler
         this.instr = instr;
     }
 
-    public FiniteDifference getMethod()
+    public FDMethod getMethod()
     {
         return method;
     }
@@ -50,7 +51,7 @@ public class FD2GUI implements ResultHandler
     @Override
     public void setMethod(Method method)
     {
-        this.method = (FiniteDifference) method;
+        this.method = (FDMethod) method;
     }
 
     public ModelParams getModelParams()
@@ -69,7 +70,7 @@ public class FD2GUI implements ResultHandler
     {
         this.instr = instr;
         this.modelParams = mp;
-        this.method = (FiniteDifference) method;
+        this.method = (FDMethod) method;
     }
     
     @Override
@@ -89,14 +90,14 @@ public class FD2GUI implements ResultHandler
     {
         JTabbedPane results = new JTabbedPane();
         
-        InfoPanel ip = new InfoPanel(method.toString(), modelParams.getDesc(),
+        InfoPanel ip = new InfoPanel(method.getDesc(), modelParams.getDesc(),
                                      instr.getDesc(), price);
         results.addTab("Description", ip);
         
         if (instr instanceof Option) {
-            results.addTab("Stopping", stoppingPlot(method, (Option) instr));
+            results.addTab("Stopping", stoppingPlot(method.getFD(), (Option) instr));
         }
-        results.addTab("Price plot", pricePlot(method, instr));
+        results.addTab("Price plot", pricePlot(method.getFD(), instr));
         
         displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
@@ -210,7 +211,7 @@ public class FD2GUI implements ResultHandler
     }
     
     private final ResultDisplay displayer;
-    private FiniteDifference method;
+    private FDMethod method;
     private Instr instr;
     private ModelParams modelParams;
 }

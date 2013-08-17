@@ -138,6 +138,10 @@ public class FiniteDifference implements ProgressObservable
          */
         private double[] stopping;
     }
+
+    public FiniteDifference()
+    {
+    }
     
     /**
      * Constructor of the model. Takes only arguments related to market and
@@ -193,7 +197,7 @@ public class FiniteDifference implements ProgressObservable
      * @param american Is it an american option?
      * @return 
      */
-    public double price(VanillaOptionParams vop, int I, int K)
+    public double price(VanillaOptionParams vop, int I, int K) throws InterruptedException
     {
         this.I = I;
         this.K = K;
@@ -208,7 +212,11 @@ public class FiniteDifference implements ProgressObservable
         {
             fillPrev(k, call, american);
             if (k % 100 == 0)
-              notifyObservers(new Progress("Filling grid", (int)(100*(K-k)/K)));
+            {
+                if (Thread.interrupted())
+                    throw new InterruptedException();
+                notifyObservers(new Progress("Filling grid", (int)(100*(K-k)/K)));
+            }
         }
         return result();
     }

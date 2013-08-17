@@ -98,7 +98,11 @@ public class FDPanel extends ModelPanel
         AmOrEu AorE = amoption.isSelected() ? AM : EU;
         int I = (Integer) priceSteps.getValue();
         int K = (Integer) timeSteps.getValue();
-        return method.price(new VanillaOptionParams(E, T, CorP, AorE), I, K);
+        try {
+            return method.price(new VanillaOptionParams(E, T, CorP, AorE), I, K);
+        } catch (InterruptedException ex) {
+                throw new RuntimeException();
+        }
     }
 
     @Override

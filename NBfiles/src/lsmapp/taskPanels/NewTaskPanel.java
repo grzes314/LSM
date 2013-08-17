@@ -151,6 +151,7 @@ public class NewTaskPanel extends javax.swing.JPanel
         methodPanels = new HashMap<>();
         methodPanels.put("Analitical formulas", new BSPanel());
         methodPanels.put("Monte Carlo", new MCPanel());
+        methodPanels.put("Finite difference", new FDPanel());
     }
 
     private void prepareMethodCombo()

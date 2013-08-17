@@ -81,7 +81,7 @@ public class Pricer extends JFrame
 
     private Container createMain()
     {
-        JTabbedPane pane = new JTabbedPane(JTabbedPane.LEFT);
+        JTabbedPane pane = new JTabbedPane();
         pane.add("Model", createModelTab());
         pane.add("Instruments", createInstrTab());
         pane.add("Tasks", createTaskTab());

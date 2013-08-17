@@ -26,7 +26,7 @@ public class NewTaskTab extends javax.swing.JPanel
         containerOfNewTaskPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
 
-        jSplitPane1.setDividerLocation(350);
+        jSplitPane1.setDividerLocation(400);
 
         containerOfProgressesContainer.setLayout(new java.awt.BorderLayout());
 
