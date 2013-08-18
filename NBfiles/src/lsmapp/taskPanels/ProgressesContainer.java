@@ -1,13 +1,11 @@
 
 package lsmapp.taskPanels;
 
-import java.awt.Component;
-
 /**
  *
  * @author Grzegorz Los
  */
-public class ProgressesContainer extends javax.swing.JPanel
+public class ProgressesContainer extends javax.swing.JPanel implements TaskObserver
 {
 
     /** Creates new form ProgressesContainer */
@@ -15,17 +13,25 @@ public class ProgressesContainer extends javax.swing.JPanel
     {
         initComponents();
     }
-
-    public Component addProgress(Component c)
+    
+    void removeProgress(ProgressPanel panel)
     {
-        return mainPanel.add(c);
+        mainPanel.remove(panel);
+        revalidate();
+        repaint();
     }
 
-    public void removeProgress(Component c)
+    @Override
+    public void newTask(PricingTask task)
     {
-        mainPanel.remove(c);
+        ProgressPanel panel = new ProgressPanel(this, task);
+        task.setProgressPanel(panel);
+        task.getMethod().addObserver(panel);
+        mainPanel.add(panel);
+        revalidate();
+        repaint();
     }
-
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -56,4 +62,5 @@ public class ProgressesContainer extends javax.swing.JPanel
     private javax.swing.JPanel mainPanel;
     private javax.swing.JScrollPane scrollPane;
     // End of variables declaration//GEN-END:variables
+
 }

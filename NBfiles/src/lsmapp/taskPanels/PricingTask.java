@@ -29,6 +29,8 @@ public class PricingTask extends SwingWorker<Double, Void>
 
     public void setProgressPanel(ProgressPanel progressPanel)
     {
+        if (this.progressPanel != null)
+            throw new RuntimeException("Task already has a corresponding progress panel!");
         this.progressPanel = progressPanel;
     }
     
@@ -102,10 +104,35 @@ public class PricingTask extends SwingWorker<Double, Void>
     {
         Pricer.getApp().setStatus(mssg);
     }
+
+    public Instr getInstr()
+    {
+        return instr;
+    }
+
+    public Method getMethod()
+    {
+        return method;
+    }
+
+    public ModelParams getMp()
+    {
+        return mp;
+    }
+
+    public ProgressPanel getProgressPanel()
+    {
+        return progressPanel;
+    }
+
+    public ResultHandler getResultHandler()
+    {
+        return resultHandler;
+    }
     
-    Method method;
-    ResultHandler resultHandler;
-    ModelParams mp;
-    Instr instr;
-    ProgressPanel progressPanel;
+    private Method method;
+    private ResultHandler resultHandler;
+    private ModelParams mp;
+    private Instr instr;
+    private ProgressPanel progressPanel;
 }

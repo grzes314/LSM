@@ -139,8 +139,6 @@ private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private void removeFromContainer()
     {
         container.removeProgress(this);
-        container.revalidate();
-        container.repaint();
     }
 
     void showErrorDialog(String message)

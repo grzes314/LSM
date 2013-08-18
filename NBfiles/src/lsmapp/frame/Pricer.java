@@ -20,6 +20,8 @@ import lsmapp.modelTab.ModelPanel;
 import lsmapp.resultPanels.ResultDisplay;
 import lsmapp.resultPanels.ResultPanel;
 import lsmapp.taskPanels.NewTaskTab;
+import lsmapp.taskPanels.QuickPricePanel;
+import lsmapp.taskPanels.TaskScheduler;
 import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
@@ -45,7 +47,7 @@ public class Pricer extends JFrame
         return application;
     }
     
-    private static void addAssetsAndInstrs()
+    private static void addAssetsAndInstrs() //TODO remove
     {
         try {
             ModelManager mm = application.getModelManager();
@@ -74,8 +76,7 @@ public class Pricer extends JFrame
         JPanel content = new JPanel();
         content.setLayout( new BorderLayout() );
         content.add(createMain(), BorderLayout.CENTER);
-        statusBar = createStatusBar();
-        content.add(statusBar, BorderLayout.PAGE_END);
+        content.add(createSouth(), BorderLayout.SOUTH);
         return content;
     }
 
@@ -109,7 +110,8 @@ public class Pricer extends JFrame
     private Component createTaskTab()
     {
         assert instrManager != null;
-        return new NewTaskTab(instrManager);
+        taskScheduler = new TaskScheduler();
+        return new NewTaskTab(instrManager, taskScheduler);
     }
 
     private Component createResultsPanel()
@@ -118,12 +120,27 @@ public class Pricer extends JFrame
         resultDisplay = resultPanel;
         return resultPanel;
     }
+    
+    private JComponent createSouth()
+    {
+        JPanel south = new JPanel(new BorderLayout());
+        quickPricer = createQuickPricer();
+        south.add(quickPricer, BorderLayout.CENTER);
+        statusBar = createStatusBar();
+        south.add(statusBar, BorderLayout.SOUTH);
+        return south;
+    }
 
     private JLabel createStatusBar()
     {
         JLabel label = new StatusBar();
         label.setText("Hello!");
         return label;
+    }
+    
+    QuickPricePanel createQuickPricer()
+    {
+        return new QuickPricePanel();
     }
     
     public void setStatus(String status)
@@ -383,8 +400,10 @@ public class Pricer extends JFrame
     }
     
     private JLabel statusBar;
+    private QuickPricePanel quickPricer;
     private ModelManager modelManager;
     private InstrManager instrManager;
+    private TaskScheduler taskScheduler;
     private ResultDisplay resultDisplay;
     private static Pricer application;
 }

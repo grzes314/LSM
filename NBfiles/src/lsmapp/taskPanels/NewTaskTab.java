@@ -68,26 +68,27 @@ public class NewTaskTab extends javax.swing.JPanel
 
 
     /** Creates new form NewTaskTab */
-    public NewTaskTab(InstrManager instrManager)
+    public NewTaskTab(InstrManager instrManager, TaskScheduler taskScheduler)
     {
         initComponents();
-        prepareProgressContainer();
-        prepareNewTasksPanel(instrManager);
+        prepareProgressContainer(taskScheduler);
+        prepareNewTasksPanel(instrManager, taskScheduler);
         revalidate();
     }
 
-    private void prepareProgressContainer()
+    private void prepareProgressContainer(TaskScheduler taskScheduler)
     {
         progressesContainer = new ProgressesContainer();
+        taskScheduler.addTaskObserver(progressesContainer);
         containerOfProgressesContainer.add(progressesContainer, BorderLayout.CENTER);
     }
 
-    private void prepareNewTasksPanel(InstrManager instrManager)
+    private void prepareNewTasksPanel(InstrManager instrManager, TaskScheduler taskScheduler)
     { 
-        newTasksPanel = new NewTaskPanel(instrManager, progressesContainer);
+        newTasksPanel = new NewTaskPanel(instrManager, taskScheduler);
         containerOfNewTaskPanel.add(newTasksPanel, BorderLayout.CENTER);
     }
-    
+
     private NewTaskPanel newTasksPanel;
     private ProgressesContainer progressesContainer;
 }

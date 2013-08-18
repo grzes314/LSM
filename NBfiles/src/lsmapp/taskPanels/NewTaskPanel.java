@@ -1,19 +1,12 @@
 
 package lsmapp.taskPanels;
 
-import finance.instruments.Instr;
 import finance.methods.common.Method;
-import finance.parameters.ModelParams;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import lsmapp.frame.Pricer;
 import lsmapp.instrPanels.InstrCountObserver;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.resultPanels.ResultHandler;
-import math.matrices.NotPositiveDefiniteMatrixException;
 
 /**
  *
@@ -21,13 +14,6 @@ import math.matrices.NotPositiveDefiniteMatrixException;
  */
 public class NewTaskPanel extends javax.swing.JPanel
 {
-
-    private void addProgressPanelToContainer()
-    {
-        progressesContainer.addProgress(panel);
-        progressesContainer.revalidate();
-        progressesContainer.repaint();
-    }
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -137,9 +123,10 @@ public class NewTaskPanel extends javax.swing.JPanel
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
-    public NewTaskPanel(InstrManager instrManager, ProgressesContainer progressesContainer)
+    public NewTaskPanel(InstrManager instrManager, TaskScheduler taskScheduler)
     {
-        this.progressesContainer = progressesContainer;
+        this.taskScheduler = taskScheduler;
+        taskScheduler.setNewTaskPanel(this);
         initComponents();
         prepareMethodPanels();
         prepareMethodCombo();
@@ -198,80 +185,39 @@ public class NewTaskPanel extends javax.swing.JPanel
 
     private void priceClicked()
     {
-        try {
-            preparePricingTask();
-            if (checkIfPricingMayBeDone())
-            {
-                addProgressPanelToContainer();
-                Pricer.getApp().setStatus("New task started: " + task.getDesc());
-                task.execute();
-            }
-        } catch (NotPositiveDefiniteMatrixException ex) {
-            Logger.getLogger(NewTaskPanel.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private void preparePricingTask() throws NotPositiveDefiniteMatrixException
-    {
-        makeMethod();
-        makeInstr();
-        makeModelParams();
-        makeResultHandler();
-        task = new PricingTask(method, modelParams, instr, resultHandler);
-        makeProgressPanel();
-    }
-    
-    private void makeMethod()
-    {
         String methodName = (String) methodCombo.getSelectedItem();
-        method = methodPanels.get(methodName).makeMethod();
-    }
-    
-    private void makeModelParams() throws NotPositiveDefiniteMatrixException
-    {
-        modelParams = Pricer.getApp().getModelManager().toParams(instr);
-    }
-
-    private void makeInstr()
-    {
         String instrName = (String) instrCombo.getSelectedItem();
-        instr = Pricer.getApp().getInstrManager().makeInstr(instrName);
+        taskScheduler.startNewTask(methodName, instrName);
     }
     
-    private void makeResultHandler()
+    private void ensureMethodNameOK(String methodName)
     {
-        String methodName = (String) methodCombo.getSelectedItem();
-        resultHandler =  methodPanels.get(methodName).makeResultHandler();
-        resultHandler.setAll(method, modelParams, instr);
-    }
-
-    private void makeProgressPanel()
-    {
-        panel = new ProgressPanel(progressesContainer, task);
-        task.setProgressPanel(panel);
-        method.addObserver(panel);
-    }
-
-    private boolean checkIfPricingMayBeDone()
-    {
-        boolean res = method.isPriceable(instr);
-        if (!res)
-        {
-            String methodName = (String) methodCombo.getSelectedItem();
-            MethodPanel methodPanel = methodPanels.get(methodName);
-            JOptionPane.showMessageDialog(this, "Chosen instrument cannot be priced "
-                + "with selected method.\n" + methodPanel.getPriceableDesc(),
-                "Pricing impossible", JOptionPane.ERROR_MESSAGE);
-        }
-        return res;
+        MethodPanel panel = methodPanels.get(methodName);
+        if (panel == null)
+            throw new IllegalArgumentException("No such method \"" + methodName + "\".");
     }
     
-    private Method method;
-    private ModelParams modelParams;
-    private Instr instr;
-    private ResultHandler resultHandler;
-    private PricingTask task;
-    private ProgressPanel panel;
-    private ProgressesContainer progressesContainer;
+    public Method makeMethod(String methodName)
+    {
+        ensureMethodNameOK(methodName);
+        MethodPanel panel = methodPanels.get(methodName);
+        return panel.makeMethod();
+    }
+    
+    public ResultHandler makeResultHandler(String methodName)
+    {
+        ensureMethodNameOK(methodName);
+        MethodPanel panel = methodPanels.get(methodName);
+        return panel.makeResultHandler();
+    }
+    
+    public String getPriceableDesc(String methodName)
+    {
+        ensureMethodNameOK(methodName);
+        MethodPanel panel = methodPanels.get(methodName);
+        return panel.getPriceableDesc();
+    }
+    
+    private TaskScheduler taskScheduler;
     private Map<String, MethodPanel> methodPanels;
 }
