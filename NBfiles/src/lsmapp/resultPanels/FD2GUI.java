@@ -2,6 +2,7 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InstrTools;
 import finance.instruments.Option;
 import finance.methods.common.Method;
 import finance.methods.finitedifference.FDMethod;
@@ -97,7 +98,8 @@ public class FD2GUI implements ResultHandler
         if (instr instanceof Option) {
             results.addTab("Stopping", stoppingPlot(method.getFD(), (Option) instr));
         }
-        results.addTab("Price plot", pricePlot(method.getFD(), instr));
+        VanillaOptionParams vop = InstrTools.extractOptionParams(instr);
+        results.addTab("Price plot", pricePlot(method.getFD(), vop));
         
         displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
@@ -138,7 +140,7 @@ public class FD2GUI implements ResultHandler
         return po;
     }
 
-    private Component pricePlot(final FiniteDifference model, final Instr instr)
+    private Component pricePlot(final FiniteDifference model, final VanillaOptionParams vop)
     {
         final FiniteDifference.Grid grid = model.getLastGrid();
         double[][] V = grid.getOptionPrices();
@@ -155,7 +157,7 @@ public class FD2GUI implements ResultHandler
         final PlotObject poIV = new PlotObject("Intrisnic value", Color.BLUE,
             PlotObject.Type.Lines);
         plotGridPrice(poPrice, grid, 0);
-        plotIV(poIV, 0, model.getBorder(), instr);
+        plotIV(poIV, 0, model.getBorder(), vop);
         plot.addPlotObject(poPrice);
         plot.addPlotObject(poIV);
         plot.resetLimits();
@@ -175,7 +177,7 @@ public class FD2GUI implements ResultHandler
                 int b = (int)(100 * (grid.timeAt(v)-1));
                 time.setText("t = " + String.format("%.2f", grid.timeAt(v)));
                 plotGridPrice(poPrice, grid, v);
-                plotIV(poIV, 0, model.getBorder(), instr);
+                plotIV(poIV, 0, model.getBorder(), vop);
                 plot.repaint();
             }
         } );
@@ -198,7 +200,7 @@ public class FD2GUI implements ResultHandler
         }
     }
     
-    private void plotIV(PlotObject po, double beg, double end, Instr instr)
+    private void plotIV(PlotObject po, double beg, double end, VanillaOptionParams vop)
     {
         po.clear();
         int steps = 1000;
@@ -206,7 +208,7 @@ public class FD2GUI implements ResultHandler
         for (int i = 0; i < steps; ++i)
         {
             double x = beg + i*step;
-            po.addPoint( new PlotPoint(x, instr.intrisnicValue(x)) );
+            po.addPoint( new PlotPoint(x, vop.intrisnicValue(x)) );
         }
     }
     

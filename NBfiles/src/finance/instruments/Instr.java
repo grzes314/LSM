@@ -83,8 +83,6 @@ abstract public class Instr
     {
         return name;
     }
-
-    public abstract double intrisnicValue(double x);
     
     /**
      * Detailed description of the financial instrument.

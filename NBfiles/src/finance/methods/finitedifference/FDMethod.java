@@ -1,15 +1,12 @@
 
 package finance.methods.finitedifference;
 
-import finance.instruments.EuExercise;
 import finance.instruments.Instr;
-import finance.instruments.Option;
+import static finance.instruments.InstrTools.extractOptionParams;
 import finance.methods.common.*;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
-import finance.parameters.VanillaOptionParams.AmOrEu;
-
 /**
  *
  * @author Grzegorz Los
@@ -87,41 +84,6 @@ public class FDMethod implements Method
         fd.addObserver(ob);
     }
 
-
-    private VanillaOptionParams extractOptionParams(Instr instr)
-    {
-        try {
-            return tryExtractAmOptionParams(instr);
-        } catch (ClassCastException ex) {
-            try {
-                return tryExtractEuOptionParams(instr);
-            } catch (ClassCastException ex2) {
-                throw new RuntimeException("Not vanilla option.");
-            }
-        }
-    }
-    
-    private VanillaOptionParams tryExtractAmOptionParams(Instr instr)
-    {
-        Option o = (Option) instr;
-        return extractOptionParams(o, VanillaOptionParams.AmOrEu.AM);
-    }
-    
-    private VanillaOptionParams tryExtractEuOptionParams(Instr instr)
-    {
-        EuExercise e = (EuExercise) instr;
-        Option o = (Option) e.getWrapped();
-        return extractOptionParams(o, VanillaOptionParams.AmOrEu.EU);
-    }
-
-    private VanillaOptionParams extractOptionParams(Option option, AmOrEu amOrEu)
-    {
-        if (amOrEu == AmOrEu.AM)
-            return option.vop.asAmerican();
-        else
-            return option.vop.asEuropean();
-    }
-    
     public FiniteDifference getFD()
     {
         return fd;

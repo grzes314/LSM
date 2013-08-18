@@ -18,32 +18,13 @@ public class Option extends Instr
     /**
      * Constructor taking type of the option, its strike value, underlying name,
      * and time support.
-     * @param type type of the option (call or put).
-     * @param strike strike value.
-     * @param T time horizon.
      */
     public Option(VanillaOptionParams vop, String underlying)
     {
         super(vop.T);
         this.vop = vop;
         this.underlying = underlying;
-        underlyingNr = null;
     }
-
-    /**
-     * Constructor taking type of the option, its strike value, underlying
-     * number and time support.
-     * @param type type of the option (call or put).
-     * @param strike strike value.
-     * @param T time horizon.
-     */
-    public Option(VanillaOptionParams vop, int underlyingNr)
-    {
-        super(vop.T);
-        this.vop = vop;
-        this.underlyingNr = underlyingNr;
-        underlying = null;
-    }    
     
     @Override
     public String getDesc()
@@ -74,13 +55,7 @@ public class Option extends Instr
     {
         return underlying;
     }
-
-    public Integer getUnderlyingNr()
-    {
-        return underlyingNr;
-    }
     
-    @Override
     public double intrisnicValue(double stockPrice)
     {
         if (getType() == CALL) return Math.max(0, stockPrice - getStrike());
@@ -96,12 +71,9 @@ public class Option extends Instr
     @Override
     protected double payoff_(Scenario s, int k)
     {
-        Trajectory tr;
-        if (underlying == null) tr = s.getTr(underlyingNr);
-        else tr = s.getTr(underlying);
+        Trajectory tr = s.getTr(underlying);
         
-        if (getType() == CALL) return Math.max(0, tr.price(k) - getStrike());
-        else return Math.max(0, getStrike() - tr.price(k));
+        return (vop.intrisnicValue(tr.price(k)));
     }
 
     @Override
@@ -139,9 +111,4 @@ public class Option extends Instr
      * (underlying, underlyingNr) may be not null.
      */
     public final String underlying;
-    
-    /**
-     * Number of underlying of the option.
-     */
-    public final Integer underlyingNr;
 }

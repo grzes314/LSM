@@ -38,12 +38,6 @@ public abstract class Modificator extends Instr
     }
     
     @Override
-    public double intrisnicValue(double x)
-    {
-        return wrapped.intrisnicValue(x);
-    }
-    
-    @Override
     public final int modificationsCount()
     {
         return 1 + wrapped.modificationsCount();

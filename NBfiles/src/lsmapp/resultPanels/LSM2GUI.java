@@ -2,6 +2,7 @@
 package lsmapp.resultPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InstrTools;
 import finance.instruments.Option;
 import finance.methods.common.Method;
 import finance.methods.lsm.LSM;
@@ -98,7 +99,8 @@ public class LSM2GUI implements ResultHandler
         if (instr instanceof Option) {
             results.addTab("Stopping", stoppingPlot(method, (Option) instr));
         }
-        results.addTab("Regression", regressionView(method, instr));
+        VanillaOptionParams vop = InstrTools.extractOptionParams(instr);
+        results.addTab("Regression", regressionView(method, vop));
         
         displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
@@ -147,7 +149,7 @@ public class LSM2GUI implements ResultHandler
         return po;
     }
 
-    private Component regressionView(final LSM model, final Instr instr)
+    private Component regressionView(final LSM model, final VanillaOptionParams vop)
     {
         final Polynomial[] P = model.getEst();
         
@@ -163,7 +165,7 @@ public class LSM2GUI implements ResultHandler
         final PlotObject poIV = new PlotObject("Intrisnic value", Color.BLUE,
             PlotObject.Type.Lines);
         plotPolinomial(poEF, 0, 2*model.getS(), P[1]);
-        plotIV(poIV, 0, 2*model.getS(), instr);
+        plotIV(poIV, 0, 2*model.getS(), vop);
         plot.addPlotObject(poEF);
         plot.addPlotObject(poIV);
         plot.resetLimits();
@@ -181,7 +183,7 @@ public class LSM2GUI implements ResultHandler
             {
                 int v = (Integer) spinner.getValue();
                 plotPolinomial(poEF, 0, 2*model.getS(), P[v]);
-                plotIV(poIV, 0, 2*model.getS(), instr);
+                plotIV(poIV, 0, 2*model.getS(), vop);
                 plot.repaint();
             }
         } );
@@ -203,7 +205,7 @@ public class LSM2GUI implements ResultHandler
         }
     }
     
-    private void plotIV(PlotObject po, double beg, double end, Instr instr)
+    private void plotIV(PlotObject po, double beg, double end, VanillaOptionParams vop)
     {
         po.clear();
         int steps = 1000;
@@ -211,7 +213,7 @@ public class LSM2GUI implements ResultHandler
         for (int i = 0; i < steps; ++i)
         {
             double x = beg + i*step;
-            po.addPoint( new PlotPoint(x, instr.intrisnicValue(x)) );
+            po.addPoint( new PlotPoint(x, vop.intrisnicValue(x)) );
         }
     }
     

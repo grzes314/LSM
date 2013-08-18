@@ -45,12 +45,6 @@ public class Bond extends Instr
     {
         return nominal;
     }
-
-    @Override
-    public double intrisnicValue(double x)
-    {
-        return nominal; // TODO rmeove instrisnic value 
-    }
     
     @Override
     public boolean areYou(String str)

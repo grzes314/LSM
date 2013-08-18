@@ -1,7 +1,11 @@
 
 package finance.methods.blackscholes;
 
-import finance.instruments.*;
+import finance.instruments.Barrier;
+import finance.instruments.Bond;
+import finance.instruments.Instr;
+import static finance.instruments.InstrTools.*;
+import finance.instruments.Option;
 import finance.methods.common.*;
 import finance.parameters.BarrierParams;
 import finance.parameters.ModelParams;
@@ -42,73 +46,37 @@ public class BSMethod implements Method
     @Override
     public boolean isPriceable(Instr instr)
     {
-        Object[] wrapped = getAllWrapped(instr);
+        ArrayList<Instr> wrapped = getAllWrapped(instr);
         return mayBePriced(wrapped, instr);
     }
     
-    private Object[] getAllWrapped(Instr instr)
+    private boolean mayBePriced(ArrayList<Instr> wrapped, Instr instr)
     {
-        ArrayList<Instr> l = new ArrayList<>();
-        while (instr != null) {
-            l.add(instr);
-            instr = getWrapped(instr);
-        }
-        return l.toArray();
-    }
-    
-    private Instr getWrapped(Instr instr)
-    {
-        Modificator mod;
-        try {
-            mod = (Modificator) instr;
-        } catch (ClassCastException ex) {
-            return null;
-        }
-        return mod.getWrapped();
-    }
-    
-    private boolean mayBePriced(Object[] wrapped, Instr instr)
-    {
-        Object core = getCore(wrapped);
+        Instr core = getCore(wrapped);
         if (isOption(core))
         {
-            if (wrapped.length == 3)
+            if (wrapped.size() == 3)
                 return instr.areYou("european") && instr.areYou("barrier")
                     && instr.getUnderlyings().size() == 1;
-            if (wrapped.length == 2)
+            if (wrapped.size() == 2)
                 return instr.areYou("european");
         }
         if (isBond(core))
-            return wrapped.length == 1;
+            return wrapped.size() == 1;
         return false;   
-    }
-
-    private Object getCore(Object[] wrapped)
-    {
-        return wrapped[wrapped.length-1];
-    }    
-    
-    private boolean isOption(Object instr)
-    {
-        return instr instanceof Option;
-    }
-    
-    private boolean isBond(Object instr)
-    {
-        return instr instanceof Bond;
     }
     
     @Override
     public double price(Instr instr) throws WrongInstrException
     {
-        Object[] wrapped = getAllWrapped(instr);
+        ArrayList<Instr> wrapped = getAllWrapped(instr);
         if (!mayBePriced(wrapped, instr))
             throw new WrongInstrException("BSMethod can price only european "
                     + "vanilla and simple barrier options and bonds.");
         return price(wrapped);
     }
 
-    private double price(Object[] wrapped)
+    private double price(ArrayList<Instr> wrapped)
     {
         BarrierParams bp = getBarrierParams(wrapped);
         return price(bp, getCore(wrapped));
@@ -139,7 +107,7 @@ public class BSMethod implements Method
             return bs.price(vop, bp);
     }
     
-    private BarrierParams getBarrierParams(Object[] wrapped)
+    private BarrierParams getBarrierParams(ArrayList<Instr> wrapped)
     {
         for (Object ob: wrapped) {
             try {

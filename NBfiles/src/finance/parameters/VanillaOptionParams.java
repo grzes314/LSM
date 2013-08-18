@@ -70,6 +70,12 @@ public class VanillaOptionParams
             throw new WrongParamException("T = " + T);
     }
     
+    public double intrisnicValue(double spot)
+    {
+        if (callOrPut == CallOrPut.CALL) return Math.max(0, spot - strike);
+        else return Math.max(0, strike - spot);
+    }
+    
     public final double strike;
     public final double T;
     public final CallOrPut callOrPut;
