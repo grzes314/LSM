@@ -14,9 +14,21 @@ public class InfoPanel extends javax.swing.JPanel
         modelField.setText(modelDesc);
         methodField.setText(methodDesc);
         instrField.setText(instrDesc);
-        priceField.setText("" + price);
+        priceField.setText(String.format("%.3f", price));
+        stdErrPanel.setVisible(false);
     }
 
+    public InfoPanel(String methodDesc, String modelDesc,
+                     String instrDesc, double price, double stderr)
+    {
+        initComponents();
+        modelField.setText(modelDesc);
+        methodField.setText(methodDesc);
+        instrField.setText(instrDesc);
+        priceField.setText(String.format("%.3f", price));
+        stdErr.setText(String.format("%.5f", stderr));
+    }
+    
     void setModelDesc(String modelDesc) {
         modelField.setText(modelDesc);
     }
@@ -54,6 +66,8 @@ public class InfoPanel extends javax.swing.JPanel
         instrPanel = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         instrField = new javax.swing.JTextPane();
+        stdErrPanel = new javax.swing.JPanel();
+        stdErr = new javax.swing.JTextField();
 
         modelPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Model", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
 
@@ -68,7 +82,7 @@ public class InfoPanel extends javax.swing.JPanel
         );
         modelPanelLayout.setVerticalGroup(
             modelPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
         );
 
         methodPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Method", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
@@ -123,6 +137,21 @@ public class InfoPanel extends javax.swing.JPanel
             .addComponent(jScrollPane4)
         );
 
+        stdErrPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Standard error", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+
+        stdErr.setEditable(false);
+
+        javax.swing.GroupLayout stdErrPanelLayout = new javax.swing.GroupLayout(stdErrPanel);
+        stdErrPanel.setLayout(stdErrPanelLayout);
+        stdErrPanelLayout.setHorizontalGroup(
+            stdErrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(stdErr)
+        );
+        stdErrPanelLayout.setVerticalGroup(
+            stdErrPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(stdErr)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,14 +159,16 @@ public class InfoPanel extends javax.swing.JPanel
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 615, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(modelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(methodPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(pricePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(modelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pricePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(instrPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(methodPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(stdErrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -152,7 +183,10 @@ public class InfoPanel extends javax.swing.JPanel
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(instrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(pricePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(pricePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(stdErrPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(35, 35, 35))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -169,5 +203,7 @@ public class InfoPanel extends javax.swing.JPanel
     private javax.swing.JPanel modelPanel;
     private javax.swing.JTextField priceField;
     private javax.swing.JPanel pricePanel;
+    private javax.swing.JTextField stdErr;
+    private javax.swing.JPanel stdErrPanel;
     // End of variables declaration//GEN-END:variables
 }
