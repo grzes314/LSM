@@ -11,6 +11,8 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.instrPanels.InstrTab;
 import lsmapp.instrPanels.NewInstrInfo;
@@ -153,6 +155,8 @@ public class Pricer extends JFrame
     {
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(createMenuFile());
+        menuBar.add(createMenuSettings());
+        menuBar.add(createMenuHelp());
         return menuBar;
     }
     
@@ -220,6 +224,50 @@ public class Pricer extends JFrame
             }
         });        
         return quit;
+    }
+    
+    private JMenu createMenuSettings()
+    {
+        JMenu settings = new JMenu("Settings");
+        settings.add(createMenuItemQuickPricerVisible());
+        return settings;
+        
+    }
+    
+    private JCheckBoxMenuItem createMenuItemQuickPricerVisible()
+    {
+        final JCheckBoxMenuItem qpv = new JCheckBoxMenuItem("Show quick price", true);
+        qpv.addChangeListener(new ChangeListener() {
+            @Override public void stateChanged(ChangeEvent e) {
+                quickPricer.setVisible(qpv.isSelected());
+            }
+        });
+        return qpv;
+    }
+    
+    private JMenu createMenuHelp()
+    {
+        JMenu help = new JMenu("Help");
+        help.add(createMenuItemAbout());
+        return help;
+        
+    }
+    
+    private JMenuItem createMenuItemAbout()
+    {
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(rootPane,
+                    "<html> <b> The Option Pricer </b>\n" +
+                    "Author: Grzegorz Łoś\n" +
+                    "An application for pricing financial instruments.\n" +
+                    "It was developed as a part of a Master thesis during author's studies "
+                    + "in Uniwersytet Wrocławski.",
+                    "About The Option Pricer", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });        
+        return about;
     }
     
     private void newModelClicked()
