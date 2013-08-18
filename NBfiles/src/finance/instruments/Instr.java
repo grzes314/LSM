@@ -13,25 +13,13 @@ import math.utils.Numerics;
 abstract public class Instr
 {
     /**
-     * Construct Instrument with given time horizon -- expiracy of the instrument.
+     * Construct Instrument with given time horizon -- expiry of the instrument.
      * @param T time horizon.
      */
     public Instr(double T)
     {
         this.T = T;
         name = "noname";
-    }
-    
-    /**
-     * Construct named Instrument with given time horizon -- expiracy
-     * of the instrument.
-     * @param T time horizon.
-     * @param name name of the instrument;
-     */
-    public Instr(double T, String name)
-    {
-        this.T = T;
-        this.name = name;
     }
     
     /**
@@ -132,7 +120,7 @@ abstract public class Instr
     public abstract Collection<String> getUnderlyings();
         
     /**
-     * Time horizon -- expiracy of the instrument.
+     * Time horizon -- expiry of the instrument.
      */
     private final double T;
     

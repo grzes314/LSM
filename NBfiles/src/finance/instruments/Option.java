@@ -32,7 +32,7 @@ public class Option extends Instr
         return "An option\n" +
                 "Type: " + (vop.callOrPut == CALL ? "call" : "put") +
                 "\nStrike: " + getStrike() +
-                "\nExpiracy: " + getT();
+                "\nExpiry: " + getT();
     }
     
     @Override

@@ -100,7 +100,8 @@ public class LSM2GUI implements ResultHandler
             results.addTab("Stopping", stoppingPlot(method, (Option) instr));
         }
         VanillaOptionParams vop = InstrTools.extractOptionParams(instr);
-        results.addTab("Regression", regressionView(method, vop));
+        if (vop != null)
+            results.addTab("Regression", regressionView(method, vop));
         
         displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
