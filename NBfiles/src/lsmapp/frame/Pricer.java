@@ -34,6 +34,12 @@ public class Pricer extends JFrame
 {
     public static void main(String[] args)
     {
+        try {
+            UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
+        }
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -66,7 +72,7 @@ public class Pricer extends JFrame
     
     private Pricer()
     {
-        setSize(800,600);
+        setSize(800,700);
         setTitle("The Pricer");
         setContentPane( createContent() );
         setJMenuBar( createMenuBar() );
