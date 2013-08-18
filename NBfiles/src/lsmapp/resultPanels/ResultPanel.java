@@ -2,7 +2,6 @@
 package lsmapp.resultPanels;
 
 import java.awt.Component;
-import lsmapp.oldFrame.ListChoicePanel;
 
 /**
  *

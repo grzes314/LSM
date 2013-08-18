@@ -1,5 +1,5 @@
 
-package lsmapp.oldFrame;
+package lsmapp.resultPanels;
 
 /**
  *
