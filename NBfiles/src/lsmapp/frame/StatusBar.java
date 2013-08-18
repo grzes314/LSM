@@ -1,5 +1,5 @@
 
-package lsmapp;
+package lsmapp.frame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

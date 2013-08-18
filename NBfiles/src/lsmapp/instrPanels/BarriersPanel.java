@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 
 /**
  *

@@ -4,7 +4,7 @@ package lsmapp.instrPanels;
 import finance.parameters.BarrierParams;
 import finance.parameters.PartialBarrierParams;
 import java.util.Collection;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.modelTab.OneAssetPanel;
 
 /**

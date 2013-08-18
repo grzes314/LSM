@@ -5,7 +5,7 @@ import finance.methods.common.Method;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
 import finance.methods.montecarlo.MonteCarlo;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.MC2GUI;
 import lsmapp.resultPanels.ResultHandler;
 

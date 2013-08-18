@@ -3,7 +3,7 @@ package lsmapp.taskPanels;
 
 import finance.methods.common.Method;
 import finance.methods.finitedifference.FDMethod;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.FD2GUI;
 import lsmapp.resultPanels.ResultHandler;
 

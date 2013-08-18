@@ -1,5 +1,5 @@
 
-package lsmapp;
+package lsmapp.frame;
 
 import finance.parameters.*;
 import java.awt.BorderLayout;

@@ -3,7 +3,7 @@ package lsmapp.taskPanels;
 
 import finance.methods.common.Method;
 import finance.methods.lsm.LSM;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.LSM2GUI;
 import lsmapp.resultPanels.ResultHandler;
 

@@ -1,7 +1,7 @@
 
 package lsmapp.instrPanels;
 
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 
 /**
  *

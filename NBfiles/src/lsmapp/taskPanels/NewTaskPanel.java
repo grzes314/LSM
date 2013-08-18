@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.instrPanels.InstrCountObserver;
 import lsmapp.instrPanels.InstrManager;
 import lsmapp.resultPanels.ResultHandler;

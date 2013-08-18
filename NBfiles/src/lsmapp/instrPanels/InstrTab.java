@@ -3,7 +3,7 @@ package lsmapp.instrPanels;
 
 import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 
 /**
  *

@@ -9,7 +9,7 @@ import finance.parameters.ModelParams;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.SwingWorker;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.ResultHandler;
 
 /**

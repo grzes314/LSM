@@ -4,7 +4,7 @@ package lsmapp.modelTab;
 import java.awt.BorderLayout;
 import java.util.Collection;
 import javax.swing.JOptionPane;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.instrPanels.InstrManager;
 
 /**

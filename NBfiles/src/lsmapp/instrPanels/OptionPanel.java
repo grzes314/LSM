@@ -12,7 +12,7 @@ import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.modelTab.OneAssetPanel;
 
 /**

@@ -1,5 +1,5 @@
 
-package lsmapp;
+package lsmapp.frame;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;

@@ -3,7 +3,7 @@ package lsmapp.taskPanels;
 
 import finance.methods.blackscholes.BSMethod;
 import finance.methods.common.Method;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.BS2GUI;
 import lsmapp.resultPanels.ResultHandler;
 

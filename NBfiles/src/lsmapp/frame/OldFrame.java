@@ -1,5 +1,5 @@
 
-package lsmapp.oldFrame;
+package lsmapp.frame;
 
 import lsmapp.resultPanels.ListChoicePanel;
 import java.awt.BorderLayout;
@@ -9,7 +9,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import lsmapp.StatusBar;
 import lsmapp.controlPanels.BSPanel;
 import lsmapp.controlPanels.FDPanel;
 import lsmapp.controlPanels.LSMPanel;
@@ -20,9 +19,9 @@ import lsmapp.resultPanels.*;
  *
  * @author grzes
  */
-public class MainFrame extends JFrame implements ResultDisplay
+public class OldFrame extends JFrame implements ResultDisplay
 {
-    public MainFrame()
+    public OldFrame()
     {
         setSize(800,600);
         setTitle("The Pricer");
@@ -36,7 +35,7 @@ public class MainFrame extends JFrame implements ResultDisplay
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new MainFrame().setVisible(true);
+                new OldFrame().setVisible(true);
             }
         });
     }

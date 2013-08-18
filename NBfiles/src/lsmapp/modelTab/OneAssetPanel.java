@@ -8,7 +8,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
-import lsmapp.Pricer;
+import lsmapp.frame.Pricer;
 
 
 /**
