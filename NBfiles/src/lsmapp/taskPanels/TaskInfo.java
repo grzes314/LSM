@@ -9,5 +9,5 @@ public interface TaskInfo
 {
     public void addTaskObserver(TaskObserver observer);
     public void removeTaskObserver(TaskObserver observer);
-    public void fireNewTask(PricingTask task);
+    public void fireNewTask(String methodName, String instrName, PricingTask task);
 }

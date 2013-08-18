@@ -1,11 +1,14 @@
 
 package lsmapp.taskPanels;
 
+import lsmapp.frame.Pricer;
+import lsmapp.instrPanels.InstrCountObserver;
+
 /**
  *
  * @author Grzegorz Los
  */
-public class QuickPricePanel extends javax.swing.JPanel
+public class QuickPricePanel extends javax.swing.JPanel implements TaskObserver, InstrCountObserver
 {
 
     /**
@@ -16,8 +19,31 @@ public class QuickPricePanel extends javax.swing.JPanel
         initComponents();
     }
 
+    @Override
+    public void newTask(String methodName, String instrName, PricingTask task)
+    {
+        methodLabel.setText(methodName);
+        instrLabel.setText(instrName);
+        price.setEnabled(true);
+    }
+    
+    @Override
+    public void instrAdded(String name)
+    {
+    }
+
+    @Override
+    public void instrDeleted(String name)
+    {
+        if (instrLabel.getText().equals(name))
+            price.setEnabled(false);
+    }
+
     private void priceClicked()
     {
+        String methodName = methodLabel.getText();
+        String instrName = instrLabel.getText();
+        Pricer.getApp().getTaskScheduler().startNewTask(methodName, instrName);
     }
     
     /**
@@ -32,9 +58,10 @@ public class QuickPricePanel extends javax.swing.JPanel
         jPanel1 = new javax.swing.JPanel();
         instrLabel = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        methodLabel = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
+        setBorder(new javax.swing.border.SoftBevelBorder(0));
         setMinimumSize(new java.awt.Dimension(200, 50));
 
         price.setText("Price");
@@ -53,7 +80,7 @@ public class QuickPricePanel extends javax.swing.JPanel
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(instrLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
+            .addComponent(instrLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 197, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -62,17 +89,17 @@ public class QuickPricePanel extends javax.swing.JPanel
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Method", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
 
-        jLabel1.setText("Nothing priced yet");
+        methodLabel.setText("Nothing priced yet");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
+            .addComponent(methodLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(methodLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -83,7 +110,7 @@ public class QuickPricePanel extends javax.swing.JPanel
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 119, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -102,7 +129,7 @@ public class QuickPricePanel extends javax.swing.JPanel
                         .addComponent(price))
                     .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(6, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -113,10 +140,10 @@ public class QuickPricePanel extends javax.swing.JPanel
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel instrLabel;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel methodLabel;
     private javax.swing.JButton price;
     // End of variables declaration//GEN-END:variables
 

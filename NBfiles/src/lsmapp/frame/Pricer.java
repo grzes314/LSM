@@ -125,6 +125,7 @@ public class Pricer extends JFrame
     {
         JPanel south = new JPanel(new BorderLayout());
         quickPricer = createQuickPricer();
+        taskScheduler.addTaskObserver(quickPricer);
         south.add(quickPricer, BorderLayout.CENTER);
         statusBar = createStatusBar();
         south.add(statusBar, BorderLayout.SOUTH);
@@ -386,6 +387,11 @@ public class Pricer extends JFrame
     public InstrManager getInstrManager()
     {
         return instrManager;
+    }
+
+    public TaskScheduler getTaskScheduler()
+    {
+        return taskScheduler;
     }
 
     public ResultDisplay getResultDisplay()

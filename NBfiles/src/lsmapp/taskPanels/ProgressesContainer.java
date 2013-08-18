@@ -22,7 +22,7 @@ public class ProgressesContainer extends javax.swing.JPanel implements TaskObser
     }
 
     @Override
-    public void newTask(PricingTask task)
+    public void newTask(String methodName, String instrName, PricingTask task)
     {
         ProgressPanel panel = new ProgressPanel(this, task);
         task.setProgressPanel(panel);

@@ -7,5 +7,5 @@ package lsmapp.taskPanels;
  */
 public interface TaskObserver
 {
-    public void newTask(PricingTask task);
+    public void newTask(String methodName, String instrName, PricingTask task);
 }

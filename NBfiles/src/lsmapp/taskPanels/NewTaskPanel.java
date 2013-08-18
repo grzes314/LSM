@@ -139,7 +139,7 @@ public class NewTaskPanel extends javax.swing.JPanel
         methodPanels.put("Analitical formulas", new BSPanel());
         methodPanels.put("Monte Carlo", new MCPanel());
         methodPanels.put("Finite difference", new FDPanel());
-        methodPanels.put("LSM", new LSMPanel());
+        methodPanels.put("Longstaff-Schwartz", new LSMPanel());
     }
 
     private void prepareMethodCombo()

@@ -29,10 +29,10 @@ public class TaskScheduler implements TaskInfo
     }
 
     @Override
-    public void fireNewTask(PricingTask task)
+    public void fireNewTask(String methodName, String instrName, PricingTask task)
     {
         for (TaskObserver ob: observers)
-            ob.newTask(task);
+            ob.newTask(methodName, instrName, task);
     }
 
     void setNewTaskPanel(NewTaskPanel newTaskPanel)
@@ -50,7 +50,7 @@ public class TaskScheduler implements TaskInfo
             preparePricingTask();
             if (checkIfPricingMayBeDone())
             {
-                fireNewTask(task);
+                fireNewTask(methodName, instrName, task);
                 Pricer.getApp().setStatus("New task started: " + task.getDesc());
                 task.execute();
             }
