@@ -44,6 +44,10 @@ public class InstrManager implements InstrCountInfo, AssetCountObserver
                 return new OptionPanel();
             case Asian:
                 return new AsianOptionPanel();
+            case Lookback:
+                return new LookbackOptionPanel();
+            case Basket:
+                throw new UnsupportedOperationException();
             default:
                 throw new UnsupportedOperationException();
         }

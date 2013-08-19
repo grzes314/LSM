@@ -28,6 +28,8 @@ public class NewInstrDialog extends javax.swing.JDialog
         jLabel3 = new javax.swing.JLabel();
         instrName = new javax.swing.JTextField();
         asian = new javax.swing.JRadioButton();
+        lookback = new javax.swing.JRadioButton();
+        basket = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -45,7 +47,7 @@ public class NewInstrDialog extends javax.swing.JDialog
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18));
         jLabel1.setText("Adding new instrument");
 
         jLabel2.setText("Select type of the instrument:");
@@ -62,6 +64,12 @@ public class NewInstrDialog extends javax.swing.JDialog
         buttonGroup.add(asian);
         asian.setText("Asian Option");
 
+        buttonGroup.add(lookback);
+        lookback.setText("Lookback option");
+
+        buttonGroup.add(basket);
+        basket.setText("Basket option");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -72,27 +80,30 @@ public class NewInstrDialog extends javax.swing.JDialog
                         .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(0, 211, Short.MAX_VALUE)
+                                .addGap(0, 233, Short.MAX_VALUE)
                                 .addComponent(OK, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(cance, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(vanilla)
-                                    .addComponent(bond)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(instrName, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(0, 29, Short.MAX_VALUE))))
+                                        .addComponent(instrName, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(bond)
+                                            .addComponent(vanilla))
+                                        .addGap(80, 80, 80)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(basket)
+                                            .addComponent(lookback)))
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 29, Short.MAX_VALUE))
+                            .addComponent(asian)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(asian)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 78, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -106,12 +117,18 @@ public class NewInstrDialog extends javax.swing.JDialog
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(bond)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(vanilla)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(asian)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(bond)
+                        .addGap(18, 18, 18)
+                        .addComponent(vanilla)
+                        .addGap(18, 18, 18)
+                        .addComponent(asian))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lookback)
+                        .addGap(18, 18, 18)
+                        .addComponent(basket)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 42, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(OK)
                     .addComponent(cance))
@@ -133,6 +150,7 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OK;
     private javax.swing.JRadioButton asian;
+    private javax.swing.JRadioButton basket;
     private javax.swing.JRadioButton bond;
     private javax.swing.ButtonGroup buttonGroup;
     private javax.swing.JButton cance;
@@ -140,6 +158,7 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JRadioButton lookback;
     private javax.swing.JRadioButton vanilla;
     // End of variables declaration//GEN-END:variables
 
@@ -148,6 +167,7 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     {
         super(Pricer.getApp(), true);
         initComponents();
+        this.setLocationRelativeTo(Pricer.getApp());
     }
 
     static NewInstrInfo showNewInstrDialog()
@@ -166,6 +186,8 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
         if (bond.isSelected()) type = NewInstrInfo.InstrType.Bond;
         else if (vanilla.isSelected()) type = NewInstrInfo.InstrType.Vanilla;
         else if (asian.isSelected()) type = NewInstrInfo.InstrType.Asian;
+        else if (lookback.isSelected()) type = NewInstrInfo.InstrType.Lookback;
+        else if (basket.isSelected()) type = NewInstrInfo.InstrType.Basket;
         else throw new UnsupportedOperationException();
         return new NewInstrInfo( type, instrName.getText() );
     }

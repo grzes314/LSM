@@ -2,7 +2,7 @@
 package finance.instruments;
 
 import finance.parameters.VanillaOptionParams.CallOrPut;
-import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
+import static finance.parameters.VanillaOptionParams.CallOrPut.*;
 import finance.trajectories.Scenario;
 import finance.trajectories.Trajectory;
 import java.util.ArrayList;
@@ -12,20 +12,20 @@ import java.util.Collection;
  *
  * @author Grzegorz Los
  */
-public class AsianOption extends Instr
+public class LookbackOption extends Instr
 {
 
-    public AsianOption(double T, CallOrPut callOrPut, String underlying)
+    public LookbackOption(double T, CallOrPut callOrPut, String underlying)
     {
         super(T);
         this.callOrPut = callOrPut;
         this.underlying = underlying;
     }
-    
+
     @Override
     public String getDesc()
     {
-        return "An asian option\n" +
+        return "A lookback option\n" +
                 "Type: " + (callOrPut == CALL ? "call" : "put") +
                 "\nExpiry: " + getT();
     }
@@ -33,15 +33,16 @@ public class AsianOption extends Instr
     @Override
     public String toString()
     {
-        return "Asian " + (callOrPut == CALL ? "Call" : "Put");
+        return "Lookback " + (callOrPut == CALL ? "Call" : "Put");
     }
 
     @Override
     public boolean areYou(String str)
     {
-        if (str.equalsIgnoreCase("asianOption"))
+        if (str.equalsIgnoreCase("lookback"))
             return true;
-        else return false;
+        else
+            return false;
     }
 
     @Override
@@ -59,19 +60,28 @@ public class AsianOption extends Instr
     @Override
     protected double payoff_(Scenario s, int k)
     {
-        Trajectory tr = s.getTr(underlying);
-        double S = tr.price(k);
-        double av = tr.average(0, k);
-        if (callOrPut == CALL) return Math.max(0, S - av);
-        else return Math.max(0, av - S);
+        if (callOrPut == CALL)
+            return callPayoff(s.getTr(underlying), k);
+        else
+            return putPayoff(s.getTr(underlying), k);
     }
 
     @Override
     public Collection<String> getUnderlyings()
     {
-        ArrayList<String> coll = new ArrayList<>();
-        coll.add(underlying);
-        return coll;
+        ArrayList<String> arr = new ArrayList<>();
+        arr.add(underlying);
+        return arr;
+    }
+
+    private double callPayoff(Trajectory tr, int k)
+    {
+        return tr.price(k) - tr.cumMin(k);
+    }
+
+    private double putPayoff(Trajectory tr, int k)
+    {
+        return tr.cumMax(k) - tr.price(k);
     }
     
     public final CallOrPut callOrPut;
