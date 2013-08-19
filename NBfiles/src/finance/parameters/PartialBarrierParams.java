@@ -2,27 +2,24 @@
 package finance.parameters;
 
 /**
- *
- * @author glos
+ * Parameters describing partial barriers.
+ * @author Grzegorz Los
  */
 public class PartialBarrierParams
 {
-    public enum Modification
+    public enum PartType
     {
-        OFF, ON
+        EARLY, LATE
     }
 
-    public PartialBarrierParams(BarrierParams barrierParams,
-            Modification mod, double since, double until)
+    public PartialBarrierParams(BarrierParams barrierParams, PartType type, double borderTime)
     {
         this.barrierParams = barrierParams;
-        this.mod = mod;
-        this.since = since;
-        this.until = until;
+        this.type = type;
+        this.borderTime = borderTime;
     }
     
     public final BarrierParams barrierParams;
-    public final Modification mod;
-    public final double since;
-    public final double until;
+    public final PartType type;
+    public final double borderTime;
 }

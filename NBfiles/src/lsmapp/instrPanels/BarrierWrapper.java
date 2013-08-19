@@ -3,8 +3,10 @@ package lsmapp.instrPanels;
 
 import finance.instruments.Barrier;
 import finance.instruments.Instr;
+import finance.instruments.PartialBarrier;
 import finance.parameters.BarrierParams;
 import finance.parameters.PartialBarrierParams;
+import finance.parameters.PartialBarrierParams.PartType;
 
 /**
  *
@@ -37,7 +39,7 @@ public class BarrierWrapper
 
     private Instr addPartialBarrier(Instr instr)
     {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return new PartialBarrier(partialBarrierParams, onAsset, instr);
     }
 
     private Instr addNormalBarrier(Instr instr)
@@ -56,9 +58,9 @@ public class BarrierWrapper
     private String getPartialBarrierDescription()
     {
         return getNormalBarrierDescription(partialBarrierParams.barrierParams) +
-                (partialBarrierParams.mod == PartialBarrierParams.Modification.ON ?
-                "\nBarrier active only " : "\nBarrier inactive ") +
-                "since " + partialBarrierParams.since + " until " + partialBarrierParams.until;
+                (partialBarrierParams.type == PartType.EARLY ? "\nBarrier active only until time "
+                                                             : "\nBarrier active only since time ")
+                + partialBarrierParams.borderTime + ".";
     }
 
     private String getNormalBarrierDescription(BarrierParams bp)

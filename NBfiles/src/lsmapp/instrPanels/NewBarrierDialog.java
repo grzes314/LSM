@@ -20,6 +20,7 @@ public class NewBarrierDialog extends javax.swing.JDialog
         initComponents();
         putAssetNamesToCombo(assetNames, initialName);
         partialPanel.setVisible(false);
+        this.setLocationRelativeTo(Pricer.getApp());
     }
 
     /** This method is called from within the constructor to
@@ -46,12 +47,10 @@ public class NewBarrierDialog extends javax.swing.JDialog
         partial = new javax.swing.JCheckBox();
         partialPanel = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        since = new javax.swing.JSpinner();
+        borderTime = new javax.swing.JSpinner();
+        early = new javax.swing.JRadioButton();
+        late = new javax.swing.JRadioButton();
         jLabel5 = new javax.swing.JLabel();
-        until = new javax.swing.JSpinner();
-        jLabel6 = new javax.swing.JLabel();
-        barrierOff = new javax.swing.JRadioButton();
-        barrierOn = new javax.swing.JRadioButton();
         jLabel7 = new javax.swing.JLabel();
         assetCombo = new javax.swing.JComboBox();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
@@ -72,7 +71,7 @@ public class NewBarrierDialog extends javax.swing.JDialog
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18));
         jLabel1.setText("Adding Barrier");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -107,63 +106,55 @@ public class NewBarrierDialog extends javax.swing.JDialog
         partialPanel.setEnabled(false);
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel4.setText("Since time:");
+        jLabel4.setText("Border time:");
 
-        since.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(0.1d)));
+        borderTime.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(0.1d)));
 
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel5.setText("Until time:");
+        offOrOnGroup.add(early);
+        early.setSelected(true);
+        early.setText("Early");
 
-        until.setModel(new javax.swing.SpinnerNumberModel(Double.valueOf(0.0d), Double.valueOf(0.0d), null, Double.valueOf(0.1d)));
+        offOrOnGroup.add(late);
+        late.setText("Late");
 
-        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jLabel6.setText("barrier is ");
-
-        offOrOnGroup.add(barrierOff);
-        barrierOff.setSelected(true);
-        barrierOff.setText("Off");
-
-        offOrOnGroup.add(barrierOn);
-        barrierOn.setText("On");
+        jLabel5.setText("Barrier is:");
 
         javax.swing.GroupLayout partialPanelLayout = new javax.swing.GroupLayout(partialPanel);
         partialPanel.setLayout(partialPanelLayout);
         partialPanelLayout.setHorizontalGroup(
             partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(partialPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(19, 19, 19)
                 .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(partialPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(barrierOff)
+                        .addComponent(early)
                         .addGap(18, 18, 18)
-                        .addComponent(barrierOn))
-                    .addGroup(partialPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(since, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(until, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(101, Short.MAX_VALUE))
+                        .addComponent(late))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, partialPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)))
+                .addGap(45, 45, 45)
+                .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(borderTime, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addContainerGap(130, Short.MAX_VALUE))
         );
         partialPanelLayout.setVerticalGroup(
             partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(partialPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(since, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5)
-                    .addComponent(until, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(barrierOff)
-                    .addComponent(barrierOn))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(partialPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(borderTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(partialPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(partialPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(late)
+                            .addComponent(early))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -179,14 +170,19 @@ public class NewBarrierDialog extends javax.swing.JDialog
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(221, Short.MAX_VALUE))
+            .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 404, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(partialPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 242, Short.MAX_VALUE)
                         .addComponent(OK, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cance, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(partialPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(partial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(345, 345, 345))
@@ -207,13 +203,8 @@ public class NewBarrierDialog extends javax.swing.JDialog
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(uao)
                                     .addComponent(dao))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 38, Short.MAX_VALUE)))
                 .addGap(4, 4, 4))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addComponent(filler1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -241,11 +232,11 @@ public class NewBarrierDialog extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(partial)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(partialPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(OK)
-                    .addComponent(cance))
+                .addComponent(partialPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(cance, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(OK, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
 
@@ -274,28 +265,26 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton OK;
     private javax.swing.JComboBox assetCombo;
-    private javax.swing.JRadioButton barrierOff;
-    private javax.swing.JRadioButton barrierOn;
+    private javax.swing.JSpinner borderTime;
     private javax.swing.JButton cance;
     private javax.swing.JRadioButton dai;
     private javax.swing.JRadioButton dao;
+    private javax.swing.JRadioButton early;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JRadioButton late;
     private javax.swing.JSpinner level;
     private javax.swing.ButtonGroup offOrOnGroup;
     private javax.swing.JCheckBox partial;
     private javax.swing.JPanel partialPanel;
-    private javax.swing.JSpinner since;
     private javax.swing.ButtonGroup typeGroup;
     private javax.swing.JRadioButton uai;
     private javax.swing.JRadioButton uao;
-    private javax.swing.JSpinner until;
     // End of variables declaration//GEN-END:variables
 
     static BarrierWrapper showNewBarrierDialog(Collection<String> assetNames, String initialAsset)
@@ -333,11 +322,10 @@ private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:even
     
     private PartialBarrierParams makePartialBarrierParams(BarrierParams bp)
     {
-        double s = (Double) since.getValue();
-        double u = (Double) until.getValue();
-        PartialBarrierParams.Modification mod = barrierOff.isSelected() ?
-                PartialBarrierParams.Modification.OFF : PartialBarrierParams.Modification.ON;
-        return new PartialBarrierParams(bp, mod, s, u);
+        double t = (Double) borderTime.getValue();
+        PartialBarrierParams.PartType type = early.isSelected() ?
+                PartialBarrierParams.PartType.EARLY : PartialBarrierParams.PartType.LATE;
+        return new PartialBarrierParams(bp, type, t);
     }
 
     private void putAssetNamesToCombo(Collection<String> assetNames, String initialName)
