@@ -226,8 +226,10 @@ public class ModelManager implements AssetCountInfo
 
     public void clear()
     {
-        for (String name: assetPanels.keySet())
-            deleteAsset(name);
+        Object[] names = assetPanels.keySet().toArray();
+        for (Object name: names)
+            deleteAsset((String) name);
+        modelPanel.reset();
     }
     
     public final void fromModelParams(ModelParams mp)

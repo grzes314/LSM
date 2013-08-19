@@ -2,6 +2,7 @@
 package lsmapp.instrPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InvalidInstrParametersException;
 import java.util.Set;
 
 /**
@@ -98,7 +99,7 @@ public class InstrPanel extends javax.swing.JPanel
         return specificPanel;
     }
 
-    public Instr makeInstr()
+    public Instr makeInstr() throws InvalidInstrParametersException
     {
         Instr instr = specificPanel.makeInstr();
         instr = barriersPanel.wrapInBarriers(instr);

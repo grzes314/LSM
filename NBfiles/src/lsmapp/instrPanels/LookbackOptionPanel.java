@@ -42,7 +42,7 @@ public class LookbackOptionPanel extends SpecificInstrPanel
         jLabel6 = new javax.swing.JLabel();
         assets = new javax.swing.JComboBox();
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16));
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Lookback Option");
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -54,6 +54,7 @@ public class LookbackOptionPanel extends SpecificInstrPanel
 
         buttonExerciseGroup.add(american);
         american.setText("american");
+        american.setEnabled(false);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel3.setText("Type:");

@@ -133,6 +133,7 @@ public class MCPanel extends MethodPanel
     public MCPanel()
     {
         initComponents();
+        controlVariates.setVisible(false);
     }    
     
     @Override

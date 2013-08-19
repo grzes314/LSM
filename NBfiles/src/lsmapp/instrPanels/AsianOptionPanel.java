@@ -54,6 +54,7 @@ public class AsianOptionPanel extends SpecificInstrPanel
 
         buttonExerciseGroup.add(american);
         american.setText("american");
+        american.setEnabled(false);
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel3.setText("Type:");

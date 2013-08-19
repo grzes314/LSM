@@ -2,6 +2,7 @@
 package lsmapp.instrPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InvalidInstrParametersException;
 import java.util.Set;
 import javax.swing.JPanel;
 
@@ -15,7 +16,7 @@ public abstract class SpecificInstrPanel extends JPanel
      * From data gathered in the panel constructs a suitable instrument.
      * @return Instrument described by values set in the panel.
      */
-    abstract Instr makeInstr();
+    abstract Instr makeInstr() throws InvalidInstrParametersException;
     
     /**
      * Returns true if and only if instrument described by data in the panel

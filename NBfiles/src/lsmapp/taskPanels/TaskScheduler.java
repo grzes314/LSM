@@ -2,6 +2,7 @@
 package lsmapp.taskPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InvalidInstrParametersException;
 import finance.methods.common.Method;
 import finance.parameters.ModelParams;
 import java.util.ArrayList;
@@ -54,6 +55,8 @@ public class TaskScheduler implements TaskInfo
                 Pricer.getApp().setStatus("New task started: " + task.getDesc());
                 task.execute();
             }
+        } catch (InvalidInstrParametersException ex) {
+            informAboutBadParams(instrName, ex.getMessage());
         } catch (NotPositiveDefiniteMatrixException ex) {
             informAboutWrongCorrelation();
         }
@@ -61,7 +64,7 @@ public class TaskScheduler implements TaskInfo
     }
         
     private void preparePricingTask()
-        throws NotPositiveDefiniteMatrixException
+        throws NotPositiveDefiniteMatrixException, InvalidInstrParametersException
     {
         makeMethod(methodName);
         makeInstr();
@@ -80,7 +83,7 @@ public class TaskScheduler implements TaskInfo
         modelParams = Pricer.getApp().getModelManager().toParams(instr);
     }
 
-    private void makeInstr()
+    private void makeInstr() throws InvalidInstrParametersException
     {
         instr = Pricer.getApp().getInstrManager().makeInstr(instrName);
     }
@@ -109,7 +112,14 @@ public class TaskScheduler implements TaskInfo
             "Could no create model parameters.\n" +
             "Provided correlations are invalid.\n" + 
             "Correlation matrix is not positive definite.",
-            "Pricing impossible", JOptionPane.ERROR_MESSAGE);
+            "Pricing can not be done", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void informAboutBadParams(String instrName, String message)
+    {
+        JOptionPane.showMessageDialog(Pricer.getApp(),
+                "Could not create instrument \"" + instrName + "\".\n" + message,
+                "Pricing can not be done", JOptionPane.ERROR_MESSAGE);
     }
 
     private String methodName;

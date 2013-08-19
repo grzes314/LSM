@@ -134,6 +134,7 @@ public class Pricer extends JFrame
         JPanel south = new JPanel(new BorderLayout());
         quickPricer = createQuickPricer();
         taskScheduler.addTaskObserver(quickPricer);
+        instrManager.addInstrCountObserver(quickPricer);
         south.add(quickPricer, BorderLayout.CENTER);
         statusBar = createStatusBar();
         south.add(statusBar, BorderLayout.SOUTH);

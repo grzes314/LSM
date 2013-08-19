@@ -2,6 +2,7 @@
 package lsmapp.instrPanels;
 
 import finance.instruments.Instr;
+import finance.instruments.InvalidInstrParametersException;
 import java.util.*;
 import lsmapp.modelTab.AssetCountObserver;
 
@@ -47,7 +48,7 @@ public class InstrManager implements InstrCountInfo, AssetCountObserver
             case Lookback:
                 return new LookbackOptionPanel();
             case Basket:
-                throw new UnsupportedOperationException();
+                return new BasketOptionPanel();
             default:
                 throw new UnsupportedOperationException();
         }
@@ -110,7 +111,7 @@ public class InstrManager implements InstrCountInfo, AssetCountObserver
             ob.instrAdded(instrName);
     }
 
-    public Instr makeInstr(String instrName)
+    public Instr makeInstr(String instrName) throws InvalidInstrParametersException
     {
         InstrPanel panel = instrPanels.get(instrName);
         if (panel == null)
