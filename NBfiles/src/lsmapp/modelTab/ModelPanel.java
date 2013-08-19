@@ -169,7 +169,6 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         oneAssetContainer = new javax.swing.JPanel();
         generalInfoContainer = new javax.swing.JPanel();
@@ -201,9 +200,6 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel1.setText("Number of assets: ");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, numberOfAssets, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel1, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
-        bindingGroup.addBinding(binding);
-
         numberOfAssets.setEditable(false);
         numberOfAssets.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
         numberOfAssets.setText("0");
@@ -224,9 +220,6 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel2.setText("Riskless interest rate: ");
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, rate, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel2, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
-        bindingGroup.addBinding(binding);
 
         rate.setModel(new javax.swing.SpinnerNumberModel(0.05d, -1.0d, 5.0d, 0.001d));
 
@@ -303,8 +296,6 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(oneAssetContainer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
     private void assetsListItemStateChanged(java.awt.event.ItemEvent evt)//GEN-FIRST:event_assetsListItemStateChanged
@@ -335,6 +326,5 @@ public class ModelPanel extends javax.swing.JPanel implements AssetCountObserver
     private javax.swing.JTextField numberOfAssets;
     private javax.swing.JPanel oneAssetContainer;
     private javax.swing.JSpinner rate;
-    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 }

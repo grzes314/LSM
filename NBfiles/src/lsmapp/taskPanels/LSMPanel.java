@@ -21,7 +21,6 @@ public class LSMPanel extends MethodPanel
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         varianceGroup = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
@@ -39,13 +38,7 @@ public class LSMPanel extends MethodPanel
 
         jLabel3.setText("Number of simulations: ");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, simulations, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel3, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
-        bindingGroup.addBinding(binding);
-
         jLabel4.setText("Number of time steps: ");
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, timeSteps, org.jdesktop.beansbinding.ObjectProperty.create(), jLabel4, org.jdesktop.beansbinding.BeanProperty.create("labelFor"));
-        bindingGroup.addBinding(binding);
 
         timeSteps.setModel(new javax.swing.SpinnerNumberModel(252, 1, 10000, 10));
 
@@ -92,8 +85,6 @@ public class LSMPanel extends MethodPanel
                     .addComponent(degree, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(29, Short.MAX_VALUE))
         );
-
-        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner degree;
@@ -104,7 +95,6 @@ public class LSMPanel extends MethodPanel
     private javax.swing.JSpinner simulations;
     private javax.swing.JSpinner timeSteps;
     private javax.swing.ButtonGroup varianceGroup;
-    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
 

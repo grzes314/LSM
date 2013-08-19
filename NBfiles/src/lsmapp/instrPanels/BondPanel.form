@@ -70,18 +70,12 @@
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="Time to maturity:"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="maturity" target="jLabel2" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="Nominal:"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="nominal" target="jLabel3" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JSpinner" name="maturity">
       <Properties>

@@ -93,27 +93,18 @@
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="spot"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="spot" target="jLabel1" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="volatility"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="volatility" target="jLabel2" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="drift"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="drift" target="jLabel3" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JSpinner" name="spot">
       <Properties>

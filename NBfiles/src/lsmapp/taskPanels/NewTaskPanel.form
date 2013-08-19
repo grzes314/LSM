@@ -79,9 +79,6 @@
         <Property name="horizontalAlignment" type="int" value="11"/>
         <Property name="text" type="java.lang.String" value="Select method:"/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="methodCombo" target="jLabel1" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JComboBox" name="methodCombo">
       <Properties>

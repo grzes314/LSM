@@ -88,17 +88,11 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Number of simulations: "/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="simulations" target="jLabel3" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
         <Property name="text" type="java.lang.String" value="Number of time steps: "/>
       </Properties>
-      <BindingProperties>
-        <BindingProperty name="labelFor" source="timeSteps" target="jLabel4" targetPath="labelFor" updateStrategy="0" immediately="false"/>
-      </BindingProperties>
     </Component>
     <Component class="javax.swing.JSpinner" name="timeSteps">
       <Properties>
