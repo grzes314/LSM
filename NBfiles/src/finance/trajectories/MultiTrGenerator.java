@@ -139,7 +139,7 @@ public class MultiTrGenerator extends GeneratorRoot
     {
         fillNext(k, pos, Z);
         if (genAnthi)
-            fillNext(k, neg, Z);
+            fillNext(k, neg, Z.times(-1));
     }
 
     private void callSetReady()
