@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lsmapp.instrPanels.InstrCountObserver;
 import lsmapp.instrPanels.InstrManager;
+import lsmapp.modelTab.ModelManager;
 import lsmapp.resultPanels.ResultHandler;
 
 /**
@@ -116,21 +117,23 @@ public class NewTaskPanel extends javax.swing.JPanel
     private javax.swing.JButton price;
     // End of variables declaration//GEN-END:variables
 
-    public NewTaskPanel(InstrManager instrManager, TaskScheduler taskScheduler)
+    public NewTaskPanel(ModelManager modelManager,
+                        InstrManager instrManager, TaskScheduler taskScheduler)
     {
         this.taskScheduler = taskScheduler;
-        taskScheduler.setNewTaskPanel(this);
         initComponents();
-        prepareMethodPanels();
+        prepareMethodPanels(modelManager);
         prepareMethodCombo();
         prepareInstrCombo(instrManager);
     }
 
-    private void prepareMethodPanels()
+    private void prepareMethodPanels(ModelManager modelManager)
     {
         methodPanels = new HashMap<>();
         methodPanels.put("Analitical formulas", new BSPanel());
-        methodPanels.put("Monte Carlo", new MCPanel());
+        MCPanel mcPanel = new MCPanel();
+        methodPanels.put("Monte Carlo", mcPanel);
+        modelManager.addAssetCountObserver(mcPanel);
         methodPanels.put("Finite difference", new FDPanel());
         methodPanels.put("Longstaff-Schwartz", new LSMPanel());
     }

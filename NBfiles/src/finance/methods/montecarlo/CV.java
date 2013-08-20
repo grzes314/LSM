@@ -26,18 +26,6 @@ public class CV extends MonteCarlo
     }
 
     /**
-     * Constructs class representing method which uses stock value as control variate.
-     * @param params model parameters 
-     * @param controlAssetNr number of the asset corresponding to the control variate.
-     */
-    public CV(ModelParams params, int controlAssetNr)
-    {
-        super(params);
-        this.controlAssetNr = controlAssetNr;
-        this.cv = ControlVariate.Stock;
-    }
-
-    /**
      * Constructor.
      * @param params model parameters
      * @param cv flag indicating what should be the control variate.
@@ -45,11 +33,25 @@ public class CV extends MonteCarlo
      * @param strike strike value of the option taken as a control variate, important only
      * if ControlVariate is vanilla option value.
      */
-    public CV(ModelParams params, ControlVariate cv, int controlAssetNr, double strike)
+    public CV(ModelParams params, ControlVariate cv, String controlAssetName, double strike)
     {
         super(params);
         this.cv = cv;
-        this.controlAssetNr = controlAssetNr;
+        this.controlAssetName = controlAssetName;
+        this.strike = strike;
+    }
+
+    /**
+     * Constructor.
+     * @param cv flag indicating what should be the control variate.
+     * @param controlAssetNr number of the asset corresponding to the control variate.
+     * @param strike strike value of the option taken as a control variate, important only
+     * if ControlVariate is vanilla option value.
+     */
+    public CV(ControlVariate cv, String controlAssetName, double strike)
+    {
+        this.cv = cv;
+        this.controlAssetName = controlAssetName;
         this.strike = strike;
     }
     
@@ -66,6 +68,7 @@ public class CV extends MonteCarlo
         gen = new MultiTrGenerator(params, Generator.Measure.MART, ts);
         payoffs = new Vector(N);
         controls = new Vector(N);
+        simulation = 1;
         calcExpectedValueOfCV(instr.getT());
     }
     
@@ -88,7 +91,7 @@ public class CV extends MonteCarlo
     
     private double calcExpectedValueOfOption(double T, VanillaOptionParams.CallOrPut callOrPut)
     {
-        OneAssetParams oap = params.getParams(controlAssetNr);
+        OneAssetParams oap = params.getParams(controlAssetName);
         SimpleModelParams smp = new SimpleModelParams(oap.S, oap.vol, params.getR());
         VanillaOptionParams vop = new VanillaOptionParams(
                 strike, T, callOrPut );
@@ -98,7 +101,7 @@ public class CV extends MonteCarlo
     
     private double calcExpectedValueOfStock()
     {
-        OneAssetParams oap = params.getParams(controlAssetNr);
+        OneAssetParams oap = params.getParams(controlAssetName);
         return oap.S;
     }
     
@@ -125,7 +128,7 @@ public class CV extends MonteCarlo
 
     private void setControl(Instr instr, Scenario scenario)
     {
-        double S = scenario.getTr(controlAssetNr).price(scenario.getTS().getK());
+        double S = scenario.getTr(controlAssetName).price(scenario.getTS().getK());
         double discount = Math.exp(-params.getR()*instr.getT());
         switch (cv)
         {
@@ -145,9 +148,10 @@ public class CV extends MonteCarlo
     {
         if (simulation < N)
         {
-            Vector H = payoffs.subvector(1, simulation);
-            Vector C = controls.subvector(1, simulation);
-            return adjustPayoffsToControl(H, C);
+            /*Vector H = payoffs.subvector(1, simulation-1);
+            Vector C = controls.subvector(1, simulation-1);
+            return adjustPayoffsToControl(H, C);*/
+            return new Result(-1, 0);
         }
         else
             return adjustPayoffsToControl(payoffs, controls);
@@ -168,7 +172,12 @@ public class CV extends MonteCarlo
     
     private double getC(Vector H, Vector C)
     {
-        return - Statistics.cov(H, C) / Statistics.var(C);
+        double numarator = - Statistics.cov(H, C);
+        double denominator = Statistics.var(C);
+        if (denominator == 0)
+            return 0;
+        else
+            return numarator / denominator;
     }
     
     private Result makeResult(Vector adjusted)
@@ -182,8 +191,8 @@ public class CV extends MonteCarlo
     private Generator gen;
     private ControlVariate cv;
     private Vector payoffs, controls;
-    private int simulation = 1;
-    private int controlAssetNr;
+    private int simulation;
+    private String controlAssetName;
     private double strike;
     private double expectedValueOfCV;
 }

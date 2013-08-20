@@ -119,7 +119,7 @@ public class Pricer extends JFrame
     {
         assert instrManager != null;
         taskScheduler = new TaskScheduler();
-        return new NewTaskTab(instrManager, taskScheduler);
+        return new NewTaskTab(modelManager, instrManager, taskScheduler);
     }
 
     private Component createResultsPanel()

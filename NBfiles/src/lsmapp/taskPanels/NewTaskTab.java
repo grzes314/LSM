@@ -3,6 +3,7 @@ package lsmapp.taskPanels;
 
 import java.awt.BorderLayout;
 import lsmapp.instrPanels.InstrManager;
+import lsmapp.modelTab.ModelManager;
 
 /**
  *
@@ -68,11 +69,12 @@ public class NewTaskTab extends javax.swing.JPanel
 
 
     /** Creates new form NewTaskTab */
-    public NewTaskTab(InstrManager instrManager, TaskScheduler taskScheduler)
+    public NewTaskTab(ModelManager modelManager, InstrManager instrManager,
+                      TaskScheduler taskScheduler)
     {
         initComponents();
         prepareProgressContainer(taskScheduler);
-        prepareNewTasksPanel(instrManager, taskScheduler);
+        prepareNewTasksPanel(modelManager, instrManager, taskScheduler);
         revalidate();
     }
 
@@ -83,9 +85,11 @@ public class NewTaskTab extends javax.swing.JPanel
         containerOfProgressesContainer.add(progressesContainer, BorderLayout.CENTER);
     }
 
-    private void prepareNewTasksPanel(InstrManager instrManager, TaskScheduler taskScheduler)
+    private void prepareNewTasksPanel(ModelManager modelManager, InstrManager instrManager,
+                                      TaskScheduler taskScheduler)
     { 
-        newTasksPanel = new NewTaskPanel(instrManager, taskScheduler);
+        newTasksPanel = new NewTaskPanel(modelManager, instrManager, taskScheduler);
+        taskScheduler.setNewTaskPanel(newTasksPanel);
         containerOfNewTaskPanel.add(newTasksPanel, BorderLayout.CENTER);
     }
 

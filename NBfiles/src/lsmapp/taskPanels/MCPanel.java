@@ -4,8 +4,11 @@ package lsmapp.taskPanels;
 import finance.methods.common.Method;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
+import finance.methods.montecarlo.CV;
+import finance.methods.montecarlo.CV.ControlVariate;
 import finance.methods.montecarlo.MonteCarlo;
 import lsmapp.frame.Pricer;
+import lsmapp.modelTab.AssetCountObserver;
 import lsmapp.resultPanels.MC2GUI;
 import lsmapp.resultPanels.ResultHandler;
 
@@ -13,7 +16,7 @@ import lsmapp.resultPanels.ResultHandler;
  *
  * @author glos
  */
-public class MCPanel extends MethodPanel
+public class MCPanel extends MethodPanel implements AssetCountObserver
 {
     /** This method is called from within the constructor to
      * initialize the form.
@@ -25,6 +28,7 @@ public class MCPanel extends MethodPanel
     private void initComponents() {
 
         varianceGroup = new javax.swing.ButtonGroup();
+        cvGroup = new javax.swing.ButtonGroup();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         crudeMonteCarlo = new javax.swing.JRadioButton();
@@ -34,6 +38,16 @@ public class MCPanel extends MethodPanel
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         timeSteps = new javax.swing.JSpinner();
+        cvPanel = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        stock = new javax.swing.JRadioButton();
+        call = new javax.swing.JRadioButton();
+        put = new javax.swing.JRadioButton();
+        jLabel6 = new javax.swing.JLabel();
+        strike = new javax.swing.JSpinner();
+        jLabel7 = new javax.swing.JLabel();
+        assetCombo = new javax.swing.JComboBox();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         jLabel1.setText("Monte Carlo");
@@ -43,12 +57,27 @@ public class MCPanel extends MethodPanel
         varianceGroup.add(crudeMonteCarlo);
         crudeMonteCarlo.setSelected(true);
         crudeMonteCarlo.setText("None");
+        crudeMonteCarlo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                crudeMonteCarloActionPerformed(evt);
+            }
+        });
 
         varianceGroup.add(controlVariates);
         controlVariates.setText("Control variates");
+        controlVariates.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                controlVariatesActionPerformed(evt);
+            }
+        });
 
         varianceGroup.add(anthiteticVariates);
         anthiteticVariates.setText("Anthitetic variates");
+        anthiteticVariates.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                anthiteticVariatesActionPerformed(evt);
+            }
+        });
 
         simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1000000), Integer.valueOf(100), null, Integer.valueOf(10000)));
 
@@ -58,72 +87,174 @@ public class MCPanel extends MethodPanel
 
         timeSteps.setModel(new javax.swing.SpinnerNumberModel(1, 1, 10000, 10));
 
+        cvPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Control variates options", 0, 0, new java.awt.Font("Abyssinica SIL", 1, 10))); // NOI18N
+
+        jLabel5.setText("Control variate:");
+
+        cvGroup.add(stock);
+        stock.setSelected(true);
+        stock.setText("Stock");
+
+        cvGroup.add(call);
+        call.setText("Vanilla call");
+
+        cvGroup.add(put);
+        put.setText("Vanilla put");
+
+        jLabel6.setText("Strike:");
+
+        strike.setModel(new javax.swing.SpinnerNumberModel(0.0d, 0.0d, 100000.0d, 1.0d));
+
+        jLabel7.setText("Asset:");
+
+        javax.swing.GroupLayout cvPanelLayout = new javax.swing.GroupLayout(cvPanel);
+        cvPanel.setLayout(cvPanelLayout);
+        cvPanelLayout.setHorizontalGroup(
+            cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cvPanelLayout.createSequentialGroup()
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(call)
+                    .addComponent(put)
+                    .addComponent(stock))
+                .addGap(47, 47, 47)
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(cvPanelLayout.createSequentialGroup()
+                        .addComponent(assetCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(22, 22, 22))
+                    .addGroup(cvPanelLayout.createSequentialGroup()
+                        .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(cvPanelLayout.createSequentialGroup()
+                                .addComponent(strike, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 12, 12))))
+        );
+        cvPanelLayout.setVerticalGroup(
+            cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cvPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel7))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(stock)
+                    .addComponent(assetCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(call)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(cvPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(put)
+                    .addComponent(strike, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(17, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(controlVariates, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(crudeMonteCarlo)
+                        .addGap(85, 85, 85)
+                        .addComponent(anthiteticVariates)))
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(timeSteps)
-                            .addComponent(simulations, javax.swing.GroupLayout.DEFAULT_SIZE, 118, Short.MAX_VALUE)))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(anthiteticVariates)
-                            .addComponent(controlVariates)
-                            .addComponent(crudeMonteCarlo))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(timeSteps, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, 6, Short.MAX_VALUE)
+                .addContainerGap())
+            .addComponent(cvPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(timeSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(simulations, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(timeSteps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(filler1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(crudeMonteCarlo)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(crudeMonteCarlo)
+                    .addComponent(anthiteticVariates))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(controlVariates)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(anthiteticVariates)
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addComponent(cvPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void crudeMonteCarloActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_crudeMonteCarloActionPerformed
+    {//GEN-HEADEREND:event_crudeMonteCarloActionPerformed
+        cvPanel.setVisible(false);
+    }//GEN-LAST:event_crudeMonteCarloActionPerformed
+
+    private void controlVariatesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_controlVariatesActionPerformed
+    {//GEN-HEADEREND:event_controlVariatesActionPerformed
+        cvPanel.setVisible(true);
+    }//GEN-LAST:event_controlVariatesActionPerformed
+
+    private void anthiteticVariatesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_anthiteticVariatesActionPerformed
+    {//GEN-HEADEREND:event_anthiteticVariatesActionPerformed
+        cvPanel.setVisible(false);
+    }//GEN-LAST:event_anthiteticVariatesActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton anthiteticVariates;
+    private javax.swing.JComboBox assetCombo;
+    private javax.swing.JRadioButton call;
     private javax.swing.JRadioButton controlVariates;
     private javax.swing.JRadioButton crudeMonteCarlo;
+    private javax.swing.ButtonGroup cvGroup;
+    private javax.swing.JPanel cvPanel;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JRadioButton put;
     private javax.swing.JSpinner simulations;
+    private javax.swing.JRadioButton stock;
+    private javax.swing.JSpinner strike;
     private javax.swing.JSpinner timeSteps;
     private javax.swing.ButtonGroup varianceGroup;
     // End of variables declaration//GEN-END:variables
 
 
     /** Creates new form MCPanel */
+
     public MCPanel()
     {
         initComponents();
-        controlVariates.setVisible(false);
+        cvPanel.setVisible(false);
     }    
     
     @Override
@@ -134,7 +265,8 @@ public class MCPanel extends MethodPanel
             mc = new CMC();
         else if (anthiteticVariates.isSelected())
             mc = new AV();
-        else throw new UnsupportedOperationException(); // TODO support
+        else 
+            mc = makeCV();
         mc.setN((Integer) simulations.getValue());
         mc.setK((Integer) timeSteps.getValue());
         return mc;
@@ -150,5 +282,35 @@ public class MCPanel extends MethodPanel
     String getPriceableDesc()
     {
         return "Monte Carlo can price only instruments with european exercise.";
+    }
+
+    private CV makeCV()
+    {
+        ControlVariate cVariate = getCVType();
+        double E = (Double) strike.getValue();
+        String asset = (String) assetCombo.getSelectedItem();
+        return new CV(cVariate, asset, E);
+    }
+
+    private ControlVariate getCVType()
+    {
+        if (stock.isSelected())
+            return ControlVariate.Stock;
+        else if (call.isSelected())
+            return ControlVariate.VanillaCall;
+        else
+            return ControlVariate.VanillaPut;
+    }
+
+    @Override
+    public void assetAdded(String name)
+    {
+        assetCombo.addItem(name);
+    }
+
+    @Override
+    public void assetDeleted(String name)
+    {
+        assetCombo.removeItem(name);
     }
 }
