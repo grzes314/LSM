@@ -103,11 +103,11 @@ public class SimpleTrajectory implements Trajectory
     }
     
     /**
-     * Sets value of trajectory at time point k. Package access!
+     * Sets value of trajectory at time point k.
      * @param k timepoint.
      * @param v value.
      */
-    void set(int k, double v)
+    public void set(int k, double v)
     {
         ensureNotReady();
         prices[k] = v;
