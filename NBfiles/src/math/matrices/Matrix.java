@@ -521,10 +521,93 @@ public class Matrix
         {
             str.append("[ ");
             for (int col = 1; col < cols; ++col)
-                str.append(get(row, col)).append(", ");
-            str.append(get(row, cols)).append(" ]\n");
+                str.append(String.format("%.2f", get(row, col))).append(", ");
+            str.append(String.format("%.2f", get(row, cols))).append(" ]\n");
         }
         return str.toString();
+    }
+
+    /**
+     * Inverts this matrix.
+     * @throws UninvertibleMatrixException 
+     */
+    public void invert() throws UninvertibleMatrixException
+    {
+        if (!isSquare())
+            throw new UninvertibleMatrixException();
+        Matrix inverted = new Matrix(rows, cols);
+        for (int col = 1; col <= cols; ++col)
+        {
+            int k = findRowUsedToDeleteOthers(col);
+            if (k != col) 
+                swapRows(k, col);
+            deleteOtherRows(inverted, col);
+            double d = 1/get(col,col);
+            multiplyRow(col, d);
+            inverted.multiplyRow(col, d);
+        }
+        copy(inverted.fields);
+    }
+    
+    private int findRowUsedToDeleteOthers(int col) throws UninvertibleMatrixException
+    {
+        for (int row = col; row <= rows; ++row)
+            if (Math.abs(get(row, col)) > 0.00001)
+                return row;
+        throw new UninvertibleMatrixException();
+    }
+    
+    private void deleteOtherRows(Matrix inverted, int col)
+    {
+        for (int row = 1; row <= rows; ++row)
+        {
+            if (row == col)
+                continue;
+            double coef = - get(row, col) / get(col, col);
+            addRows(col, row, coef);
+            inverted.addRows(col, row, coef);
+        }
+    }
+    public void swapRows(int row1, int row2)
+    {
+        double[] aux = fields[row1-1];
+        fields[row1-1] = fields[row2-1];
+        fields[row2-1] = aux;
+    }
+    
+    /**
+     * Returns inversion of this matrix. This matrix stays intact.
+     * @return inversion of this matrix.
+     * @throws UninvertibleMatrixException 
+     */
+    public Matrix getInverted() throws UninvertibleMatrixException
+    {
+        Matrix copy = new Matrix(this);
+        copy.invert();
+        return copy;
+    }
+    
+    /**
+     * Adds row number {@code from} to row number {@code to} muliplied by {@code coef}.
+     * @param from
+     * @param to
+     * @param coef 
+     */
+    public void addRows(int from, int to, double coef)
+    {
+        for (int col = 1; col <= cols; ++col)
+            set(to, col, get(to, col) + coef * get(from, col));
+    }
+    
+    /**
+     * Multiplies given row by given coefficient.
+     * @param row
+     * @param coef 
+     */
+    public void multiplyRow(int row, double coef)
+    {
+        for (int col = 1; col <= cols; ++col)
+            set(row, col, coef * get(row, col));
     }
     
     private final double[][] fields;

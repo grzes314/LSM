@@ -179,6 +179,22 @@ public class MatrixTest extends TestCase
             assertTrue("Cholesky decomposition on positive definite matrix should not throw", false);
         }    
     }
+    
+    public void testInvert() throws UninvertibleMatrixException
+    {
+        Matrix M = new Matrix(5,5);
+        for (int i = 1; i <= 5; ++i)
+            for (int j = 1; j <= 5; ++j)
+                M.set(i, j, Math.sin(i*j));
+        Matrix res = new Matrix( new double[][]
+                                { {0.6235430, 1.0331187, 0.9915678, 0.5882977, 0.1656131},
+                                  {1.0331187, 0.7749274, 0.5909437, 1.2352353, 0.7534940},
+                                  {0.9915678, 0.5909437, 1.3835656, 0.5788117, 1.1772794},
+                                  {0.5882977, 1.2352353, 0.5788117, 1.0756407, 0.9238124},
+                                  {0.1656131, 0.7534940, 1.1772794, 0.9238124, 0.3039895}
+                                });
+        assertEquals(res, M.getInverted());
+    }
 
     private double delta = 1e-3;
     private int rowsSq, colsSq, rowsRec, colsRec, rowsTr, colsTr;
