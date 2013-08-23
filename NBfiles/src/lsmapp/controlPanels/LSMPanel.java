@@ -6,6 +6,7 @@ import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
 import finance.methods.common.Progress;
+import finance.methods.common.WrongModelException;
 import finance.methods.lsm.LSM;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
@@ -56,7 +57,11 @@ public class LSMPanel extends ModelPanel
         int N = (Integer) simulations.getValue();
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
-        method = new LSM(S,v,r,N,K,M);
+        method = new LSM();
+        try {
+            method.setModelParams( new SimpleModelParams(S, v, r) );
+        } catch (WrongModelException ex) {}
+        method.setMethodParams(N, K, M);
         toGui.setModelParams(new SimpleModelParams(S,v,r));
         //toGui.setMethod(method);
         //TODO uncomment

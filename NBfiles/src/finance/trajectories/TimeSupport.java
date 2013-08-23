@@ -34,7 +34,7 @@ public class TimeSupport
      * @param nr number of time point.
      * @return time in years corresponding to given time point.
      */
-    double nrToTime(int nr)
+    public double nrToTime(int nr)
     {
         if (nr < 0 || nr > K)
             throw new IllegalArgumentException("TimeSupport.nrToTime: nr=" + nr);
