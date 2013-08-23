@@ -1,6 +1,8 @@
 package math.approx;
 
 import java.util.Collection;
+import math.matrices.Matrix;
+import math.matrices.Vector;
 
 
 /**
@@ -19,6 +21,7 @@ public class Approx
     public Polynomial approximate(Collection<Point> points, int m)
     {
         ensureArgsOK(points, m);
+        Gauss gauss = new Gauss();
         if (points.size() <= m)
             m = points.size() - 1;
         double[] s = calculateS(points, m);
@@ -54,7 +57,7 @@ public class Approx
      * @throws InvalidArgumentException when points are null or empty, or
      * m is negative.
      */
-    private void ensureArgsOK(Collection<Point> points, int m)
+    private void ensureArgsOK(Collection points, int m)
     {
         if (points == null)
             throw new InvalidArgumentException("points can not be null");
@@ -115,7 +118,66 @@ public class Approx
     }
     
     /**
-     * Object used to solve system of linear equations.
+     * Computes two argument polynomial approximating given set of points.
+     * @param points collection of pairs argument - value
+     * @param m degree of approximating polynomial
+     * @return Approximating polynomial
      */
-    private Gauss gauss = new Gauss();
+    public Polynomial2 approximate2(Collection<Point3D> points, int m)
+    {
+        ensureArgsOK(points, m);
+        Matrix X = preparePredictorsForRegression(points, m);
+        Vector Y = prepareObservationsForRegression(points);
+        Regresser r = new Regresser();
+        Vector b;
+        try {
+             b = r.regress(X, Y);
+        } catch (UnsupportedCaseException ex) {
+            return approximate2(points, m);
+        }
+        return new Polynomial2(b, m);
+    }
+
+    private Matrix preparePredictorsForRegression(Collection<Point3D> points, int m)
+    {
+        int n = (m+1) * (m+2) / 2;
+        Matrix X = new Matrix(points.size(), n);
+        int row = 1;
+        for (Point3D p: points)
+        {
+            X.setRow(row, makePredictorsFromPoint(p, m));
+            row++;
+        }
+        return X;
+    }
+
+    private Vector makePredictorsFromPoint(Point3D p, int m)
+    {
+        int n = (m+1) * (m+2) / 2;
+        Vector v = new Vector(n);
+        double x_pow = 1;
+        for (int i = 0; i <= m; ++i)
+        {
+            double y_pow = 1;
+            for (int j = 0; j <= m - i; ++j)
+            {
+                v.set(i+j+1, x_pow * y_pow);
+                y_pow *= p.y;
+            }
+            x_pow *= p.x;
+        }
+        return v;
+    }
+    
+    private Vector prepareObservationsForRegression(Collection<Point3D> points)
+    {
+        Vector Y = new Vector(points.size());
+        int row = 1;
+        for (Point3D p: points)
+        {
+            Y.set(row, p.z);
+            row++;
+        }
+        return Y;
+    }
 }
