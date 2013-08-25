@@ -466,12 +466,12 @@ public class Matrix
     {
         ensureCanBeRow(v);
         for (int col = 1; col <= cols; ++col)
-            set(row, col, v.get(row));        
+            set(row, col, v.get(col));        
     }
     
     private void ensureCanBeRow(Vector v)
     {
-        if (v.getCols() != cols)
+        if (v.getRows() != cols)
             throw new DimensionException("Vector of size " + cols + " required.");        
     }
     

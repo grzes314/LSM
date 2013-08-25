@@ -28,7 +28,7 @@ public class Polynomial2
         {
             a[i] = new double[deg - i + 1];
             for (int j = 0; j <= deg - i; ++j)
-                a[i][j] = coef[i+j];
+                a[i][j] = coef[i+j]; //TODO Blad!!
         }
     }
     

@@ -66,8 +66,8 @@ public class TaskScheduler implements TaskInfo
     private void preparePricingTask()
         throws NotPositiveDefiniteMatrixException, InvalidInstrParametersException
     {
-        makeMethod(methodName);
         makeInstr();
+        makeMethod(methodName);
         makeModelParams();
         makeResultHandler();
         task = new PricingTask(method, modelParams, instr, resultHandler);
@@ -75,7 +75,7 @@ public class TaskScheduler implements TaskInfo
     
     private void makeMethod(String methodName)
     {
-        method = newTaskPanel.makeMethod(methodName);
+        method = newTaskPanel.makeMethod(methodName, instr);
     }
     
     private void makeModelParams() throws NotPositiveDefiniteMatrixException

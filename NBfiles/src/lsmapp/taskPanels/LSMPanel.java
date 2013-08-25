@@ -1,8 +1,10 @@
 
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
-import finance.methods.lsm.LSM;
+import finance.methods.lsm.LSMProxy;
+import finance.methods.lsm.LSMRoot;
 import lsmapp.frame.Pricer;
 import lsmapp.resultPanels.LSM2GUI;
 import lsmapp.resultPanels.ResultHandler;
@@ -105,9 +107,9 @@ public class LSMPanel extends MethodPanel
     }
 
     @Override
-    Method makeMethod()
+    Method makeMethod(Instr instr)
     {
-        LSM lsm = new LSM();
+        LSMRoot lsm = lsm_proxy.chooseMethod(instr);
         lsm.setN( (Integer) simulations.getValue() );
         lsm.setK( (Integer) timeSteps.getValue() );
         lsm.setM( (Integer) degree.getValue() );
@@ -123,7 +125,8 @@ public class LSMPanel extends MethodPanel
     @Override
     String getPriceableDesc()
     {
-        return "LSM can price only those instruments whose payoff depends on a single underlying.";
+        return "LSM can price only instruments depending on at most two assets.";
     }
     
+    LSMProxy lsm_proxy = new LSMProxy();
 }

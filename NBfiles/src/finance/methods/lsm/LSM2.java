@@ -27,6 +27,7 @@ public class LSM2 extends LSMRoot
         if (mp.getNumberOfAssets() != 2)
             throw new WrongModelException("This implementation of Longstaff-Schwartz method"
                     + " can use only one or two assets models.");
+        this.mp = mp;
     }
     
     @Override
@@ -38,7 +39,7 @@ public class LSM2 extends LSMRoot
     @Override
     public boolean isPriceable(Instr instr)
     {
-        return instr.getUnderlyings().size() != 2;
+        return instr.getUnderlyings().size() == 2;
     }
 
     @Override

@@ -1,6 +1,7 @@
 
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
 import finance.methods.finitedifference.FDMethod;
 import lsmapp.frame.Pricer;
@@ -89,7 +90,7 @@ public class FDPanel extends MethodPanel
     }
 
     @Override
-    Method makeMethod()
+    Method makeMethod(Instr instr)
     {
         FDMethod fd = new FDMethod();
         fd.setI((Integer) priceSteps.getValue());

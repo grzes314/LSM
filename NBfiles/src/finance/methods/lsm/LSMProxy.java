@@ -39,17 +39,7 @@ public class LSMProxy
         int n = instr.getUnderlyings().size();
         if (n == 0)
             return false;
-        if (n == 1)
-        {
-            if (instr.areYou("european"))
-                return true;
-            if (instr.areYou("asian"))
-                return true;
-            if (instr.areYou("lookback"))
-                return true;
-            return true;
-        }
-        if (n == 2)
+        if (n == 1 || n == 2)
             return true;
         return false;
     }

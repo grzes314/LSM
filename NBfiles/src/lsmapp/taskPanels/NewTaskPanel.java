@@ -1,6 +1,7 @@
 
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -193,11 +194,11 @@ public class NewTaskPanel extends javax.swing.JPanel
             throw new IllegalArgumentException("No such method \"" + methodName + "\".");
     }
     
-    public Method makeMethod(String methodName)
+    public Method makeMethod(String methodName, Instr instr)
     {
         ensureMethodNameOK(methodName);
         MethodPanel panel = methodPanels.get(methodName);
-        return panel.makeMethod();
+        return panel.makeMethod(instr);
     }
     
     public ResultHandler makeResultHandler(String methodName)

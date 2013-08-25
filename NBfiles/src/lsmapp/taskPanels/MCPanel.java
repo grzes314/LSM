@@ -1,6 +1,7 @@
 
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
 import finance.methods.montecarlo.AV;
 import finance.methods.montecarlo.CMC;
@@ -258,7 +259,7 @@ public class MCPanel extends MethodPanel implements AssetCountObserver
     }    
     
     @Override
-    Method makeMethod()
+    Method makeMethod(Instr instr)
     {
         MonteCarlo mc;
         if (crudeMonteCarlo.isSelected())

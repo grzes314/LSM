@@ -1,6 +1,7 @@
 
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.common.Method;
 import javax.swing.JPanel;
 import lsmapp.resultPanels.ResultHandler;
@@ -11,9 +12,9 @@ import lsmapp.resultPanels.ResultHandler;
  */
 public abstract class MethodPanel extends JPanel
 {
-    abstract Method makeMethod();
-    
     abstract ResultHandler makeResultHandler();
 
     abstract String getPriceableDesc();
+
+    abstract Method makeMethod(Instr instr);
 }

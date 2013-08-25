@@ -161,7 +161,7 @@ public class Approx
             double y_pow = 1;
             for (int j = 0; j <= m - i; ++j)
             {
-                v.set(i+j+1, x_pow * y_pow);
+                v.set(i+j+1, x_pow * y_pow); //TODO Blad!!
                 y_pow *= p.y;
             }
             x_pow *= p.x;

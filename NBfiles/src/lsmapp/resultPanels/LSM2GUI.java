@@ -6,6 +6,7 @@ import finance.instruments.InstrTools;
 import finance.instruments.Option;
 import finance.methods.common.Method;
 import finance.methods.lsm.LSM;
+import finance.methods.lsm.LSMRoot;
 import finance.parameters.ModelParams;
 import finance.parameters.VanillaOptionParams;
 import java.awt.BorderLayout;
@@ -44,7 +45,7 @@ public class LSM2GUI implements ResultHandler
         this.instr = instr;
     }
 
-    public LSM getMethod()
+    public LSMRoot getMethod()
     {
         return method;
     }
@@ -71,7 +72,7 @@ public class LSM2GUI implements ResultHandler
     {
         this.instr = instr;
         this.modelParams = mp;
-        this.method = (LSM) method;
+        this.method = (LSMRoot) method;
     }
     
     
@@ -97,11 +98,11 @@ public class LSM2GUI implements ResultHandler
         results.addTab("Description", ip);
         
         if (instr instanceof Option) {
-            results.addTab("Stopping", stoppingPlot(method, (Option) instr));
+            results.addTab("Stopping", stoppingPlot((LSM)method, (Option) instr));
+            VanillaOptionParams vop = InstrTools.extractOptionParams(instr);
+            if (vop != null)
+                results.addTab("Regression", regressionView((LSM)method, vop));
         }
-        VanillaOptionParams vop = InstrTools.extractOptionParams(instr);
-        if (vop != null)
-            results.addTab("Regression", regressionView(method, vop));
         
         displayer.addResults(instr.getName() + ": " + method.toString(), results);
     }
@@ -219,7 +220,7 @@ public class LSM2GUI implements ResultHandler
     }
     
     private final ResultDisplay displayer;
-    private LSM method;
+    private LSMRoot method;
     private Instr instr;
     private ModelParams modelParams;
 }

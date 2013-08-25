@@ -55,7 +55,7 @@ public class Polynomial2Test extends TestCase
         double sum = 0;
         for (int i = 0; i <= n; ++i)
             for (int j = 0; j <= n-i; ++j)
-                sum += Math.pow(x, i) * Math.pow(y, j);
+                sum += Math.pow(x, i) * Math.pow(y, j); //TODO czemu to nie wykrylo bledu?
         assertEquals(sum, allOnes.value(x, y), delta);
     }
     
@@ -66,7 +66,7 @@ public class Polynomial2Test extends TestCase
         double x = 2.5, y = -3.3;
         for (int i = 0; i <= n; ++i)
             for (int j = 0; j <= n-i; ++j)
-                sum += smallRandomCoefs[i+j] * Math.pow(x, i) * Math.pow(y, j);
+                sum += smallRandomCoefs[i+j] * Math.pow(x, i) * Math.pow(y, j); //TODO Blad
         assertEquals(sum, smallRandom.value(x, y), delta);
     }
     

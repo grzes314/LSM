@@ -60,11 +60,18 @@ public class Pricer extends JFrame
         try {
             ModelManager mm = application.getModelManager();
             InstrManager im = application.getInstrManager();
-            mm.addAsset("aktywo");
+            mm.addAsset("Aktywo A");
+            mm.addAsset("Aktywo B");
             im.addInstr( new NewInstrInfo(
                 NewInstrInfo.InstrType.Bond, "obligacja"));
             im.addInstr( new NewInstrInfo(
                 NewInstrInfo.InstrType.Vanilla, "wanilia"));
+            im.addInstr(new NewInstrInfo(
+                NewInstrInfo.InstrType.Asian, "asian"));
+            im.addInstr(new NewInstrInfo(
+                NewInstrInfo.InstrType.Basket, "basket"));
+            im.addInstr(new NewInstrInfo(
+                NewInstrInfo.InstrType.Lookback, "lookback"));
         } catch (IllegalArgumentException | NoAssetsException | UnsupportedOperationException ex) {
             Logger.getLogger(Pricer.class.getName()).log(Level.SEVERE, null, ex);
         }

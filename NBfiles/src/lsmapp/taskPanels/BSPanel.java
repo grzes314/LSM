@@ -1,6 +1,7 @@
     
 package lsmapp.taskPanels;
 
+import finance.instruments.Instr;
 import finance.methods.blackscholes.BSMethod;
 import finance.methods.common.Method;
 import lsmapp.frame.Pricer;
@@ -62,7 +63,7 @@ public class BSPanel extends MethodPanel
     }
     
     @Override
-    Method makeMethod()
+    Method makeMethod(Instr instr)
     {
         return new BSMethod();
     }
