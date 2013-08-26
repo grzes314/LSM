@@ -15,6 +15,7 @@
 \usepackage[font={small,sl}]{caption}
 \usepackage{bbm}
 \usepackage{subfig} % placing floats side by side
+\usepackage{rotating}
 
 % pretty display of a chapter/part
 \addto\captionsenglish{
@@ -100,7 +101,6 @@
 \textbf{\large Uniwersytet Wrocławski\\
 Wydział Matematyki i Informatyki\\
 Instytut Matematyczny}\\
-\textit{\large specjalność: zastosowania}\\
 \vspace{4cm}
 \textbf{\textit{\large Grzegorz Łoś}\\
 \vspace{0.5cm}
@@ -136,8 +136,11 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
   Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
 \end{quotation}
 
+\chapter*{Preface}
+We all love option pricing so much.
+
 \chapter{Preliminaries}
-We expect from the reader some basic knowledge of stochastic processes and option pricing. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
+We expect from the reader some basic knowledge of stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
 
 \section{Elements of stochastic analysis}
 \begin{mydef}
@@ -147,7 +150,7 @@ We expect from the reader some basic knowledge of stochastic processes and optio
 \end{mydef}
 
 \begin{remark}
- Stochastic process may be viewed as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is it's concrete realization.
+ Stochastic process may be seen as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is it's concrete realization.
 \end{remark}
 
 \begin{remark}
@@ -1497,6 +1500,7 @@ At the end of this section, it is worth to mention, that there exist analitical 
 \end{figure}
 
 \section{Multiasset instruments}
+\label{sec:multi-asset}
 Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlation between the assets. Let
 \[ \Sigma = \left( \varrho_{ij} \right)_{i,j=1}^d \]
 be the matrix describing correlation between risky assets (recall that by that we understand the correlation between Wiener processes appearing in assets dynymics). Equation (\ref{eq:priceChange}) holds for every asset, i.e.
@@ -2138,7 +2142,117 @@ In our example the average of realized cashflows equals 2.99. It is greater than
 
 \section{Mathematical background of LSM}
 
+\chapter{Application architecture}
+An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This part describes architecture of the created financial library which is application's back end. The library is to some extent an implementation of algorithms presented in previous parts, however, they are generalized and adjusted to the object oriented language.
 
+\section{Scenarios and trajectories}
+The basis of Monte Carlo pricing is trajectory generation. Hence, we begin with a presentation of classes performing this task. Corresponding class diagram is presented in Figure \ref{fig:arch:traj}.
+
+\begin{sidewaysfigure}
+\centering
+ \includegraphics[scale=0.75]{images/Architecture/trajectories.png}
+\caption{Diagram presenting classes designated for scenario generation.}
+\label{fig:arch:traj}
+\end{sidewaysfigure}
+
+Class \texttt{TimeSupport} is a simple auxiliary class allowing to switch between discrete and continous time. Let $T$ be the final time on a trajectory and $K$ be the natural number such that the trajectory is generated in points $0 = t_0 < t_1 < \ldots < t_K$, where $t_k = k \cdot \Delta T$ and $\Delta T = T / K$. Method \texttt{nrToTime} from class \texttt{TimeSupport} for given $k$ returns $t_k$. Method \texttt{timeToNr} is somewhat an opposite and for given $t$ returns natural number $k$ such that $t_k \leq t < t_{k+1}$. 
+
+\texttt{Trajectory} is an interface for classes representing realization of price movements of one asset. Method \texttt{price} returns price of that asset at k\textsuperscript{th} time point. Interface provides also several auxiliary functions like \texttt{average} which returns average price of the option in time between given time points, or \texttt{cumMax} which returns asset's maximum price until given time point. These methods are useful for determining payoffs from instruments like asian, barrier or lookback options. Class \texttt{ConcreteTrajectory} is an implementation of the \texttt{Trajectory} interface.
+
+\texttt{Scenario} is an interface for classes representing realization of whole market scenario. A scenario may be considered as a set of trajectories of all assets. Method \texttt{getNumberOfAssets} answers how many assets are in the model. We can obtain trajectory of chosen asset by call to \texttt{getTrajectory}, which takes as an argument asset's name. \texttt{TimeSupport} object obtained by a call to \texttt{getTimeSupport} represents set of points in which trajectory was generated. Anthitetic variates method makes a use from \texttt{getAnthi} which returns anthitetic scenario. \texttt{Scenario} is implemented by class \texttt{MultiTrScenario}.
+
+When we have classes for holding scenarios and trajectories we can finally develop their generators. They must implement \texttt{Generator} interface, which provides a method \texttt{generate} returning an array of Scenarios. Class \texttt{MultiTrGenerator}, which is an implementation of \texttt{Generator}, follows Algorithm \ref{alg:multi-tr} from section \ref{sec:multi-asset}.
+
+\section{Instrument hierarchy}
+Classes representing financial instruments are arranged in a hierarchy based on the so-called decorator pattern. Idea of such construction arises from the fact that instruments like barrier options are just modifications of vanilla options. Moreover, we can add several modifications to one instrument. Decorator pattern allows us to take into account diffrent sets of modifications without a need to create a seperate class for each set. Figure \ref{fig:arch:instr} shows the instrument hierarchy.
+\begin{sidewaysfigure}
+\centering
+ \includegraphics[scale=0.75]{images/Architecture/instr.png}
+\caption{Class diagram presenting hierarchy of financial instruments.}
+\label{fig:arch:instr}
+\end{sidewaysfigure}
+
+
+\texttt{Instr} is an abstract class representing a general financial instrument. It stores field \texttt{T} which holds time to the expiration. Classes deriving from \texttt{Instr} must implement methods \texttt{exAvail} and \texttt{payoff}. The first method, for specified Scenario and time point, answers if the exercise is possible. For example an European option may be exercised if and only if given time point is the last one on the trajectory. On the other hand, exercise of knock-out option is possible if and only if barrier was not hit in given Scenario. Method \texttt{payoff} returns a real number which means what would be the payoff obtained in given scenario if the instrument was exercised at given time point.
+
+\texttt{Bond} and \texttt{Option} are concrete instruments. As the name indicates \texttt{Bond} represents instruments paying \texttt{nominal} after time \texttt{T}. Implementation of the methods for class \texttt{Instr} looks as follows: 
+\lstset{language=Java, basicstyle=\small}
+\begin{lstlisting}
+    protected boolean exAvail(Scenario s, int k) {        
+        return s.getTS().getK() == k;
+    }
+    protected double payoff(Scenario s, int k) {
+        return nominal;
+    }
+\end{lstlisting}
+
+	
+Class \texttt{Option} is designed for American options. It stores information about the strike price, its type (call or put) and name of the underlying asset. American vanilla option may be exercised at any time, hence \texttt{exAvail} has the form:
+\begin{lstlisting}
+    protected boolean exAvail(Scenario s, int k) {
+        return true;
+    }
+\end{lstlisting}
+Implementation of \texttt{payoff} is also not complicated:
+\begin{lstlisting}
+    protected double payoff(Scenario s, int k) {
+        Trajectory tr = s.getTr(underlying);
+        double spot = tr.price(k);
+        if (type == CALL) return max(0, spot - strike);
+        else return max(0, strike - spot);
+    }
+\end{lstlisting}
+
+\texttt{Modificator} class is the place where decorator pattern comes in. \texttt{Modificator} is just a wrapper for another instrument, but deriving classes can modify its \texttt{payoff} and \texttt{exAvail}. Let us discuss it on several examples. \texttt{EuExercise} and \texttt{Barrier} do not change the payoff, thus corresponding function has the form
+\begin{lstlisting}
+    protected double payoff(Scenario s, int k) {
+        return wrapped.payoff(s, k);
+    }
+\end{lstlisting}
+but \texttt{exAvail} is modified. In class \texttt{EuExercise} we modify the instrument in such a way, that it may be exercised only in final time point, hence
+\begin{lstlisting}
+    protected boolean exAvail(Scenario s, int k) {
+        return s.getTS().getK() == k;
+    }
+\end{lstlisting}
+Class \texttt{Barrier} checks if the barrier was hit. And then, depending on whether the option is knock-out or knock-in, it allows for option's exercise or not. 
+\begin{lstlisting}
+    public boolean exAvail(Scenario s, int k) {
+        Trajectory tr = s.getTr(underlying);
+        boolean hit;
+        if (bp.isFromUp())
+            hit = tr.cumMax(k) >= bp.level;
+        else
+            hit = tr.cumMin(k) <= bp.level;
+        return (bp.isKnockIn() ? hit : !hit);
+    }
+\end{lstlisting}
+Class \texttt{Binary} does not change method \texttt{exAvail}, but payoff function is modified:
+\begin{lstlisting}
+    protected double payoff(Scenario s, int k) {
+        return wrapped.payoff(s, k) > 0 ? 1 : 0;
+    }
+\end{lstlisting}
+	
+This design may look overly complicated. Let us explain what is its advantage. Suppose that at some point we will have a need to price not only typical barrier options, but also options with double barrier, for example knock-out corridor options, which has zero payoff if the stock price goes beyond some specified range during option's lifetime. Our design lets us to instantiate an object representing such instrument without necessity to write any additional classes! We just write\footnote{Constructors' arguments which are irrelevant for the example were omitted.}:
+\begin{lstlisting}
+    Instr corridor = new Barrier(new Barrier(new Option()));
+\end{lstlisting}
+That's it! What if we would like to price European binary option with double barrier? Do we need some additional code? Of course not, we simply type
+\begin{lstlisting}
+    Instr veryExotic = new European(new Barrier(new Barrier(
+                                    new Binary(new Option()))));
+\end{lstlisting}
+If we had to create special classes for such instruments as the one mentioned above, then soon we would have dozens of instrument classes and the code would become unmaintainable.
+	
+\section{Pricing methods}
+\begin{sidewaysfigure}
+\centering
+ \includegraphics[scale=0.59]{images/Architecture/method.png}
+\caption{Class diagram presenting hierarchy of classes used for option pricing.}
+\label{fig:arch:method}
+\end{sidewaysfigure}
+	
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{\bfseries References}
 
