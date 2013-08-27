@@ -8,11 +8,14 @@ import finance.parameters.SimpleModelParams;
 import finance.trajectories.Generator;
 import finance.trajectories.OneTrGenerator;
 import finance.trajectories.Scenario;
+import finance.trajectories.Trajectory;
+import finance.trajectories.Trajectory.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collection;
 import math.approx.Approx;
 import math.approx.Point;
 import math.approx.Polynomial;
+
 
 /**
  * Class calculating option prices using Longstaff-Schwartz method. This implementation allows
@@ -21,8 +24,9 @@ import math.approx.Polynomial;
  */
 public class LSM extends LSMRoot
 {
-    public LSM()
+    public LSM(Collection<Auxiliary> auxTrStats)
     {
+        this.auxTrStats = auxTrStats;
     }
 
     @Override
@@ -88,7 +92,7 @@ public class LSM extends LSMRoot
     @Override
     public Generator makeGenerator()
     {
-        return new OneTrGenerator(smp, Generator.Measure.MART, ts);
+        return new OneTrGenerator(smp, Generator.Measure.MART, ts, auxTrStats);
     }
     
     @Override
@@ -127,8 +131,8 @@ public class LSM extends LSMRoot
 
     private SimpleModelParams smp;
     private Polynomial[] est;
+    private Collection<Trajectory.Auxiliary> auxTrStats;
 }
-
 class Future implements FutureEstimatedFlow
 {
     public Future(Polynomial p)

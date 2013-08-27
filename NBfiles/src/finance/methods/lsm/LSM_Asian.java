@@ -6,6 +6,7 @@ import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.*;
+import java.util.HashSet;
 
 /**
  * Class calculating option prices using Longstaff-Schwartz method. This implementation allows
@@ -64,7 +65,9 @@ class GeneratorForAsian extends GeneratorRoot
 {
     public GeneratorForAsian(SimpleModelParams smp, TimeSupport ts)
     {
-        generator = new OneTrGenerator(smp, Generator.Measure.MART, ts);
+        HashSet<SimpleTrajectory.Auxiliary> stats = new HashSet<>();
+        stats.add(Trajectory.Auxiliary.AVERAGE);
+        generator = new OneTrGenerator(smp, Generator.Measure.MART, ts, stats);
         this.smp = smp;
         this.ts = ts;
     }
@@ -77,20 +80,21 @@ class GeneratorForAsian extends GeneratorRoot
         Scenario s = generator.generate(anthi);
         Trajectory tr = s.getTr(1);
         Trajectory avg = makeAvgTrajectory(tr);
-        return new MultiTrScenario( ts, new String[]{smp.name, "###AVG###"},
-            new Trajectory[]{tr, avg} );
+        return new MultiTrScenario( ts, new String[]{"", smp.name, "###AVG###"},
+            new Trajectory[]{null, tr, avg} );
     }
 
 
     private Trajectory makeAvgTrajectory(Trajectory tr)
     {
-        SimpleTrajectory avg = new SimpleTrajectory(ts.getK());
+        SimpleTrajectory avg = new SimpleTrajectory(ts.getK(), new HashSet<SimpleTrajectory.Auxiliary>());
         double sum = 0;
         for (int k = 0; k <= ts.getK(); ++k)
         {
             sum += tr.price(k);
             avg.set(k, sum / (k+1));
         }
+        avg.setReady();
         return avg;
     }
     

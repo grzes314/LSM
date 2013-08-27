@@ -41,6 +41,10 @@ public class LookbackOption extends Instr
     {
         if (str.equalsIgnoreCase("lookback"))
             return true;
+        else if (str.equalsIgnoreCase("call"))
+            return callOrPut == CALL;
+        else if (str.equalsIgnoreCase("put"))
+            return callOrPut != CALL;
         else
             return false;
     }

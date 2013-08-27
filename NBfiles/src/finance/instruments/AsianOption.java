@@ -39,7 +39,7 @@ public class AsianOption extends Instr
     @Override
     public boolean areYou(String str)
     {
-        if (str.equalsIgnoreCase("asianOption"))
+        if (str.equalsIgnoreCase("asian"))
             return true;
         else return false;
     }

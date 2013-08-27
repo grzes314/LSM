@@ -194,7 +194,7 @@ public class NewTaskPanel extends javax.swing.JPanel
             throw new IllegalArgumentException("No such method \"" + methodName + "\".");
     }
     
-    public Method makeMethod(String methodName, Instr instr)
+    public Method makeMethod(String methodName, Instr instr) throws MethodInstantiationException
     {
         ensureMethodNameOK(methodName);
         MethodPanel panel = methodPanels.get(methodName);

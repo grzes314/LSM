@@ -16,5 +16,5 @@ public abstract class MethodPanel extends JPanel
 
     abstract String getPriceableDesc();
 
-    abstract Method makeMethod(Instr instr);
+    abstract Method makeMethod(Instr instr) throws MethodInstantiationException;
 }

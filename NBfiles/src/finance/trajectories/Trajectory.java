@@ -7,6 +7,11 @@ package finance.trajectories;
  */
 public interface Trajectory
 {    
+    public enum Auxiliary
+    {
+        AVERAGE, CUMMIN, CUMMAX
+    }
+    
     /**
      * Returns number of steps in this trajecotry. Let K = getK(). 
      * Numbers of steps are {0,1,...,K}. Step 0 corresponds to time 0,

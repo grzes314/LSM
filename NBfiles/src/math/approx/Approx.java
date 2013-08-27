@@ -155,13 +155,14 @@ public class Approx
     {
         int n = (m+1) * (m+2) / 2;
         Vector v = new Vector(n);
+        int nextInd = 1;
         double x_pow = 1;
         for (int i = 0; i <= m; ++i)
         {
             double y_pow = 1;
             for (int j = 0; j <= m - i; ++j)
             {
-                v.set(i+j+1, x_pow * y_pow); //TODO Blad!!
+                v.set(nextInd++, x_pow * y_pow);
                 y_pow *= p.y;
             }
             x_pow *= p.x;

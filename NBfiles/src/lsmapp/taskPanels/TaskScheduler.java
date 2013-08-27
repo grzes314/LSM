@@ -55,6 +55,8 @@ public class TaskScheduler implements TaskInfo
                 Pricer.getApp().setStatus("New task started: " + task.getDesc());
                 task.execute();
             }
+        } catch (MethodInstantiationException ex) {
+            informAboutMethodInstantiationProblem(ex.getMessage());
         } catch (InvalidInstrParametersException ex) {
             informAboutBadParams(instrName, ex.getMessage());
         } catch (NotPositiveDefiniteMatrixException ex) {
@@ -63,8 +65,8 @@ public class TaskScheduler implements TaskInfo
         
     }
         
-    private void preparePricingTask()
-        throws NotPositiveDefiniteMatrixException, InvalidInstrParametersException
+    private void preparePricingTask() throws NotPositiveDefiniteMatrixException,
+            InvalidInstrParametersException, MethodInstantiationException
     {
         makeInstr();
         makeMethod(methodName);
@@ -73,7 +75,7 @@ public class TaskScheduler implements TaskInfo
         task = new PricingTask(method, modelParams, instr, resultHandler);
     }
     
-    private void makeMethod(String methodName)
+    private void makeMethod(String methodName) throws MethodInstantiationException
     {
         method = newTaskPanel.makeMethod(methodName, instr);
     }
@@ -122,6 +124,13 @@ public class TaskScheduler implements TaskInfo
                 "Pricing can not be done", JOptionPane.ERROR_MESSAGE);
     }
 
+    private void informAboutMethodInstantiationProblem(String message)
+    {
+        JOptionPane.showMessageDialog(Pricer.getApp(),
+                "Could not use method: \"" + methodName + "\".\n" + message,
+                "Pricing can not be done", JOptionPane.ERROR_MESSAGE);
+    }
+    
     private String methodName;
     private String instrName;
     private Method method;

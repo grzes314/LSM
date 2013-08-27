@@ -1,9 +1,11 @@
 
 package finance.trajectories;
 
+import finance.trajectories.Trajectory.Auxiliary;
 import finance.parameters.ModelParams;
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
+import java.util.Collection;
 import math.utils.RandomTools;
 
 /**
@@ -16,6 +18,16 @@ public class OneTrGenerator extends GeneratorRoot
     {
         this.S = params.getParams(1).S;
         this.ts = ts;
+        this.auxStats = SimpleTrajectory.makeAllAuxiliary();
+        calcAux(params, measure);
+    }
+    
+    public OneTrGenerator(ModelParams params, Measure measure, TimeSupport ts,
+            Collection<Auxiliary> auxiliary)
+    {
+        this.S = params.getParams(1).S;
+        this.ts = ts;
+        this.auxStats = auxiliary;
         calcAux(params, measure);
     }
 
@@ -46,7 +58,7 @@ public class OneTrGenerator extends GeneratorRoot
         
     protected Scenario generateNoAnthi()
     {
-        SimpleTrajectory tr = new SimpleTrajectory(ts.getK());
+        SimpleTrajectory tr = new SimpleTrajectory(ts.getK(), auxStats);
         tr.set(0, S);
         for (int j = 1; j <= ts.getK(); ++j)
         {
@@ -59,8 +71,8 @@ public class OneTrGenerator extends GeneratorRoot
     
     protected Scenario generateAnthi()
     {
-        SimpleTrajectory pos = new SimpleTrajectory(ts.getK());
-        SimpleTrajectory neg = new SimpleTrajectory(ts.getK());
+        SimpleTrajectory pos = new SimpleTrajectory(ts.getK(), auxStats);
+        SimpleTrajectory neg = new SimpleTrajectory(ts.getK(), auxStats);
         pos.set(0, S);
         neg.set(0, S);
         for (int j = 1; j <= ts.getK(); ++j)
@@ -79,4 +91,5 @@ public class OneTrGenerator extends GeneratorRoot
     private double S, dm, dvol;
     private TimeSupport ts;
     private RandomTools rt = new RandomTools();
+    private Collection<Auxiliary> auxStats;
 }

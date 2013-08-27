@@ -11,6 +11,7 @@ import finance.methods.lsm.LSM;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
+import finance.trajectories.SimpleTrajectory;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
 import lsmapp.resultPanels.LSM2GUI;
@@ -57,7 +58,7 @@ public class LSMPanel extends ModelPanel
         int N = (Integer) simulations.getValue();
         int K = (Integer) steps.getValue();
         int M = (Integer) degree.getValue();
-        method = new LSM();
+        method = new LSM(SimpleTrajectory.makeAllAuxiliary());
         try {
             method.setModelParams( new SimpleModelParams(S, v, r) );
         } catch (WrongModelException ex) {}

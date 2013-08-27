@@ -24,11 +24,12 @@ public class Polynomial2
         ensureCoefHasProperLength(coef, deg);
         this.deg = deg;
         a = new double[deg+1][];
+        int nextInd = 0;
         for (int i = 0; i <= deg; ++i)
         {
             a[i] = new double[deg - i + 1];
             for (int j = 0; j <= deg - i; ++j)
-                a[i][j] = coef[i+j]; //TODO Blad!!
+                a[i][j] = coef[nextInd++];
         }
     }
     
@@ -43,11 +44,12 @@ public class Polynomial2
         ensureCoefHasProperLength(coef, deg);
         this.deg = deg;
         a = new double[deg+1][];
+        int nextInd = 1;
         for (int i = 0; i <= deg; ++i)
         {
             a[i] = new double[deg - i + 1];
             for (int j = 0; j <= deg - i; ++j)
-                a[i][j] = coef.get(i+j+1);
+                a[i][j] = coef.get(nextInd++);
         }
     }
     

@@ -2,6 +2,8 @@
 package finance.trajectories;
 
 import finance.parameters.ModelParams;
+import finance.trajectories.Trajectory.Auxiliary;
+import java.util.Collection;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
 import math.matrices.Vector;
@@ -16,6 +18,15 @@ public class MultiTrGenerator extends GeneratorRoot
     public MultiTrGenerator(ModelParams params, Measure measure, TimeSupport ts)
     {
         this.ts = ts;
+        this.auxStats = SimpleTrajectory.makeAllAuxiliary();
+        extractNecssaryData(params, measure);
+    }
+    
+    public MultiTrGenerator(ModelParams params, Measure measure, TimeSupport ts,
+            Collection<Auxiliary> auxiliary)
+    {
+        this.ts = ts;
+        this.auxStats = auxiliary;
         extractNecssaryData(params, measure);
     }
     
@@ -111,9 +122,9 @@ public class MultiTrGenerator extends GeneratorRoot
         neg = genAnthi ? new SimpleTrajectory[numberOfAssets+1] : null;
         for (int i = 1; i <= numberOfAssets; ++i)
         {
-            pos[i] = new SimpleTrajectory(getTimePoints());
+            pos[i] = new SimpleTrajectory(getTimePoints(), auxStats);
             if (genAnthi)
-                neg[i] = new SimpleTrajectory(getTimePoints());
+                neg[i] = new SimpleTrajectory(getTimePoints(), auxStats);
         }
     }
 
@@ -192,4 +203,5 @@ public class MultiTrGenerator extends GeneratorRoot
     private Matrix decomp;
     private SimpleTrajectory[] pos;
     private SimpleTrajectory[] neg;
+    private Collection<Auxiliary> auxStats;
 }

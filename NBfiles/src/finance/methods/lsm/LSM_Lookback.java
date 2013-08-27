@@ -7,6 +7,7 @@ import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.trajectories.*;
+import java.util.HashSet;
 
 /**
  * Class calculating option prices using Longstaff-Schwartz method. This implementation allows
@@ -69,6 +70,11 @@ class GeneratorForLookback extends GeneratorRoot
 
     public GeneratorForLookback(SimpleModelParams smp, TimeSupport ts, VanillaOptionParams.CallOrPut type)
     {
+        HashSet<SimpleTrajectory.Auxiliary> stats = new HashSet<>();
+        if (type == VanillaOptionParams.CallOrPut.CALL)
+            stats.add(Trajectory.Auxiliary.CUMMIN);
+        else
+            stats.add(Trajectory.Auxiliary.CUMMAX);
         generator = new OneTrGenerator(smp, Generator.Measure.MART, ts);
         this.smp = smp;
         this.ts = ts;
@@ -83,8 +89,8 @@ class GeneratorForLookback extends GeneratorRoot
         Scenario s = generator.generate(anthi);
         Trajectory tr = s.getTr(1);
         Trajectory snd = makeSndTrajectory(tr);
-        return new MultiTrScenario( ts, new String[]{smp.name, "###SND###"},
-            new Trajectory[]{tr, snd} );
+        return new MultiTrScenario( ts, new String[]{"", smp.name, "###SND###"},
+            new Trajectory[]{null, tr, snd} );
     }
 
     private Trajectory makeSndTrajectory(Trajectory tr)

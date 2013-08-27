@@ -259,7 +259,7 @@ public class MCPanel extends MethodPanel implements AssetCountObserver
     }    
     
     @Override
-    Method makeMethod(Instr instr)
+    Method makeMethod(Instr instr) throws MethodInstantiationException
     {
         MonteCarlo mc;
         if (crudeMonteCarlo.isSelected())
@@ -267,7 +267,7 @@ public class MCPanel extends MethodPanel implements AssetCountObserver
         else if (anthiteticVariates.isSelected())
             mc = new AV();
         else 
-            mc = makeCV();
+            mc = makeCV(instr);
         mc.setN((Integer) simulations.getValue());
         mc.setK((Integer) timeSteps.getValue());
         return mc;
@@ -285,12 +285,16 @@ public class MCPanel extends MethodPanel implements AssetCountObserver
         return "Monte Carlo can price only instruments with european exercise.";
     }
 
-    private CV makeCV()
+    private CV makeCV(Instr instr) throws MethodInstantiationException
     {
         ControlVariate cVariate = getCVType();
         double E = (Double) strike.getValue();
         String asset = (String) assetCombo.getSelectedItem();
-        return new CV(cVariate, asset, E);
+        if (instr.getUnderlyings().contains(asset))
+            return new CV(cVariate, asset, E);
+        else
+            throw new MethodInstantiationException("Control variate must depend "
+                    + "on the same asset as priced instrument.");
     }
 
     private ControlVariate getCVType()

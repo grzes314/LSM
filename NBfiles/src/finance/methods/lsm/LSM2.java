@@ -7,11 +7,13 @@ import finance.parameters.ModelParams;
 import finance.trajectories.Generator;
 import finance.trajectories.MultiTrGenerator;
 import finance.trajectories.Scenario;
+import finance.trajectories.Trajectory.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collection;
 import math.approx.Approx;
 import math.approx.Point3D;
 import math.approx.Polynomial2;
+
 
 
 /**
@@ -21,6 +23,12 @@ import math.approx.Polynomial2;
  */
 public class LSM2 extends LSMRoot
 {
+
+    public LSM2(Collection<Auxiliary> auxTrStats)
+    {
+        this.auxTrStats = auxTrStats;
+    }
+    
     @Override
     public void setModelParams(ModelParams mp) throws WrongModelException
     {
@@ -50,7 +58,7 @@ public class LSM2 extends LSMRoot
     @Override
     protected Generator makeGenerator()
     {
-        return new MultiTrGenerator(mp, Generator.Measure.MART, ts);
+        return new MultiTrGenerator(mp, Generator.Measure.MART, ts, auxTrStats);
     }
 
     @Override
@@ -89,6 +97,7 @@ public class LSM2 extends LSMRoot
     }
 
     private ModelParams mp;
+    private Collection<Auxiliary> auxTrStats;
 }
 
 class Future2 implements FutureEstimatedFlow
