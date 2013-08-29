@@ -84,7 +84,7 @@ public class PartialBarrier extends Modificator
     }
 
     @Override
-    protected boolean exAvail_(Scenario s, int k)
+    protected boolean modExAvail(Scenario s, int k)
     {
         int border = calcBorderTimeStep(s.getTS());
         Trajectory tr = s.getTr(assetName);

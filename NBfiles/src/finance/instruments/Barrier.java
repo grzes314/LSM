@@ -43,7 +43,7 @@ public class Barrier extends Modificator
     }
 
     @Override
-    public boolean exAvail_(Scenario s, int k)
+    public boolean modExAvail(Scenario s, int k)
     {
         Trajectory tr;
         if (underlying == null) tr = s.getTr(underlyingNr);

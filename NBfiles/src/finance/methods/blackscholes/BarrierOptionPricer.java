@@ -33,11 +33,19 @@ class BarrierOptionPricer
     {
         extractParameters(vop, bp);
         calcAuxValues(vop, bp);
+        if (barrierZeroesPriceAtTime0(bp))
+            return 0;
         if (vop.callOrPut == CALL)
             return priceCall(vop, bp);
         else return pricePut(vop, bp);
     }
 
+    private boolean barrierZeroesPriceAtTime0(BarrierParams bp)
+    {
+        return (bp.type == BarrierParams.Type.UAO && bp.level < S)
+            || (bp.type == BarrierParams.Type.DAO && bp.level > S);
+    }
+    
     private void extractParameters(VanillaOptionParams vop, BarrierParams bp)
     {
         E = vop.strike;

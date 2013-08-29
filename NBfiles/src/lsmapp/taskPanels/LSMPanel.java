@@ -33,16 +33,16 @@ public class LSMPanel extends MethodPanel
         jLabel5 = new javax.swing.JLabel();
         degree = new javax.swing.JSpinner();
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 16));
         jLabel1.setText("Longstaff-Schwartz");
 
-        simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(10000), Integer.valueOf(100), null, Integer.valueOf(10000)));
+        simulations.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(100000), Integer.valueOf(100), null, Integer.valueOf(10000)));
 
         jLabel3.setText("Number of simulations: ");
 
         jLabel4.setText("Number of time steps: ");
 
-        timeSteps.setModel(new javax.swing.SpinnerNumberModel(252, 1, 10000, 10));
+        timeSteps.setModel(new javax.swing.SpinnerNumberModel(100, 1, 10000, 10));
 
         jLabel5.setText("<html>Degree of approximating polynomial:");
 

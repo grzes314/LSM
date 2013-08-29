@@ -33,7 +33,7 @@ public class EuExercise extends Modificator
     }
     
     @Override
-    protected boolean exAvail_(Scenario s, int k)
+    protected boolean modExAvail(Scenario s, int k)
     {
         return s.getTS().getK() == k;
     }

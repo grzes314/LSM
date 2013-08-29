@@ -194,8 +194,42 @@ public class MatrixTest extends TestCase
                                   {0.1656131, 0.7534940, 1.1772794, 0.9238124, 0.3039895}
                                 });
         assertEquals(res, M.getInverted());
+    }    
+    
+    public void testInvert2() throws UninvertibleMatrixException
+    {
+        Matrix M = new Matrix(new double[][] {
+            { 1,1,1,1,1 },
+            { 1,1,2,2,2 },
+            { 0,1,0,0,0 },
+            { 0,0,0,0,1 },
+            { 0,0,0,1,0 } });
+        Matrix expected = new Matrix(new double[][] {
+            { 2,   -1,   -1,    0,    0 },
+            { 0,    0,    1,    0,    0 },
+            {-1,    1,    0,   -1,   -1 },
+            { 0,    0,    0,    0,    1 },
+            { 0,    0,    0,    1,    0} });
+        Matrix inv = M.getInverted();
+        assertEquals(expected, inv);
     }
 
+    public void testUninvertable()
+    {
+        Matrix M = new Matrix(new double[][] {
+            { 1, 0, 1, 0, 0 },
+            { 0, 1, 1, 0, 0 },
+            { 1, 1, 2, 0, 0 },
+            { 0, 1, 0, 1, 2 },
+            { 0, 1, 0, 2, 3 } });
+        try {
+            M.getInverted();
+            fail("Inverting uninvertible matrix should throw.");
+        } catch (UninvertibleMatrixException ex) {
+            // good!
+        }
+    }
+    
     private double delta = 1e-3;
     private int rowsSq, colsSq, rowsRec, colsRec, rowsTr, colsTr;
     private Matrix rect, square, triangular;

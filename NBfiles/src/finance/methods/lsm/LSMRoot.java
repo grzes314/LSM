@@ -5,11 +5,14 @@ import finance.instruments.Instr;
 import finance.methods.common.Method;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObserver;
+import finance.methods.montecarlo.Result;
 import finance.trajectories.Generator;
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeSupport;
 import java.util.LinkedList;
 import java.util.List;
+import math.matrices.Vector;
+import math.utils.Statistics;
 
 /**
  *
@@ -69,9 +72,11 @@ abstract public class LSMRoot implements Method
         } );
         Scenario[] paths = gen.generate(N);
         CashFlow[] realizedCF = realizedCashFlows(paths, instr);
-        double mean = getMean(realizedCF);
         double payoffAtTime0 = instr.payoff(paths[0], 0);
-        return Math.max(mean, payoffAtTime0);
+        paths = null; // resources can now be fried
+        //System.gc();
+        Result res = makeResult(realizedCF);
+        return Math.max(res.result, payoffAtTime0);
     }
     
     abstract protected void initPricing(Instr instr);
@@ -111,12 +116,15 @@ abstract public class LSMRoot implements Method
         }
     }
     
-    protected double getMean(CashFlow[] realizedCF)
+    protected Result makeResult(CashFlow[] realizedCF)
     {
-        double sum = 0;
-        for (int i = 0; i < N; ++i)
-            sum += realizedCF[i].value(getR());
-        return sum / N;
+        Vector payoffs = new Vector(N);
+        for (int i = 1; i <= N; ++i)
+            payoffs.set(i, realizedCF[i-1].value(getR()));
+        double mean = Statistics.mean(payoffs);
+        double stderr = Math.sqrt( Statistics.var(payoffs) / N );
+        lastResult = new Result(mean, stderr);
+        return lastResult;
     }
 
     @Override
@@ -154,8 +162,13 @@ abstract public class LSMRoot implements Method
         for (ProgressObserver ob: observers)
             ob.update(pr);
     }
+
+    public Result getLastResult()
+    {
+        return lastResult;
+    }
     
-    
+    private Result lastResult;
     protected int N, K, M;
     protected TimeSupport ts;
     private List<ProgressObserver> observers = new LinkedList<>();

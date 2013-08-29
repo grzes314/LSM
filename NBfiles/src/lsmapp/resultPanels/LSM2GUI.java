@@ -94,7 +94,7 @@ public class LSM2GUI implements ResultHandler
         JTabbedPane results = new JTabbedPane();
         
         InfoPanel ip = new InfoPanel(method.getDesc(), modelParams.getDesc(),
-                                     instr.getDesc(), price);
+                                     instr.getDesc(), price, method.getLastResult().stderr);
         results.addTab("Description", ip);
         
         if (instr instanceof Option) {

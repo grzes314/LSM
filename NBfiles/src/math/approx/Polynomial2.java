@@ -1,7 +1,9 @@
 
 package math.approx;
 
+import java.util.Arrays;
 import math.matrices.Vector;
+import math.utils.Numerics;
 
 /**
  *
@@ -79,6 +81,45 @@ public class Polynomial2
             x_pow *= x;
         }
         return sum;
+    }
+
+    public boolean equals(Object obj)
+    {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Polynomial2 other = (Polynomial2) obj;
+        if (this.deg != other.deg) {
+            return false;
+        }
+        return compareArrays(other);
+    }
+
+    private boolean compareArrays(Polynomial2 other)
+    {
+        double[][] b = other.a;
+        if (a.length != b.length)
+            return false;
+        for (int i = 0; i < a.length; ++i)
+        {
+            if (a[i].length != b[i].length)
+                return false;
+            for (int j = 0; j < a[i].length; ++j)
+                if (!Numerics.doublesEqual(a[i][j], b[i][j], 1e-3))
+                    return false;
+        }
+        return true;
+    }
+
+    public int hashCode()
+    {
+        int hash = 7;
+        hash = 13 * hash + Arrays.deepHashCode(this.a);
+        hash = 13 * hash + this.deg;
+        return hash;
     }
     
     private double valueOfSubPolynomial(int xDeg, double x_pow, double y)

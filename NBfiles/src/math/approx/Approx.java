@@ -133,7 +133,9 @@ public class Approx
         try {
              b = r.regress(X, Y);
         } catch (UnsupportedCaseException ex) {
-            return approximate2(points, m);
+            return new Polynomial2(Double.POSITIVE_INFINITY);
+            // TODO someday it would be nice to write better handling of that situation
+            // return approximate2(points, m - 1);
         }
         return new Polynomial2(b, m);
     }

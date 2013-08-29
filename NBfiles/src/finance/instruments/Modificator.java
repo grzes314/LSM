@@ -36,6 +36,14 @@ public abstract class Modificator extends Instr
     {
         return wrapped.payoff_(s, k);
     }
+
+    @Override
+    protected final boolean exAvail_(Scenario s, int k)
+    {
+        return wrapped.exAvail_(s, k) && modExAvail(s,k);
+    }
+    
+    abstract protected boolean modExAvail(Scenario s, int k);
     
     @Override
     public final int modificationsCount()

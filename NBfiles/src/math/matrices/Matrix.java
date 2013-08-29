@@ -540,7 +540,10 @@ public class Matrix
         {
             int k = findRowUsedToDeleteOthers(col);
             if (k != col) 
+            {
                 swapRows(k, col);
+                inverted.swapRows(k, col);
+            }
             deleteOtherRows(inverted, col);
             double d = 1/get(col,col);
             multiplyRow(col, d);
