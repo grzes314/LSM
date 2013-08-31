@@ -29,6 +29,11 @@ public class LSM extends LSMRoot
         this.auxTrStats = auxTrStats;
     }
 
+    public LSM()
+    {
+        this.auxTrStats = new ArrayList<>();
+    }
+
     @Override
     public void setModelParams(ModelParams mp) throws WrongModelException
     {
