@@ -13,13 +13,18 @@ import static math.utils.Statistics.cndf;
  * in Wilmotts book. 
  * @author Grzegorz Los
  */
-class BarrierOptionPricer
+public class BarrierOptionPricer
 {
-    BarrierOptionPricer(SimpleModelParams smp)
+    public BarrierOptionPricer(SimpleModelParams smp)
     {
         S = smp.S;
         vol = smp.vol;
         r = smp.r;
+    }
+
+    public BarrierOptionPricer()
+    {
+        S = vol = r = 0;
     }
 
     void setParams(SimpleModelParams smp)

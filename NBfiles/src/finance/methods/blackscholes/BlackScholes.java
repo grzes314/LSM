@@ -1,11 +1,7 @@
 
 package finance.methods.blackscholes;
 
-import finance.methods.common.Progress;
-import finance.methods.common.ProgressObservable;
-import finance.methods.common.ProgressObserver;
 import finance.methods.common.WrongParamException;
-import finance.parameters.BarrierParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import static java.lang.Math.*;
@@ -16,7 +12,7 @@ import static math.utils.Statistics.cndf;
  * Class for pricing options with BS Formula.
  * @author Grzegrorz Los
  */
-public class BlackScholes implements ProgressObservable
+public class BlackScholes
 {
     public BlackScholes()
     {
@@ -60,17 +56,6 @@ public class BlackScholes implements ProgressObservable
         else
             return pricePut(vop.strike, vop.T);
     }
-    
-    public double price(VanillaOptionParams vop, BarrierParams bp)
-    {
-        BarrierOptionPricer bop = new BarrierOptionPricer( new SimpleModelParams(S, vol, r) );
-        return bop.price(vop, bp);
-    }
-    
-    public double priceBond(double nominal, double T)
-    {
-        return nominal * exp(-r*T);
-    }
 
     @Override
     public String toString()
@@ -80,13 +65,6 @@ public class BlackScholes implements ProgressObservable
                "vol = " + vol + "\n" +
                "r = " + r + "\n";                
     }
-    
-    @Override
-    public void addObserver(ProgressObserver ob) {}
-    @Override
-    public void removeObserver(ProgressObserver ob) {}
-    @Override
-    public void notifyObservers(Progress pr) {}
     
     private double priceCall(double K, double T)
     {

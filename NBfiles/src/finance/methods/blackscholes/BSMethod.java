@@ -12,6 +12,8 @@ import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Allows the user to price {@code Instr} using Black-Scholes method if it is priceable.
@@ -19,19 +21,27 @@ import java.util.ArrayList;
  */
 public class BSMethod implements Method
 {
-
-    public BSMethod(BlackScholes method)
-    {
-        bs = method;
-    }
-
     public BSMethod()
     {
-        bs = new BlackScholes();
+        blackScholes = new BlackScholes();
+        bondPricer = new BondPricer();
+        binaryPricer = new BinaryOptionPricer();
+        barrierPricer = new BarrierOptionPricer();
+    }
+
+    public BSMethod(SimpleModelParams smp)
+    {
+        this();
+        try {
+            setModelParams(smp);
+        } catch (WrongModelException ex) {
+            Logger.getLogger(BSMethod.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("BSMethod should accept SimpleModelParams.");
+        }
     }
     
     @Override
-    public void setModelParams(ModelParams mp) throws WrongModelException
+    public final void setModelParams(ModelParams mp) throws WrongModelException
     {
         SimpleModelParams smp;
         try {
@@ -40,7 +50,10 @@ public class BSMethod implements Method
             throw new WrongModelException("Black-Scholes method can only be used"
                     + "with model on single asset");
         }
-        bs.setParams(smp);
+        blackScholes.setParams(smp);
+        binaryPricer.setParams(smp);
+        barrierPricer.setParams(smp);
+        bondPricer.setParams(smp);
     }
     
     @Override
@@ -56,8 +69,14 @@ public class BSMethod implements Method
         if (isOption(core))
         {
             if (wrapped.size() == 3)
-                return instr.areYou("european") && instr.areYou("barrier")
-                    && instr.getUnderlyings().size() == 1;
+            {
+                if (!instr.areYou("european"))
+                    return false;
+                if (instr.areYou("barrier"))
+                    return instr.getUnderlyings().size() == 1;
+                if (instr.areYou("binary"))
+                    return true;
+            }
             if (wrapped.size() == 2)
                 return instr.areYou("european");
         }
@@ -72,39 +91,44 @@ public class BSMethod implements Method
         ArrayList<Instr> wrapped = getAllWrapped(instr);
         if (!mayBePriced(wrapped, instr))
             throw new WrongInstrException("BSMethod can price only european "
-                    + "vanilla and simple barrier options and bonds.");
-        return price(wrapped);
+                    + "vanilla, barrier, binary options and bonds.");
+        return price(instr, wrapped);
     }
 
-    private double price(ArrayList<Instr> wrapped)
+    private double price(Instr instr, ArrayList<Instr> wrapped)
     {
         BarrierParams bp = getBarrierParams(wrapped);
-        return price(bp, getCore(wrapped));
+        return price(bp, instr, getCore(wrapped));
     }
     
-    private double price(BarrierParams bp, Object instr)
+    private double price(BarrierParams bp, Instr instr, Instr core)
     {
-        if (instr instanceof Option)
+        if (core instanceof Option)
         {
-            Option op = (Option) instr;
-            return price(bp, op);
+            Option op = (Option) core;
+            return price(bp, instr, op);
         }
-        else if (instr instanceof Bond)
+        else if (core instanceof Bond)
         {
             assert bp == null;
-            Bond bond = (Bond) instr;
-            return bs.priceBond(bond.getNominal(), bond.getT());
+            Bond bond = (Bond) core;
+            return bondPricer.price(bond.getNominal(), bond.getT());
         }
         else throw new RuntimeException("Flow should not reach that statement");
     }
 
-    private double price(BarrierParams bp, Option op)
+    private double price(BarrierParams bp, Instr instr, Option op)
     {
         VanillaOptionParams vop = op.vop;
         if (bp == null)
-            return bs.price(vop);
+        {
+            if (instr.areYou("binary"))
+                return binaryPricer.price(vop);
+            else
+                return blackScholes.price(vop);
+        }
         else
-            return bs.price(vop, bp);
+            return barrierPricer.price(vop, bp);
     }
     
     private BarrierParams getBarrierParams(ArrayList<Instr> wrapped)
@@ -131,23 +155,15 @@ public class BSMethod implements Method
     }
 
     @Override
-    public void removeObserver(ProgressObserver ob)
-    {
-        bs.removeObserver(ob);
-    }
-
+    public void removeObserver(ProgressObserver ob){}
     @Override
-    public void notifyObservers(Progress pr)
-    {
-        bs.notifyObservers(pr);
-    }
-
+    public void notifyObservers(Progress pr) {}
     @Override
-    public void addObserver(ProgressObserver ob)
-    {
-        bs.addObserver(ob);
-    }
+    public void addObserver(ProgressObserver ob){}
     
     
-    private BlackScholes bs;
+    private BlackScholes blackScholes;
+    private BondPricer bondPricer;
+    private BinaryOptionPricer binaryPricer;
+    private BarrierOptionPricer barrierPricer;
 }

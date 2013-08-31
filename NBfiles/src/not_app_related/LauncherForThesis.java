@@ -456,6 +456,53 @@ public class LauncherForThesis
         out.println(str);
     }
     
+    private void makeEuropeanBinaryPut2D(PrintStream out)
+    {
+        final BSMethod bs = new BSMethod();
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
+        double[] spots = new double[60];
+        for (int i = 0; i < 60; ++i)
+            spots[i] = 40 + i*2;
+        final Instr[] instr = new Instr[4];
+        for (int i = 0; i < 4; ++i)
+        {
+            BarrierParams bp = new BarrierParams(BarrierParams.Type.UAO, 110 + 10*i);
+            instr[i] = new Barrier( bp, onlyAsset, new EuExercise( new Option(vop, onlyAsset) ) );
+        }
+        DataForMaker_2D maker = new DataForMaker_2D(spots) {
+            @Override int getNumberOfYVals() {
+                return 4;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "price";
+            }
+            @Override String getLegend(int i) {
+                return "barrier " + (110 + 10*i);
+            }
+            @Override String getDesc() {
+                return "Comparision of prices of call@100 with UAO barriers (vol=0.3, r=0).";
+            }
+            @Override void setXVal(double d) {
+                try {
+                    bs.setModelParams(smp.withS(d));
+                } catch (WrongModelException ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            @Override double getPrice(int i) {
+                try {
+                    return bs.price(instr[i]);
+                } catch (Exception ex) { throw new RuntimeException(); }
+            }
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
 }
 
 abstract class DataForMaker_3D

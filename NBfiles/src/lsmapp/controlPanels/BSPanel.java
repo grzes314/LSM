@@ -5,14 +5,16 @@ import finance.instruments.EuExercise;
 import finance.instruments.Instr;
 import finance.instruments.Option;
 import finance.methods.blackscholes.BSMethod;
-import finance.methods.blackscholes.BlackScholes;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObservable;
+import finance.methods.common.WrongInstrException;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import static finance.parameters.VanillaOptionParams.CallOrPut.CALL;
 import static finance.parameters.VanillaOptionParams.CallOrPut.PUT;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lsmapp.resultPanels.BS2GUI;
 
 /**
@@ -29,7 +31,7 @@ public class BSPanel extends ModelPanel
     }
     
     @Override
-    public BlackScholes getMethod()
+    public BSMethod getMethod()
     {
         return method;
     }
@@ -45,7 +47,14 @@ public class BSPanel extends ModelPanel
         double K = (Double) strike.getValue();
         double T = (Double) years.getValue();
         CallOrPut CP = put.isSelected() ? CallOrPut.PUT : CallOrPut.CALL;
-        return method.price(new VanillaOptionParams(K, T, CP));
+        Instr opt = new EuExercise(
+            new Option(new VanillaOptionParams(K, T, CP), SimpleModelParams.onlyAsset) );
+        try {
+            return method.price(opt);
+        } catch (WrongInstrException ex) {
+            Logger.getLogger(BSPanel.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Pricing european vanilla option should not throw.");
+        }
     }
         
     @Override
@@ -55,8 +64,7 @@ public class BSPanel extends ModelPanel
         double r = (Double) rate.getValue();
         double S = (Double) spot.getValue();
         SimpleModelParams smp = new SimpleModelParams(S,v,r);
-        method = new BlackScholes(smp);
-        toGui.setMethod( new BSMethod(method) );
+        toGui.setMethod( new BSMethod(smp) );
         toGui.setModelParams(smp);
         return method;
     }
@@ -93,7 +101,7 @@ public class BSPanel extends ModelPanel
     }
     
     private BS2GUI toGui;
-    private BlackScholes method;
+    private BSMethod method;
     private Instr instr;
     
     /**
