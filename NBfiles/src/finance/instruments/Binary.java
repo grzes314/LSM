@@ -21,7 +21,13 @@ public class Binary extends Modificator
     {
         return true;
     }
-
+    @Override
+    protected double payoff_(Scenario s, int k)
+    {
+        double d = wrapped.payoff_(s, k);
+        return d > 0 ? 1 : 0;
+    }
+    
     @Override
     public String getDesc()
     {

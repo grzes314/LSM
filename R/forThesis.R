@@ -47,8 +47,8 @@ makeChart2D <- function(frame, xLab, yLab)
   
   plot <- ggplot(data=data_long, aes(x=xVal, y=value, colour=variable)) +
     geom_line() + xlab(xLab)  + ylab(yLab) +
-    my_theme(20) + theme(legend.justification=c(1,1), legend.position=c(1,1),
-                       legend.text = element_text(colour="black", size = 20, face = "plain")) +
+    my_theme(16) + theme(legend.justification=c(1,1), legend.position=c(1,1),
+                       legend.text = element_text(colour="black", size = 16, face = "plain")) +
     guides(color=guide_legend(title=NULL)) +
     scale_colour_discrete(labels = legnames) +
     scale_y_continuous(labels=fmt(2))

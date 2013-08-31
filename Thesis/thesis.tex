@@ -1,4 +1,4 @@
-\documentclass[a4paper,12pt, oneside]{book}
+\documentclass[a4paper,11pt, twoside]{book}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage[polish, english]{babel}
@@ -86,9 +86,9 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[RO]{\small\bfseries\thepage}
-%\fancyhead[LE,RO]{\small\bfseries\thepage} do odkomentowania w wersji dwustronnej
+\fancyhead[LE,RO]{\small\bfseries\thepage} %do odkomentowania w wersji dwustronnej
 \fancyhead[LO]{\small\bfseries\nouppercase\rightmark}
-%\fancyhead[RE]{\small\bfseries\nouppercase\leftmark} do odkomentowania w wersji dwustronnej
+\fancyhead[RE]{\small\bfseries\nouppercase\leftmark} %do odkomentowania w wersji dwustronnej
 
 %\lhead{\nouppercase{\bfseries \leftmark}}
 %\rhead{\nouppercase \rightmark}
@@ -129,20 +129,29 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 
 \newpage
 
-\section*{\begin{center}\begin{normalsize} Abstract \end{normalsize}\end{center}}
+
+\chapter*{Abstract}
+
+%\section*{\begin{center}\begin{normalsize} Abstract \end{normalsize}\end{center}}
 \begin{quotation}
-\noindent 
-  The thesis presents a technique of option pricing known as Least Squares Monte Carlo or Longstaff-Schwartz model, due to it's discoverers Francis Longstaff and Eduardo Schwartz. In the first chapter some general facts from Stochastic Analysis, Monte Carlo theory and Black-Scholes model are reminded.
-  Next chapters describe LSM algorithm, the implementation, examples of usage for valuation of exotic options.
+\noindent
+  This thesis presents techniques of option pricing based on Monte Carlo simulations. Mathematical theories underlying the presented methods are recalled, however, the thesis is practical in nature, hence it not always gets deep into mathematical details.
+  Instead, it provides many algorithms in the form of concise pseudocode, which outline how to use the theory in practice. The utility of depicted methods is affirmed by implementations in R and Java programming languages. This paper is filled with illustrations of the results obtained by the created application.
+  
+  The first part of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s lemma Girsanov theorem, a general description of Monte Carlo methtods.
+  In the second part, Reader may find an introduction to option pricing. It contains description of the market model, Black-Scholes paradigm, definition of the martingale measure. It also provides a detailed explanation how to calibrate parameters of the Black-Scholes model from the real-world market's history.
+  In the next part, the Monte Carlo pricing procedure for European options is described. It starts with simple vanilla options, and gradually moves to more complicated exotic instruments, whose exercise may depend on multiple assets or on the whole history of the market scenario. 
+  The fourth part introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method, which may be used to price American options, is described.
+  The next part depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
+  In the last part, illustrations of several pricing results are collected.
 \end{quotation}
 
-\chapter*{Preface}
-We all love option pricing so much.
-
 \chapter{Preliminaries}
-We expect from the reader some basic knowledge of stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
+Despite the fact that noone really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. 
 
 \section{Elements of stochastic analysis}
+We expect from the reader some basic knowledge of the probability theory and stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
+
 \begin{mydef}
  Let $(\Omega, \mathcal{F}, \P)$ be a probability space, $(E, \mathcal{E})$ be a measurable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
  
@@ -150,7 +159,7 @@ We expect from the reader some basic knowledge of stochastic processes. Purpose 
 \end{mydef}
 
 \begin{remark}
- Stochastic process may be seen as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is it's concrete realization.
+ Stochastic process may be seen as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is its concrete realization.
 \end{remark}
 
 \begin{remark}
@@ -2253,15 +2262,15 @@ If we had to create special classes for such instruments as the one mentioned ab
 \label{fig:arch:method}
 \end{sidewaysfigure}
 
-\chapter{Some results}
+\chapter{Results illustrations}
  
 \section{Vanilla options}
 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/Results/euAndAmPut.pdf}
+ \includegraphics[scale=0.5]{images/Results/vanillaEuAndAmPut.pdf}
 \caption{Chcem sprawdzic jak obrazek wyglada w pracy}
-\label{fig:results:dupa2}
+\label{fig:results:dupa1}
 \end{figure}
 
 \section{Barrier options}
@@ -2269,8 +2278,19 @@ If we had to create special classes for such instruments as the one mentioned ab
 \centering
  \includegraphics[scale=0.5]{images/Results/barrierCall3D.pdf}
 \caption{Chcem sprawdzic jak obrazek wyglada w pracy}
-\label{fig:results:dupa1}
+\label{fig:results:dupa2}
 \end{figure}
+
+\section{Binary options}
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.5]{images/Results/binaryEuPut.pdf}
+ \includegraphics[scale=0.5]{images/Results/binaryEuPut.pdf}
+\caption{Chcem sprawdzic jak obrazek wyglada w pracy}
+\label{fig:results:dupa3}
+\end{figure}
+
+\chapter*{Concluding remarks}
  
 
 \begin{thebibliography}{99}
