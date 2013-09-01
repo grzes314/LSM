@@ -600,14 +600,14 @@ Let us finish this example with a remark that this was a preconceived case, whic
 Now, when we know how Monte Carlo methods work, we need to describe how to get random values.
 \paragraph{Independent standard normal random variables.} Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
 
-The most popular way is to use the \textbf{Box-Muller algorithm} which uses two independent variates with the uniform distribution on $(0,1)$, and ``produces'' two independent variates with the standard normal distribution.
+The most popular way is to use the \textbf{Box-Muller transformation} (Algorithm \ref{alg:box-muller}) which uses two independent variates with the uniform distribution on $(0,1)$, and ``produces'' two independent variates with the standard normal distribution.
 \begin{algorithm}[!ht]
  \begin{algorithmic}[1]
-  \Function{BoxMuller}{}
+  \Function{BoxMuller}{\null}
     \State Generate independent random variables $U_1, U_2 \sim \mathcal{U}(0,1)$,
-    \State $N_1 \gets \sqrt{-2\log(U_1)} \cos(2\pi U_2)$,
-    \State $N_2 \gets \sqrt{-2\log(U_1)} \sin(2\pi U_2)$,
-    \State \Return ($N_1$, $N_2$).
+    \State $Z_1 \gets \sqrt{-2\log(U_1)} \cos(2\pi U_2)$,
+    \State $Z_2 \gets \sqrt{-2\log(U_1)} \sin(2\pi U_2)$,
+    \State \Return ($Z_1$, $Z_2$).
   \EndFunction
  \end{algorithmic}
  \caption{The Box-Muller method.}
@@ -616,81 +616,96 @@ The most popular way is to use the \textbf{Box-Muller algorithm} which uses two 
 
 This method returns values of two independent random variables coming from the standard normal distribution. When we need more than two samples, then of course we repeat that algorithm as many times as necessary.
 
-In \cite{london} we can find a remark that necessity of calculating sine and cosine may slow down the above algorithm. Another algorithm, \textbf{polar rejection}, is proposed.
+In \cite{london} we can find a remark that necessity of calculating sine and cosine may slow down the above algorithm. Another method, \textbf{polar rejection}, is proposed (Algorithm \ref{alg:polarRejection}).
 \begin{algorithm}[!ht]
  \begin{algorithmic}[1]
-  \Function{PolarRejection}{}
+  \Function{PolarRejection}{$\mu$, $\sigma$}
     \State Generate independent random variables $U_1, U_2 \sim \mathcal{U}(0,1)$,
     \State $V_1 \gets 2U_1-1$,
     \State $V_2 \gets 2U_2-1$,
     \State $W \gets V_1^2 + V_2^2$,
     \State if $W > 1$ return to step 2.,
-    \State $N_1 \gets \sqrt{\frac{-2\log(W)}{W}} V_1$,
-    \State $N_2 \gets \sqrt{\frac{-2\log(W)}{W}} V_2$,
-    \State \Return ($N_1$, $N_2$).
+    \State $Z_1 \gets \sqrt{\frac{-2\log(W)}{W}} V_1$,
+    \State $Z_2 \gets \sqrt{\frac{-2\log(W)}{W}} V_2$,
+    \State \Return ($Z_1$, $Z_2$).
   \EndFunction
  \end{algorithmic}
  \caption{Polar rejection method.}
  \label{alg:polarRejection}
 \end{algorithm}
-
 However, conducted experiments do not show any significat diffrence in efficiency of both presented methods. It brings us to the conclusion that the efficiency of both algorithms is comparable and not worth bothering. Moreover, which method is faster may depend even on the choice of the programming language.
 
-\paragraph{Independet nonstandard normal random variables.} Sampling from an arbitrary normal distribution $\mathcal{N}(\mu, \sigma^2)$ is now straightforward. From the elementary probability theory comes following method.
-\begin{enumerate}
- \item Genarate $N \sim \mathcal{N}(0,1)$ using one of previously shown methods.
- \item Return $\mu + \sigma N$.
-\end{enumerate}
+\paragraph{Independet nonstandard normal random variables.} Sampling from an arbitrary normal distribution $\mathcal{N}(\mu, \sigma^2)$ is now straightforward. From the elementary probability theory comes the method presentented in Algorithm \ref{alg:gaussDist}.
+\begin{algorithm}[!ht]
+ \begin{algorithmic}[1]
+  \Function{GaussDistr}{\null}
+    \State $(Z_1, Z_2) \gets $ \Call{BoxMuller}{\null}
+    \Comment{{\color{comment} or $(N_1, N_2) \gets $ \Call{PolarRejection}{\null}}}
+    \State \Return $\mu$ + $\sigma \cdot Z_1$
+  \EndFunction
+ \end{algorithmic}
+ \caption{The polar rejection method.}
+ \label{alg:gaussDist}
+\end{algorithm}
 
-\paragraph{Correlated normal random values.} Above methods allow us to generate independent random variables. In the real world, however, we notice dependencies between observed phenomenons. For example movements of the prices of the market assets are usually correlated. When the market is in a boom cycle, then all the prices are increasing; inversly, if the recession comes, all of the prices are falling.
+\paragraph{Correlated normal random values.} The above methods allow us to generate independent random variables. In the real world, however, we notice dependencies between observed phenomena. For example movements of prices of the market assets are usually correlated. When the market is in a boom cycle, then all the prices are increasing; on the other hand, if the recession comes, all of the prices are sinking down.
 In order to model such values we must be able to generate correlated random variables.
 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.4]{images/Preliminaries/normalCorrelated.pdf}
-\caption{Graphical illustration of dependency between normal correlated random variables. In the upper left corner $\varrho = -0.8$, upper right: $\varrho = -0.4$, lower left: $\varrho = 0$ (independent variables), lower right: $\varrho = 0.4$.}
+ \includegraphics[scale=0.5]{images/Preliminaries/normalCorrelated.pdf}
+\caption{Graphical illustration of the dependency between two normal correlated random variables $Z1$ and $Z2$. In the upper left corner $\varrho = -0.9$, upper right: $\varrho = -0.5$, lower left: $\varrho = 0$ (independent variables), lower right: $\varrho = 0.5$.}
 \end{figure}
 
-Let's begin with two standard normal random variables with correlation $\varrho$. We want to obtain $Z_1, Z_2 \sim \mathcal{N}(0,1)$ such that $\Corr(Z_1, Z_2) = \varrho$.  For now we only can generate independent $Z_1$ and $Z_2$, i.e. $\Corr(Z_1, Z_2) = 0$. On the other hand $\Cov(Z_1, Z_1) = 1$. Here rises the idea that there exists $Z_3$, such that $\Corr(Z_1, Z_3) = \varrho$, of the form $Z_3 = a Z_1 + b Z_2$.
-It should come from standard normal distribution, thus
-\[ 1 = \Var(Z_3) = \Var( a Z_1) +  \Var(b Z_2) = a^2 + b^2 \]
+Let us begin with two standard normal random variables with correlation $\varrho$. We want to obtain $N_1, N_3 \sim \mathcal{N}(0,1)$ such that $\Corr(N_1, N_3) = \varrho$.  For now we can only generate independent $N_1$ and $N_2$, i.e. $\Corr(N_1, N_2) = 0$. On the other hand $\Corr(N_1, N_1) = 1$. Here rises the idea that there exists $N_3$ of the form $N_3 = a N_1 + b N_2$, such that $\Corr(N_1, N_3) = \varrho$.
+It should come from the standard normal distribution, thus
+\[ 1 = \Var(N_3) = \Var( a N_1) +  \Var(b N_2) = a^2 + b^2 \]
 Moreover
-\[ \varrho = \Corr(Z_1, Z_3) = \Cov(Z_1, Z_3) = a\Cov(Z_1, Z_1) + b\Cov(Z_1, Z_2) = a \]
+\[ \varrho = \Corr(N_1, N_3) = \Cov(N_1, N_3) = a\Cov(N_1, N_1) + b\Cov(N_1, N_2) = a \]
 Hence
 \[ a = \varrho,\ \ \ \ b = \sqrt{1 - \varrho^2}. \]
 We have proven following
 \begin{prop}
- If $Z_1$ and $Z_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any $\varrho \in [-1,1]$ random variable
- \[ Z_3 = \varrho Z_1 + \sqrt{1 - \varrho^2} Z_2 \]
+ If $Z_1$ and $Z_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any $\varrho \in [-1,1]$ random variables
+ \begin{align*}
+ N_1 &= Z_1 \\
+ N_2 &= \varrho Z_1 + \sqrt{1 - \varrho^2} Z_2
+ \end{align*}
+
  has distribution $\mathcal{N}(0,1)$ and $\Corr(Z_1, Z_3) = \varrho$.
 \end{prop}
-The derivation of above fact was intuitive, but we need a more general version.
+The derivation of the above fact was intuitive, but we need a more general version.
 
-
-\begin{thm}
- If $N_1$ and $N_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any
+\begin{prop}
+ If $Z_1$ and $Z_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any covariance matrix
  $\Sigma = \left( \begin{array}{cc}
-                      \sigma_1^2 & \sigma_{12}^2 \\
-                      \sigma_{12}^2 & \sigma_2^2
-                   \end{array} \right)$
- random vector $ Z = \mu + LN$, where
-  $L = \left( \begin{array}{cc}
-                      \sigma_1 & 0 \\
-                      \frac{\sigma_{12}^2}{\sigma_1} & \sqrt{\sigma_2^2 - \frac{\sigma_{12}^4}{\sigma_1^2}}
+                      \sigma_{11}^2 & \sigma_{12}^2 \\
+                      \sigma_{12}^2 & \sigma_{22}^2
+                   \end{array} \right),$
+ random vector $ N = \mu + LZ$, where
+  $L ~= \left( \begin{array}{cc}
+                      \sigma_{11} & 0 \\
+                      \frac{\sigma_{12}^2}{\sigma_{11}} & \sqrt{\sigma_{22}^2 - \frac{\sigma_{12}^4}{\sigma_{11}^2}}
                    \end{array} \right)$,
- has distribution $\mathcal{N}(\mu,\sigma)$. Moreover $\Sigma = LL^T$.
-\end{thm}
+ has distribution $\mathcal{N}(\mu,\Sigma)$. Moreover, $\Sigma = LL^T$.
+\end{prop}
 \begin{proof}
-Let's focus on the case $\mu_1 = \mu_2 = 0$, since the mean may be added at the end. We have $N \sim \mathcal{N}(\bf{0}, \mathbb{I})$. By making an assigment $Z_1 = \sigma_1 N_1$, $Z_1$ has desired variance. As previously, we look for $Z_2$ of the form $Z_2 = a N_1 + b N_2$. We want the variance of $Z_2$ to equal $\sigma_2^2$, so
-\[ \sigma_2^2 = \Var(Z_2) = \Var( a N_1) +  \Var(b N_2) = a^2 + b^2 \]
+Let's focus on the case $\mu_1 = \mu_2 = 0$, since the mean may be added at the end. We have $Z \sim \mathcal{N}(\bf{0}, \mathbb{I})$. By making an assigment $N_1 = \sigma_{11} Z_1$, $N_1$ has the desired variance. As previously, we look for $N_2$ of the form $N_2 = a Z_1 + b Z_2$. We want the variance of $N_2$ to equal $\sigma_{22}^2$, so
+\[ \sigma_{22}^2 = \Var(N_2) = \Var( a Z_1) +  \Var(b Z_2) = a^2 + b^2 \]
 Moreover
-\[ \sigma_{12}^2 = \Cov(Z_1, Z_2) = \sigma_1 a\Cov(N_1, N_1) + \sigma_1 b\Cov(N_1, N_2) = a\sigma_1 \]
+\[ \sigma_{12}^2 = \Cov(N_1, N_2) = \sigma_{11} a\Cov(Z_1, Z_1) + \sigma_{11} b\Cov(Z_1, Z_2) = a\sigma_{11} \]
 Hence
-\[ a = \frac{\sigma_{12}^2}{\sigma_1},\ \ \ \ b = \sqrt{\sigma_2^2 - \frac{\sigma_{12}^4}{\sigma_1^2}}. \] 
+\[ a = \frac{\sigma_{12}^2}{\sigma_{11}},\ \ \ \ b = \sqrt{\sigma_{22}^2 - \frac{\sigma_{12}^4}{\sigma_{11}^2}}. \] 
 Equation $\Sigma = LL^T$ may be proven by simple matrix multiplication.
 \end{proof}
 
-It turns out that above theorem can be generalized for higher dimensions. That explains following algorithm for generating values from multivariate normal distribution with given mean vector $\mu$ and positive-definite covariation matrix $\Sigma$. 
+It turns out that the above Proposition can be generalized for higher dimensions.
+%\begin{thm}
+% For the positive-definite matrix $\Sigma$ there 
+%\end{thm}
+
+
+That explains following algorithm for generating values from multivariate normal distribution with given mean vector $\mu$ and positive-definite covariation matrix $\Sigma$. 
 \begin{enumerate}
  \item Use Cholesky decomposition to obtain matrix $L$ such that $\Sigma = LL^T$,
  \item Using previously shown method generate vector $N$ of independent random variables with standard normal distribution.
