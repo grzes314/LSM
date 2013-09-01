@@ -79,7 +79,7 @@ boxesMC <- function(K=100, n=10000, cmcFun, avFun, cvFun, CV_EX, seed=NULL)
   )
   qplot(method, est, data=data, ylab="Estimated value", geom="boxplot",
         fill=method, xlim=c("CMC", "AV", "CV")) +
-    geom_jitter(size=0.75) + theme_bw() +
+    geom_jitter(size=0.75) + theme_bw(base_size = 16) +
     scale_y_continuous(labels=fmt(2))
 }
 
@@ -113,7 +113,7 @@ convergence <- function(n=100000, cmcFun, avFun, cvFun, CV_EX, realValue, seed=N
   
   plot <- ggplot(data=data_long, aes(x=`replicated pairs`, y=`estimated value`, colour=method)) +
     geom_line() +
-    theme_bw() +
+    theme_bw(base_size=16) +
     scale_y_continuous(labels=fmt(2))
   
   if (!is.null(realValue))

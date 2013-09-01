@@ -107,9 +107,9 @@ Instytut Matematyczny}\\
 {\Large Pricing Exotic Options using Monte Carlo methods}}\\
 \end{center}
 \vspace{3cm}
-{\hspace*{6.5cm}\large Praca magisterska\\
-\hspace*{6.5cm}\large  napisana pod kierunkiem\\
-\hspace*{6.5cm}\large  doktora Pawła Kawy }
+{\hspace*{6.5cm}\large Master's thesis\\
+\hspace*{6.5cm}\large  written under the supervision of\\
+\hspace*{6.5cm}\large  Dr. Paweł Kawa }
 \vfill
 \begin{center}
 {\large Wrocław 2013}\\
@@ -147,19 +147,20 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 \end{quotation}
 
 \chapter{Preliminaries}
-Despite the fact that noone really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. 
+There exists several approaches to the analysis of assets' prices, for example fundamental analysis, technical analysis and quantitative analysis. Mathematicians are interested in the last one, in which every asset is considered to be a stochastic process.
+Despite the fact that noone really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. However, this approach requires nontrivial mathematical background whose essentials are collected in this part.
 
 \section{Elements of stochastic analysis}
-We expect from the reader some basic knowledge of the probability theory and stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
+We expect from Reader some basic knowledge of the probability theory and stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
 
 \begin{mydef}
- Let $(\Omega, \mathcal{F}, \P)$ be a probability space, $(E, \mathcal{E})$ be a measurable space and $T$ be an arbitrary set. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an arbitrary set $T$, is a family of random variables $X = (X_t)_{t \in T}$, where each $X_t$ is $E$-valued.
+ Let $(\Omega, \mathcal{F}, \P)$ be a probability space, $(E, \mathcal{E})$ be a measurable space and $T$ be a positive real number. A \textbf{stochastic process} with values in a measurable space $E$, indexed by an interval $[0,T]$, is a family of random variables $X = (X_t)_{t = 0}^T$, where each $X_t$ is $E$-valued.
  
  For given $\omega \in \Omega$ a \textbf{trajectory} of process $X$ is a function $t \mapsto X_t(\omega)$, with domain $T$ and codomain $E$.
 \end{mydef}
 
 \begin{remark}
- Stochastic process may be seen as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is its concrete realization.
+ Stochastic process may be seen as a function $X: \Omega \rightarrow \mathbb{E}^T$. Then a trajectory is a value of such function, i.e. for given $\omega,\ X(\omega)$ is a trajectory. In the other words, a stochastic process is a random function and a trajectory is its concrete realization.
 \end{remark}
 
 \begin{remark}
@@ -171,35 +172,35 @@ We expect from the reader some basic knowledge of the probability theory and sto
  \begin{itemize}
   \item $W_0 = 0$ a.s.,
   \item for any $t,\ W_t \sim \mathcal{N}(0,t)$,
-  \item increments of $W$ are independent (i.e. for any $t_0 \leq t_1 \leq \ldots \leq t_n$ random variable $W_{t_0}, W_{t_1} - W_{t_0},\ \ldots, W_{t_n} - W_{t_{n-1}}$ are independent,
+  \item increments of $W$ are independent (i.e. for any $t_0 \leq t_1 \leq \ldots \leq t_n$ random variables $W_{t_0}, W_{t_1} - W_{t_0},\ \ldots, W_{t_n} - W_{t_{n-1}}$ are independent,
   \item increments of $W$ are stationary (i.e. for every $0 \leq s < t,\ W_t-W_s$ is equal in distribution to $W_{t-s})$,
   \item trajectories of $W$ are continous a.s.
  \end{itemize}
 \end{mydef}
-\noindent In this paper $W$ will always denote Brownian motion.
+\noindent \textbf{In this thesis $W$ will always denote Brownian motion.}
 
 \begin{mydef}
- \textbf{Filtration} $(\mathcal{F}_t)_{t=0}^T$ on probability space $(\Omega, \mathcal{F}, {P})$ is an increasing family of $\sigma$-algebras contained in $\mathcal{F}$, i.e. for all $s<t,\ \mathcal{F}_s \subseteq \mathcal{F}_t \subseteq \mathcal{F}$.
+ \textbf{Filtration} $(\mathcal{F}_t)_{t=0}^T$ on the probability space $(\Omega, \mathcal{F}, {P})$ is an increasing family of $\sigma$-algebras contained in $\mathcal{F}$, i.e. for all $s<t,\ \mathcal{F}_s \subseteq \mathcal{F}_t \subseteq \mathcal{F}$.
 \end{mydef}
 \noindent Sometimes $\mathcal{F}_t$ is interpreted as a set of all events observable up to time $t$.
 
 \begin{mydef}
- Process $X=(X_t)_{t=0}^T$ is called $\mathcal{F}_t$-\textbf{adoptable} if and only if for all $t~\in~[0,T],\ X_t$ is $\mathcal{F}_t$-measurable.
+ Process $X=(X_t)_{t=0}^T$ is called \textbf{adapted} with respect to the filtration $\mathcal{F}_t$ if and only if for all $t~\in~[0,T],\ X_t$ is $\mathcal{F}_t$-measurable.
 \end{mydef}
-\noindent Minimal filtration to which $X$ is adoptable if of course filtration generated by $X$, defined as $\mathcal{F}_t^X = \sigma(X_s:\ s \leq t)$.
+\noindent Minimal filtration to which $X$ is adapted is of course filtration generated by $X$, called \textbf{natural filtration}, defined as $\mathcal{F}_t^X = \sigma(X_s:\ s \leq t)$.
 
 \begin{mydef}
- A \textbf{stopping time} with respect to filtration $(\mathcal{F}_t)_{t=0}^T$ is a random variable $\tau:\ \Omega \rightarrow [0,T]\cup\{\infty\}$, such that $\{\tau \leq t\} \in \mathcal{F}_t$ for all $t \in [0,T]$.
+ A \textbf{stopping time} with respect to the filtration $(\mathcal{F}_t)_{t=0}^T$ is a random variable $\tau:\ \Omega \rightarrow [0,T]\cup\{\infty\}$, such that $\{\tau \leq t\} \in \mathcal{F}_t$ for all $t \in [0,T]$.
 \end{mydef}
 If $X$ is a process corresponding to some risky game, then a stopping time may be seen as a strategy which tells us whether we should withdraw at time $t$, basing only on the information accessible at time $t$.
 \begin{example}
  A typical example of a stopping time is first $t$, when $X_t$ reaches a fixed barrier, i.e.
  \[\tau = \inf\{t\in[0,T]: X_t \geq b\}\]
 \end{example}
-\noindent Stopping times play important role in financial mathematics. Often we are interested in finding an optimal strategy for exercising an option. Such strategy is a stopping time.
+\noindent Stopping times play important role in the financial mathematics. Often we are interested in finding an optimal strategy for exercising an American option. Such strategy is a stopping time.
 
 \begin{mydef}
- We call a stochastic process $M=(M_t)_{t=0}^T$ a \textbf{martingale} with respect to the filtration the $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
+ We call a stochastic process $M=(M_t)_{t=0}^T$ a \textbf{martingale} with respect to the filtration $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
  \begin{itemize}
   \item for all $t \in [0,T],\ M_t$ is $\mathcal{F}_t$-measurable,
   \item for all $t \in [0,T],\ \E|M_t| < \infty$,
@@ -208,15 +209,21 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
 \end{mydef}
 
 \begin{example}
- Brownian motion $W$ is a martingale. Indeed, we have
- \begin{equation*}
-  \E[W_t|\mathcal{F}_s] = \E[W_t-W_s|\mathcal{F}_s] + \E[W_s|\mathcal{F}_s] = \E[W_t-W_s] + W_s = W_s.
- \end{equation*}
- for all $t > s$.
+ Brownian motion $W$ is a martingale with respect to its natural filtration $\mathcal{F}$. Indeed, for all $t > s$ we have
+ \begin{samepage}
+  \begin{itemize}
+  \item $W_t \sim \mathcal{F}_t$,
+  \item $\E|W_t| \leq \sqrt{t} < \infty$ (becuase from Jensen's inequality: $(\E|W_t|)^2 \leq \E W_t^2 = t$),
+  \item $\E[W_t|\mathcal{F}_s] = \E[W_t-W_s|\mathcal{F}_s] + \E[W_s|\mathcal{F}_s] = \E[W_t-W_s] + W_s = W_s$.
+ \end{itemize}
+ \end{samepage}
+
 \end{example}
 \begin{example}
  \label{ex:angleWt}
- Process $(W_t^2-t)_t$ is a martingale. As previously, for any $t > s$
+ Process $(W_t^2-t)_t$ is a martingale with respect to $W$'s natural filtration $\mathcal{F}$. Of course $(W_t^2-t) \sim \mathcal{F}_t$. From
+ \[ \E|W_t^2-t| \leq \E(|W_t^2| + |t|) = \E(W_t^2 + t) = 2t\]
+ we have $\E|W_t^2-t| < \infty$. Moreover, for any $t > s$
  \begin{equation*}
   \begin{split}
        & \E[W_t^2-t|\mathcal{F}_s] = \E[(W_t-W_s)^2 + 2W_tW_s - W_s^2|\mathcal{F}_s] -t =\\ 
@@ -228,13 +235,13 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
 \end{example}
 
 \begin{mydef}
- A stochastic process $M=(M_t)_{t=0}^T$ is called a \textbf{supermartingale} with respect to the filtration the $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
+ A stochastic process $M=(M_t)_{t=0}^T$ is called a \textbf{supermartingale} with respect to the filtration $(\mathcal{F}_t)_{t=0}^T$ if and only if it satisfies following conditions:
  \begin{itemize}
   \item for all $t \in [0,T],\ M_t$ is $\mathcal{F}_t$-measurable,
   \item for all $t \in [0,T],\ \E|M_t| < \infty$,
   \item for all $0 \leq s < t \leq T,\  M_s \geq \E[M_t|\mathcal{F}_s]$  a.s.
  \end{itemize}
- $M$ is called \textbf{submartingale} if it is satisfies the above conditions, but with an inequality $ M_s \leq \E[M_t|\mathcal{F}_s]$.
+ $M$ is called a \textbf{submartingale} if it is satisfies the above conditions, but with an inequality $ M_s \leq \E[M_t|\mathcal{F}_s]$.
 \end{mydef}
 \begin{example}
  For $0 \leq s < t \leq T$ we have
@@ -243,29 +250,30 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
 \end{example}
 
 
-The breakthrough allowing financial mathematics to devolop was discovery of It\^{o} integral, named after Japanese mathematician Kiyoshi It\^{o}. We will not discuss constructon of such integral, what is done for example in \cite{latala}.
+The breakthrough which initiated a rapid development of the financial mathematics was the discovery of It\^{o} integral, named after Japanese mathematician Kiyoshi It\^{o}. We will not discuss construction of such integral, what is done for example in \cite{latala}.
 Instead we will provide some intuition about its meaning. It\^{o} integral of $X=(X)_{t=0}^T$ with respect to Wiener process $W=(W)_{t=0}^T$ is a stochastic process
 \[ \left( \int_0^{t} X_s dW_s \right)_{t = 0}^T, \]
 where
 \begin{equation}
  \label{eq:ito_integral}
-  \int_0^{t} X_s dW_s = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n X_{t_{i-1}} (W_{t_i} - W_{t_{i-1}}).
+  \int_0^{t} X_s dW_s = \lim_{n \rightarrow \infty} \sum\limits_{i=1}^n X_{t_{i-1}} (W_{t_i} - W_{t_{i-1}}).
 \end{equation}
-As we can see the above definition is similar to the Stieltjes integral definition, which is defined for $g$ with locally bounded variation, and continous $f$, as
-\[  \int_0^{t} f(s) dg(s) = \lim_{n \rightarrow \infty} \sum\limits_{i=0}^n f(t_{i-1}) (g(t_i) - g(t_{i-1})). \]
+and for each $n$, $\{t_i\}_{i=0}^n$ is a partition of the interval $[0,t]$, whose diameter converges to 0 as $n$ tends to infinity.
+As we can see It\^{o} integral is similar to the Stieltjes integral, which is defined for $g$ with locally bounded variation, and continous $f$, as
+\[  \int_0^{t} f(s) dg(s) = \lim_{n \rightarrow \infty} \sum\limits_{i=1}^n f(t_{i-1}) (g(t_i) - g(t_{i-1})). \]
 However, on almost all trajectories $W$ has locally unbounded variation. In order to give sense to equation (\ref{eq:ito_integral}), the limit has to be taken in $L_2$.
 
 \begin{remark} Note that
 \begin{itemize}
- \item to integrate $\int\limits_0^t X_s ds$ we need only ``standard'' Riemann theory. The integrand is random, hence $\int\limits_0^t X_s ds$ is a function $\omega \mapsto \int\limits_0^t X_s(\omega) ds$ and the last term is a Riemann integral.
- \item $\int\limits_0^t X_s dW_s$ denotes stochastic integral, thus its calculation requires It\^{o} theory.
+ \item to integrate $\int\limits_0^t X_s ds$ we need only ``standard'' Riemann theory. The integrand is random, but $\int\limits_0^t X_s ds$ can be treated as a function $\omega \mapsto \int\limits_0^t X_s(\omega) ds$ and the last term is a Riemann integral of a function $X(\omega)$.
+ \item $\int\limits_0^t X_s dW_s$ denotes a stochastic integral, thus its calculation requires It\^{o} theory.
 \end{itemize}
 \end{remark}
 
 
 \begin{mydef}
 \label{def:SDE}
- Let $\mu, \sigma \in C^1,\ \xi$ be $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
+ Let $\mu, \sigma \in C^1,\ \xi$ be a $\mathcal{F}_s$-measurable random variable. We say that process $X=(X_t)_{t=0}^T$ solves a \textbf{stochastic differential equation (SDE)}
  \begin{equation*}
  \begin{split}
    dX_t &= \mu(X_t)dt + \sigma(X_t) dW_t,\\
@@ -281,7 +289,7 @@ for all $t \in [0,T)$.
 \end{remark}
 \[ dX = \mu(X)dt + \sigma(X) dW. \]
 
-Next definition presents one of the most important type of processes, used to model asset movements in markets.
+Next definition presents one of the most important type of processes, used to model asset movements in real-world markets.
 \begin{mydef}
  A stochastic process $S$ given by SDE
  \begin{equation}
@@ -305,7 +313,7 @@ Now we can formulate a version of It\^{o}'s lemma, which is widely used in finan
   \end{equation}  
 \end{thm}
 
-\noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, formulated theorem will be sufficient.
+\noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, the formulated theorem will be sufficient.
 Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
 It\^{o}'s lemma is a very powerfull tool, indispensable in Black-Scholes theory. We will show how it can be used to solve equation (\ref{eq:gbm}).
@@ -319,7 +327,7 @@ It\^{o}'s lemma is a very powerfull tool, indispensable in Black-Scholes theory.
  \end{equation}
 \end{prop}
 \begin{proof}
-We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. We have
+We will apply It\^{o}'s formula with $F(S,t) = \ln(S)$. We have
  \begin{equation*}
   \begin{split}
    dF &= \frac{\partial F}{\partial S}dS + \frac{\partial F}{\partial t}dt + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt \\
@@ -332,7 +340,7 @@ We will apply Theorem \ref{thm:ito} (It\^{o}'s formula) with $F(S,t) = \ln(S)$. 
  \begin{equation*}
   \begin{split}
   F(S_t,t) &= F_0 + \int\limits_0^t (\mu - \frac{1}{2}\sigma^2) ds + \int\limits_0^t \sigma dW_s\\
-  &= F_0 + (\mu - \frac{1}{2}\sigma^2)t + \int\limits_0^t \sigma W_t. 
+  &= F_0 + (\mu - \frac{1}{2}\sigma^2)t +  \sigma W_t. 
   \end{split}.
  \end{equation*}
  By substituting $S_0 = e^{F_0}$, we get
@@ -350,7 +358,7 @@ So far, we have discussed only one dimensional stochastic processes. However, of
         \end{array} \right],\]
 where all components are independent Wiener processes.
 \end{mydef}
-Movements of asset prices usually can not be regarded as independent. We need notation to describe dependency between processes.
+Movements of asset prices usually cannot be regarded as independent. We need notation to describe dependency between processes.
 \begin{mydef}
  We say that Wiener processes $W$ and $V$ are correlated and have correlation $\varrho$, what we denote by
  \[ \Corr(W, V) = \varrho, \]
@@ -364,10 +372,10 @@ Movements of asset prices usually can not be regarded as independent. We need no
  The process $W$ is called \textbf{$d$-dimensional correlated Wiener process} with correlation matrix $\Sigma = (\varrho_{ij})_{i,j=1}^d$, if and only if $W = [W^{(1)},W^{(2)},\ldots,W^{(d)}]'$, where for each $i,j$, $\Corr(W^{(i)}, W^{(j)}) = \varrho_{ij}$.   
 \end{mydef}
 
-We end this section with the Girsanov theorem, whose significance in the financial mathematics arises from the fact, that it allows us to move from the real measure $\P$ to an equivalent martingale measure $\Pm$. In the literature exist many versions of this theorem. The one presented here comes from \cite{bjork}, there reader may also finde the proof.
+We end this section with the Girsanov theorem, whose significance in the financial mathematics arises from the fact, that it allows us to move from the real measure $\P$ to an equivalent martingale measure $\Pm$. In the literature exist many versions of this theorem. The one presented here comes from \cite{bjork}, there Reader may also find the proof.
 \begin{thm}[\bfseries Girsanov theorem]
  \label{thm:girsanov}
- Let $\bar{W}$ be a $d$-dimensional standard Wiener process on probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$ and let $\varphi$ be any $d$-dimensional adapted column vector process.
+ Let $\bar{W}$ be a $d$-dimensional standard Wiener process on the probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$ and let $\varphi$ be any $d$-dimensional adapted column vector process.
  Choose a fixed $T$ and define the process $L$ on $[0,T]$ by
  \[ L_t = \exp\left\{ \int\limits_0^t \varphi_s \cdot d\bar{W}_s - \frac{1}{2}\int\limits_0^t ||\varphi_s||^2ds. \right\} \]
  Assume that 
@@ -387,7 +395,7 @@ Monte Carlo methods are a class of algorithms designed for estimation of unknown
 They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
 
 \subsection{Crude Monte Carlo}
-Suppose we want to estimate an unknown value $I$, which can be written as expected value of some random variable, i.e.
+Suppose that we want to estimate an unknown value $I$, which can be written as expected value of some random variable, i.e.
 \begin{equation}
  \label{eq:EY}
  I = \E Y. 
@@ -403,7 +411,7 @@ This procedure is justified by the strong law of large numbers. Let
 \end{equation}
 Of course $\E\CMC[n] = \E Y = I$, so $\CMC[n]$ is unbiased. Moreover, from the law of large numbers $\CMC[n] \conv I$ a.s., what explains why Monte Carlo method works. 
 
-Value $\CMC[n]$ is called \textbf{crude Monte Carlo} estimator. Simple calculation gives its variance
+Value $\CMC[n]$ is called \textbf{crude Monte Carlo (CMC)} estimator. Simple calculation gives its variance
 \begin{equation}
  \label{eq:VarCMC}
  \Var(\CMC[n]) = \frac{1}{n}\Var(Y).
@@ -413,7 +421,7 @@ In this paragraph we will simply write $\hat{Y}_n$ instead of $\CMC[n]$.
 Here appears a natural question, how big should be the number $n$ to obatain the satisfying accuracy of the estimator?
 To find an answer we have to specify the question a little more: for chosen numbers $b$ and $\alpha$, how big should be $n$, so we could tell, that an error of the estimation, with probability $1-\alpha$, is not greater than $b$?
 
-Let $\sigma = \sqrt{\Var{Y}}$, $z_{1-\alpha/2} = \Phi^{-1}(1-\alpha/2)$, where $\Phi$ is cumulative distribution function of normal distribution.
+Let $\sigma = \sqrt{\Var{Y}}$, $z_{1-\alpha/2} = \Phi^{-1}(1-\alpha/2)$, where $\Phi$ is the cumulative distribution function of the normal distribution.
 Strong convergence of $\hat{Y}_n$ implies also weak convergence, what means that
 \[ \P(|\hat{Y}_n - I| > b) \conv 0 \hbox{\ \ a.s.,} \]
 for any $b > 0$. 
@@ -423,14 +431,14 @@ Hence we write
  \P(-b \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{n}  \leq b) &= 1 - \alpha\\
  \P(-\frac{b\sqrt{n}}{\sigma} \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{\sqrt{n}\sigma}  \leq \frac{b\sqrt{n}}{\sigma}) &= 1 - \alpha
 \end{align*}
-From Central Limit Theorem we have
+From Central Limit Theorem we know that
 \[ \limn \P(-z_{1-\alpha/2} \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{\sqrt{n}\sigma}  \leq z_{1-\alpha/2}) = 1 - \alpha, \]
 hence for large $n$ we have
 \[z_{1-\alpha/2} \approx \frac{b\sqrt{n}}{\sigma}.\]
-In a typical situation we do not know variation of $Y$ (we don't even know the expected value, yet we are using Monte Carlo method to find it!), so above formula has rather theoretical meaning.
-However, there is a version of CLT which uses unbiased estimator
+In a typical situation we do not know variation of $Y$ (we do not even know the expected value, after all we are using Monte Carlo method to find it!), so the above formula has rather theoretical meaning.
+Instead, we have to use an unbiased estimator
 \[ \hat{\sigma} = \frac{1}{n-1}\sum\limits_{i=1}^n (Y_i - \hat{Y}_n)^2 \]
-instead of $\sigma$, what allows to replace $\sigma$ by $\hat{\sigma}$ in above approximation. We have proven following 
+and replace $\sigma$ by $\hat{\sigma}$ in above approximation. The foregoing discussion may be considered a sketch of a proof of following
 \begin{thm}
  Dependency between number of simulations $n$, error $b$ and confidence level $\alpha$ is given by following formulas
  \begin{equation}
@@ -442,9 +450,9 @@ instead of $\sigma$, what allows to replace $\sigma$ by $\hat{\sigma}$ in above 
    n = \frac{\hat{\sigma}^2 z_{1-\alpha/2}^2}{b^2}.
  \end{equation}
 \end{thm}
-\noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulation. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
+\noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulations. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
 
-Unfortunatly equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with smallest possible variance. In next sections two methods of variance reduction are discussed.
+Unfortunatly equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with the smallest possible variance. In next paragraphs, two methods of variance reduction are discussed.
 
 The confidence level $\alpha$, which appears in (\ref{eq:error}) in quantile function, is not essential when comparing two estimators. Hence we introduce 
 \begin{mydef}
@@ -455,13 +463,15 @@ The confidence level $\alpha$, which appears in (\ref{eq:error}) in quantile fun
  \end{equation}
 is called \textbf{standard error} (abbreviated \textbf{s.e.}).
 \end{mydef}
-Suppose that in some fixed time we can take $n$ samples from distribution of $Y$, and $m$ samples from distribution of $Z$, where $EY = EZ = I$. In order to settle which estimator is better, $\hat{Y}_n$ or $\hat{Z}_m$, it is sufficient to compare their standard errors, that is $\dfrac{\hat{\sigma}_Y}{\sqrt{n}}$ and $\dfrac{\hat{\sigma}_Z}{\sqrt{m}}$.
+Suppose that in some fixed time we can take $n$ samples from the distribution of $Y$, and $m$ samples from the distribution of $Z$, where $EY = EZ = I$. In order to settle which estimator is better, $\hat{Y}_n$ or $\hat{Z}_m$, it is sufficient to compare their standard errors, that is $\dfrac{\hat{\sigma}_Y}{\sqrt{n}}$ and $\dfrac{\hat{\sigma}_Z}{\sqrt{m}}$.
+
+Since $z_{0.975} \approx 2$, equation (\ref{eq:error}) tells us that with \textbf{95\% confidence difference between the real value and the result of the estimation will not exceed two standard errors.}
 
 \subsection{Antithetic variates}
-Let's consider again $I$ and $Y$ as in (\ref{eq:EY}). Equation (\ref{eq:sim}) shows that the number of simulations required to obtain given accuracy is proportional to variance of $Y$. It explains the necessity of choosing $Y$ wisely. If we can find $Y'$ which has smaller variance than $Y$, then we can significantly decrease the number of needed simulations.
+Let us consider again $I$ and $Y$ as in (\ref{eq:EY}). Equation (\ref{eq:sim}) shows that the number of simulations required to obtain given accuracy is proportional to variance of $Y$. It explains the necessity of choosing $Y$ wisely. If we can find $Y'$ which has smaller variance than $Y$, then we can significantly decrease the number of needed simulations.
 We will describe two techniques of variance reduction: this paragraph introduces antithetic variates method, and the following presents control variates method.
 
-In \textbf{antithetic variates method} every sample is a pair of values, each from the same distribution as $Y$. Every of $n$ sample pairs is independent from each other, however random variables in a pair should be correlated. In the other words we consider pairs $(Y_{2i-1}, Y_{2i})$, $i=1,2,...,n$,
+In \textbf{antithetic variates method (AV method)} every sample is a pair of values, each from the same distribution as $Y$. Every of $n$ sample pairs is independent from each other, however random variables in a pair should be correlated. In the other words we consider pairs $(Y_{2i-1}, Y_{2i})$, $i=1,2,...,n$,
 where each $(Y_{2i-1}, Y_{2i})$ is independent from $(Y_{2j-1}, Y_{2j})$, if $i \neq j$, and for some $\varrho$, $\Corr(Y_{2i-1}, Y_{2i}) = \varrho$. Let
 \begin{equation*}
  \tilde{Y}_i = \frac{Y_{2i-1} + Y_{2i}}{2},\ \ \ i = 1,2,...,n.
@@ -469,9 +479,9 @@ where each $(Y_{2i-1}, Y_{2i})$ is independent from $(Y_{2j-1}, Y_{2j})$, if $i 
 It is clear that $(\tilde{Y}_i)_{i=1}^n$ are i.i.d., and their variance satisifies
 \begin{equation*}
  \begin{split}
- \Var(\tilde{Y}_i) &= \dfrac{1}{4} \Var( Y_{2i-1} + Y_{2i} ) = \dfrac{1}{4} (\Var(Y_{2i-1}) + \Var(Y_{2i}) + 2\Cov(Y_{2i-1}, Y_{2i})) \\
+ \Var(\tilde{Y}_i) &= \dfrac{1}{4} \Var( Y_{2i-1} + Y_{2i} ) = \dfrac{1}{4} (\Var(Y_{2i-1}) + \Var(Y_{2i}) + 2\cdot\Cov(Y_{2i-1}, Y_{2i})) \\
  %&= \dfrac{1}{4} (\Var(Y_{2i-1}) + \Var(Y_{2i}) + 2\Corr(Y_{2i-1}, Y_{2i})\sqrt{\Var(Y_{2i-1})\Var(Y_{2i})})
- &= \dfrac{1}{4} (2\Var(Y) + 2\Var(Y)\varrho) \\
+ &= \dfrac{1}{4} (2\cdot\Var(Y) + 2\cdot\Var(Y)\varrho) \\
  &= \dfrac{\Var(Y)}{2} (1 + \varrho).
  \end{split}
 \end{equation*}
@@ -479,7 +489,7 @@ We define \textbf{antithetic variates estimator} as
 \begin{equation*}
  \AV[n] = \frac{1}{n}\sum\limits_{i=1}^n \tilde{Y}_i.
 \end{equation*}
-We calculate its variance
+It is clear that such estimator is unbiased, i.e. $\E\AV[n] = I$. Let us calculate its variance
 \begin{equation}
  \label{eq:VarAV}
  \begin{split}
@@ -487,16 +497,16 @@ We calculate its variance
    &= \frac{1}{n} \Var(\tilde{Y}_i) = \dfrac{\Var(Y)}{2n} (1 + \varrho).
  \end{split}
 \end{equation}
-From (\ref{eq:VarCMC}) we see that variance of the crude Monte Carlo estimator, which performs the same number of draws, equals $\frac{1}{2n}\Var(Y)$. Hence, if correlation of random variables in a pair is negative, then we reduce variance. In consequence the number of simulations necessary to keep an error smaller than $b$, at the confidence level $\alpha$ is also smaller.
+In order to calculate $\AV[n]$ we have to take $2n$ samples (or rather $n$ pairs of samples). From (\ref{eq:VarCMC}) we see that variance of the crude Monte Carlo estimator, which performs the same number of draws, equals $\frac{1}{2n}\Var(Y)$. Hence, if correlation of random variables in a pair is negative, then we reduce variance. In consequence the number of simulations necessary to keep an error smaller than $b$, at the confidence level $\alpha$ is also smaller.
 
 \subsection{Control variates}
-The \textbf{control variates method} also involves drawing pairs of values, however in opposite to antithetic variates method, elements in pair do not come from the same distribution and expected value of the second distribution must be known. More precisely, we consider pairs $(Y_i, X_i)$, $i=1,2,...,n$, where each $(Y_i, X_i)$ is independent from $(Y_j, X_j)$,
-if $i \neq j$, $\E X$ is known and $\Cov(Y_i, X_i) > 0$. Let $\hat{X}_n = \frac{1}{n}\sum_{i=1}^n X_i$. \textbf{Control variates estimator} is defined as
+The \textbf{control variates method (CV method)} also involves drawing pairs of values, however in opposite to antithetic variates method, elements in pair do not come from the same distribution and expected value of the second distribution must be known. More precisely, we consider pairs $(Y_i, X_i)$, $i=1,2,...,n$, where each $(Y_i, X_i)$ is independent from $(Y_j, X_j)$,
+if $i \neq j$, $\E X$ is known and $|\Cov(Y_i, X_i)| > 0$. Let $\hat{X}_n = \frac{1}{n}\sum_{i=1}^n X_i$. \textbf{Control variates estimator} is defined as
 \begin{equation}
  \label{eq:CV}
  \CV[n] = \CMC[n] + c(\hat{X}_n - \E X)
 \end{equation}
-for some $c$. In order to reduce variance $c$ must be chosen properly. We have
+for some $c$. Clearly, $\CV[n]$ is unbiased. In order to reduce variance, $c$ must be chosen properly. We have
 \begin{equation*}
  \begin{split}
  \Var( \CV[n] ) &= \Var( \CMC[n] + c\hat{X}_n ) = \frac{1}{n^2} \Var \left( \sum\limits_{i=1}^n( Y_i + c X_i) \right) \\
@@ -505,7 +515,7 @@ for some $c$. In order to reduce variance $c$ must be chosen properly. We have
 \end{equation*}
 The last expression is a simple quadratic equation with respect to $c$, hence it is easy to determine for which argument it reaches its minimum value:
 \[ c = -\frac{\Cov(Y,X)}{\Var(X)}. \]
-Let $\varrho = \Corr(Y,X)$. By substituting $c$ to the last equation we get
+Let $\varrho = \Corr(Y,X)$. By substituting $c$ to the last equation we obtain
 \begin{equation}
  \begin{split}
  \Var( \CV[n] ) &=  \frac{1}{n} \left( \Var(Y) - 2\frac{\Cov(Y,X)^2}{\Var(X)} + \frac{\Cov(Y,X)^2}{\Var(X)^2} \Var(X) \right) \\
@@ -541,48 +551,48 @@ To compare presented Monte Carlo methods let us calculate value of $I = \int_0^1
  \end{equation*}
 where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. The results of comparision of all presented methods are gathered in Table \ref{tab:MCcompare} and Figures \ref{fig:boxMC}, \ref{fig:convergenceMC}.
 
-\begin{table}
+\begin{table}[h]
 \centering
  \caption{Results of calculating $\int_0^1 e^x dx$ by simulation.}
  \label{tab:MCcompare}
 \begin{tabular} {||c | c | c | c | c |c | c ||}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMC[2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AV[n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CV[n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-100    & 1.69825 & 0.03504 & 1.71717 & 0.00648 & 1.71962 & 0.00638 \\ \hline 
-1000   & 1.72458 & 0.01094 & 1.72171 & 0.00205 & 1.72032 & 0.00203 \\ \hline 
-10000  & 1.72116 & 0.00349 & 1.71805 & 0.00062 & 1.71918 & 0.00063 \\ \hline 
-100000 & 1.71665 & 0.00110 & 1.71802 & 0.00020 & 1.71844 & 0.00020 \\ \hline 
-1000000& 1.71796 & 0.00035 & 1.71831 & 0.00006 & 1.71829 & 0.00006 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMC[2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AV[n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CV[n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+  2 & 1.69825 & 0.03504 & 1.71717 & 0.00648 & 1.71962 & 0.00638 \\ \hline 
+  3 & 1.72458 & 0.01094 & 1.72171 & 0.00205 & 1.72032 & 0.00203 \\ \hline 
+  4 & 1.72116 & 0.00349 & 1.71805 & 0.00062 & 1.71918 & 0.00063 \\ \hline 
+  5 & 1.71665 & 0.00110 & 1.71802 & 0.00020 & 1.71844 & 0.00020 \\ \hline 
+  6 & 1.71796 & 0.00035 & 1.71831 & 0.00006 & 1.71829 & 0.00006 \\ \hline 
 \end{tabular}  
 \end{table}
 
 \begin{figure}
 \centering
- \includegraphics[scale=0.4]{images/Preliminaries/boxMonteCarlo.pdf}
+ \includegraphics[scale=0.6]{images/Preliminaries/boxMonteCarlo.pdf}
 \caption{For each method 10000 simulations were run 100 times. Hence each method gave 100 estimations of $\int_0^1 e^x dx$. Small points indicate obtained values. As usually in box plots, the lower and upper edges of the boxes are first and third quartiles.  }
 \label{fig:boxMC}
 \end{figure}
 
 \begin{figure}
 \centering
- \includegraphics[scale=0.4]{images/Preliminaries/convergenceMC.pdf}
-\caption{Comparision of speed of convergence. }
+ \includegraphics[scale=0.6]{images/Preliminaries/convergenceMC.pdf}
+\caption{Comparision of the speed of convergence. }
 \label{fig:convergenceMC}
 \end{figure}
 
 We see that in this case antithetic and control variates methods gave approximatly equal results, while crude Monte Carlo is far behind them. When performing one million simulations (in case of CMC two millions) standard error turned out 50 times smaller in AV and CV than in CMC. It means that results from the first two methods are more than one digit more accurate.
 
-Box plot from figure \ref{fig:boxMC} shows that variance of the crude Monte Carlo estimator is greater than in two other methods. In practice it means, that if we run simulations with AV estimator or CV estimator, then every time we would obtain more or less equal result. For CMC discrepancy between the results would be much bigger.
+Box plot in Figure \ref{fig:boxMC} shows that a variance of the crude Monte Carlo estimator is much more greater than in the two other methods. In practice it means, that if we ran simulations with AV estimator or CV estimator, then every time we would obtain more or less equal result. For CMC the discrepancy between the results would be far greater.
 Figure \ref{fig:convergenceMC} explains that fact -- speed of convergence of CMC is definitely lower than two other methods.
 
-In order to realize why AV and CV methods result with so similar accuracy, look at (\ref{eq:VarAV}) and (\ref{eq:VarCV}). In AV method variance is reduced by a coefficient
+In order to realize why AV and CV methods lead to so similar accuracy, look at (\ref{eq:VarAV}) and (\ref{eq:VarCV}). In AV method variance is reduced by a coefficient
 \[ \frac{1 + \Corr(e^U, e^{1-U})}{2} \approx \frac{1 - 0.968}{2} = 0.0162, \]
 while in CV method variance is reduced by a coefficient
 \[ 1 - \Corr(e^U, U)^2 \approx 1 - 0.992^2 = 0.0163. \]
 Such similarity of the results is pure coincidence.
 
-At the end note that this is very tendentious example, which shows that variance reduction may be very usefull. Actually, in many applications it may be difficult to find pairs of highly correlated random variables necessary to use AV or CV methods.
+Let us finish this example with a remark that this was a preconceived case, which showed that variance reduction techniques may be very useful. Actually, in many applications it may be difficult to find appropriate pairs of highly correlated random variables necessary to use AV or CV methods.
 \end{example}
 
 
@@ -590,7 +600,7 @@ At the end note that this is very tendentious example, which shows that variance
 Now, when we know how Monte Carlo methods work, we need to describe how to get random values.
 \paragraph{Independent standard normal random variables.} Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
 
-The most popular way is to use \textbf{Box-Muller algorithm}, which uses two independent variates with uniform distribution on $(0,1)$, and ``produces'' two independent variates with standard normal distribution.
+The most popular way is to use the \textbf{Box-Muller algorithm} which uses two independent variates with the uniform distribution on $(0,1)$, and ``produces'' two independent variates with the standard normal distribution.
 \begin{algorithm}[!ht]
  \begin{algorithmic}[1]
   \Function{BoxMuller}{}
@@ -600,13 +610,13 @@ The most popular way is to use \textbf{Box-Muller algorithm}, which uses two ind
     \State \Return ($N_1$, $N_2$).
   \EndFunction
  \end{algorithmic}
- \caption{Box-Muller method.}
+ \caption{The Box-Muller method.}
  \label{alg:box-muller}
 \end{algorithm}
 
-This method returns values of two independent random variables coming from standard normal distribution. When we need more than two samples, then of course we repeat that algorithm as many time as necessary.
+This method returns values of two independent random variables coming from the standard normal distribution. When we need more than two samples, then of course we repeat that algorithm as many times as necessary.
 
-In \cite{london} we can find a remark that necessity of calculating sine and cosine may slow the above algorithm down. Another algorithm, \textbf{polar rejection}, is proposed.
+In \cite{london} we can find a remark that necessity of calculating sine and cosine may slow down the above algorithm. Another algorithm, \textbf{polar rejection}, is proposed.
 \begin{algorithm}[!ht]
  \begin{algorithmic}[1]
   \Function{PolarRejection}{}
@@ -624,13 +634,7 @@ In \cite{london} we can find a remark that necessity of calculating sine and cos
  \label{alg:polarRejection}
 \end{algorithm}
 
-However, conducted experiment does not show any significat diffrence in efficiency of both presented methods. Code for the test is presented on Listing \ref{lst:rnorm}.
-\lstset{  basicstyle=\scriptsize }
-\lstinputlisting[language=Java, caption=Java program for comparision of normal random values generators, label=lst:rnorm]{listings/rnormTest.java}
-For both algorithms program takes ten millions pairs of values and prints following \hbox{output}\footnote{Test was performed on a notebook with processor Intel® Core™2 Duo CPU P8400 @ 2.26GHz x 2 }: \bigskip \\
-\texttt{Box-Muller: 3.321 s.\\
-Polar rejection: 3.292 s.} \bigskip\\
-what brings us to conclusion that the efficiency of both algorithms is comparable and not worth bothering.
+However, conducted experiments do not show any significat diffrence in efficiency of both presented methods. It brings us to the conclusion that the efficiency of both algorithms is comparable and not worth bothering. Moreover, which method is faster may depend even on the choice of the programming language.
 
 \paragraph{Independet nonstandard normal random variables.} Sampling from an arbitrary normal distribution $\mathcal{N}(\mu, \sigma^2)$ is now straightforward. From the elementary probability theory comes following method.
 \begin{enumerate}
@@ -797,7 +801,7 @@ We start this section with definition of a mentioned contingent claim.
  \label{def:cc_eu}
  \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. \textbf{Derivative} of underlying assets $S^{(0)}, S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
 \end{mydef}
-European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim can not take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
+European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim cannot take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
 \begin{mydef}
  An \textbf{European call option} on the asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $E$.
@@ -908,7 +912,7 @@ Investors may both, borrow and lend, any amount of money at rate $r$.
     \label{eq:PriceProcessForm}
     F_t = \varphi(S_t, t).
     \end{equation}
-This assumption looks entirely natural, but it can not be concluded from what we discussed so far. It must be taken as an axiom.
+This assumption looks entirely natural, but it cannot be concluded from what we discussed so far. It must be taken as an axiom.
 \end{enumerate}
 \footnotetext{$F_t$ is the value of the option quoted at time $t$ (not discounted to time 0). The discounted price process is in this thesis denoted by letter $V$. }
 
@@ -1222,7 +1226,7 @@ Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucia
 
 
 \chapter[{Pricing European options using Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
-The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value can not be derived analitically. Thus, other methods must be used.
+The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value cannot be derived analitically. Thus, other methods must be used.
 The most popular are finite diffrence, binomial trees and Monte Carlo. In this thesis only the last one is presented.
 
 \section{Vanilla options}
@@ -1357,7 +1361,7 @@ This time the asset price usually ended above the options strike, what means tha
 \section{Path-depenent instruments}
 \label{sec:pricing_complicated}
 
-To price vanilla options it was sufficient to generate the asset price only at the maturity. However, there are contingent claims whose payoff depends on the entire history, for example barrier options or Asian options. Of course, we can not generate the entire trajectory, since it has continuum points. Thus, values of the asset must be generated in a finite number $K$ of points. By taking $K$ large enough, a continous model is approximated sufficiently.
+To price vanilla options it was sufficient to generate the asset price only at the maturity. However, there are contingent claims whose payoff depends on the entire history, for example barrier options or Asian options. Of course, we cannot generate the entire trajectory, since it has continuum points. Thus, values of the asset must be generated in a finite number $K$ of points. By taking $K$ large enough, a continous model is approximated sufficiently.
 
 It follows from equation (\ref{eq:vanilla_St}) that
 \begin{equation}
@@ -1596,7 +1600,7 @@ While having a method for scenario generation, valuation of the multiasset optio
 
 
 In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. However, modifications of options and their payoffs are only bounded by investors imagination (and by some integrability assumptions, but it is hard bo believe that investors can invent a claim which would not be sufficiently integrable).
-It should be clear how to modify Algorithm \ref{alg:priceBasketPutAV} to price options with any arbitrary payoff, even path-dependent. This is the main adventage of Monte Carlo methods in option pricing -- flexibility, which can not be provided by finite diffrence or binomial trees.
+It should be clear how to modify Algorithm \ref{alg:priceBasketPutAV} to price options with any arbitrary payoff, even path-dependent. This is the main adventage of Monte Carlo methods in option pricing -- flexibility, which cannot be provided by finite diffrence or binomial trees.
 
 We used described technique to price basket vanilla call option. We took following parameters:
 \begin{equation}
@@ -1641,7 +1645,7 @@ CV method gave the most accurate prices.
 Part \Roman{chapter} describes American-style derivatives. The diffrence between them and discussed previously European-style contracts is that American feature allows the owner of the derivative to exercise it at \emph{any time} up to the expiration date. This additional attribute makes the instrument much harder to analyze and more advanced theory is necessary to value and hedge.
 Due to the practical nature of this thesis we will not get deep into details. Nevertheless, we will provide mathematical tools necessary for pricing American contingent claims, advising the reader to find proofs in more specialist literature. 
 
-It turns out that Monte Carlo method from previous part can not be carried over directly to price American contracts. However, Least Squares Monte Carlo method uses a clever trick, so the simulations still can be involved. 
+It turns out that Monte Carlo method from previous part cannot be carried over directly to price American contracts. However, Least Squares Monte Carlo method uses a clever trick, so the simulations still can be involved. 
 
 \section{American contingent claims}
 Definition of the American contingent claim is analogous to its European counterpart, with one diffrence that it is not a random variable, but a \emph{process}.
