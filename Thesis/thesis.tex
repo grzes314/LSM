@@ -390,7 +390,7 @@ We end this section with the Girsanov theorem, whose significance in the financi
  Symbol $\cdot$ in definition of $L$ is the inner product of two vectors. 
 \end{remark}
 
-\section{Elements of Monte Carlo theory}
+\section{Introduction to Monte Carlo methods}
 Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation.
 They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
 
@@ -640,11 +640,11 @@ However, conducted experiments do not show any significat diffrence in efficienc
  \begin{algorithmic}[1]
   \Function{GaussDistr}{\null}
     \State $(Z_1, Z_2) \gets $ \Call{BoxMuller}{\null}
-    \Comment{{\color{comment} or $(N_1, N_2) \gets $ \Call{PolarRejection}{\null}}}
+    \Comment{{\color{comment} or $(Z_1, Z_2) \gets $ \Call{PolarRejection}{\null}}}
     \State \Return $\mu$ + $\sigma \cdot Z_1$
   \EndFunction
  \end{algorithmic}
- \caption{The polar rejection method.}
+ \caption{Drawing a random variable from the normal distribution $\mathcal{N}(\mu, \sigma^2)$.}
  \label{alg:gaussDist}
 \end{algorithm}
 
@@ -666,51 +666,66 @@ Hence
 \[ a = \varrho,\ \ \ \ b = \sqrt{1 - \varrho^2}. \]
 We have proven following
 \begin{prop}
+ \label{prop:corrNorm}
  If $Z_1$ and $Z_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any $\varrho \in [-1,1]$ random variables
  \begin{align*}
  N_1 &= Z_1 \\
  N_2 &= \varrho Z_1 + \sqrt{1 - \varrho^2} Z_2
  \end{align*}
-
- has distribution $\mathcal{N}(0,1)$ and $\Corr(Z_1, Z_3) = \varrho$.
+ have distribution $\mathcal{N}(0,1)$ and $\Corr(N_1, N_2) = \varrho$.
 \end{prop}
-The derivation of the above fact was intuitive, but we need a more general version.
 
+\begin{remark}
+ Let $\Sigma = \left( \begin{array}{cc}
+                    1    & \varrho \\
+                    \varrho & 1
+                    \end{array} \right),$
+  and $L = \left( \begin{array}{cc}
+                    1    & 0 \\
+                    \varrho & \sqrt{1 - \varrho^2}
+                    \end{array} \right).$
+ Clearly, vector $N = (N_1, N_2)'$ from Proposition \ref{prop:corrNorm} has the Gaussian distribution $\mathcal{N}(0, \Sigma)$. Moreover, $N = LZ$. There is an intresting correspondance between $\Sigma$ and $L$ -- simple matrix multiplication shows that $\Sigma = LL'$.  
+\end{remark}
+
+The derivation of the above fact was intuitive, but we need a more general version. It turns out that Proposition \ref{prop:corrNorm} can be generalized for higher dimensions.
+\begin{thm}
+ For the positive-definite matrix $\Sigma$ there exists a lower triangular matrix $L$, such that $\Sigma = LL'$. This representation of $\Sigma$ is called the \textbf{Cholesky decomposition}.
+\end{thm}
+Matrix $L$ from the above theorem may be obtained by the \textbf{Cholesky algorithm}. Utility of the Cholesky decomposition arises from the following fact.
 \begin{prop}
- If $Z_1$ and $Z_2$ are independent random variables with the same distribution $\mathcal{N}(0,1)$, then for any covariance matrix
- $\Sigma = \left( \begin{array}{cc}
-                      \sigma_{11}^2 & \sigma_{12}^2 \\
-                      \sigma_{12}^2 & \sigma_{22}^2
-                   \end{array} \right),$
- random vector $ N = \mu + LZ$, where
-  $L ~= \left( \begin{array}{cc}
-                      \sigma_{11} & 0 \\
-                      \frac{\sigma_{12}^2}{\sigma_{11}} & \sqrt{\sigma_{22}^2 - \frac{\sigma_{12}^4}{\sigma_{11}^2}}
-                   \end{array} \right)$,
- has distribution $\mathcal{N}(\mu,\Sigma)$. Moreover, $\Sigma = LL^T$.
+ Let $Z$ be a random vector with the multivariate normal distribution $\mathcal{N}(0, \mathbbm{I})$. Let $\Sigma$ be a covariance matrix and $\Sigma = LL'$. Then vector $N = \mu + LZ$ has the distribution $\mathcal{N}(\mu, \Sigma)$.
 \end{prop}
 \begin{proof}
-Let's focus on the case $\mu_1 = \mu_2 = 0$, since the mean may be added at the end. We have $Z \sim \mathcal{N}(\bf{0}, \mathbb{I})$. By making an assigment $N_1 = \sigma_{11} Z_1$, $N_1$ has the desired variance. As previously, we look for $N_2$ of the form $N_2 = a Z_1 + b Z_2$. We want the variance of $N_2$ to equal $\sigma_{22}^2$, so
-\[ \sigma_{22}^2 = \Var(N_2) = \Var( a Z_1) +  \Var(b Z_2) = a^2 + b^2 \]
-Moreover
-\[ \sigma_{12}^2 = \Cov(N_1, N_2) = \sigma_{11} a\Cov(Z_1, Z_1) + \sigma_{11} b\Cov(Z_1, Z_2) = a\sigma_{11} \]
-Hence
-\[ a = \frac{\sigma_{12}^2}{\sigma_{11}},\ \ \ \ b = \sqrt{\sigma_{22}^2 - \frac{\sigma_{12}^4}{\sigma_{11}^2}}. \] 
-Equation $\Sigma = LL^T$ may be proven by simple matrix multiplication.
+ It is clear that $N$ has the multivariate normal distribution. Morever,
+ \[ \E N = \E(\mu + LZ) = \mu + L\cdot\E Z = \mu, \]
+ \begin{equation*}
+  \begin{split}
+ \Cov(N) &= \E \bigl( (N - \E N) (N - \E N)' \bigr) = \E \bigl( (LZ - L\cdot \E Z) (LZ - L\cdot \E Z)' \bigr) =\\
+         &= \E \bigl( L(Z - \E Z) (Z - \E Z)'L' \bigr) = L\cdot \E \bigl( (Z - \E Z) (Z - \E Z)' \bigr) \cdot L' =\\
+         &= L\cdot \Cov(Z) \cdot L'= LL' = \Sigma.   
+  \end{split}
+ \end{equation*}
 \end{proof}
 
-It turns out that the above Proposition can be generalized for higher dimensions.
-%\begin{thm}
-% For the positive-definite matrix $\Sigma$ there 
-%\end{thm}
 
-
-That explains following algorithm for generating values from multivariate normal distribution with given mean vector $\mu$ and positive-definite covariation matrix $\Sigma$. 
+That explains how works Algorithm \ref{alg:gaussMulti} for generating values from the multivariate normal distribution with given mean vector $\mu$ and positive-definite covariation matrix $\Sigma$. 
 \begin{enumerate}
  \item Use Cholesky decomposition to obtain matrix $L$ such that $\Sigma = LL^T$,
  \item Using previously shown method generate vector $N$ of independent random variables with standard normal distribution.
  \item Return $\mu + LN$.
 \end{enumerate}
+\begin{algorithm}[!ht]
+ \begin{algorithmic}[1]
+  \Function{GaussMultiVariate}{$\mu$, $\Sigma$}
+    \State $L \gets $ \Call{CholeskyAlgorithm}{$\Sigma$}
+    \State $Z \gets $ vector of independent standard normal random variables.
+    \State \Comment{{\color{comment} $Z$ is obtained from \Call{BoxMuller}{} or \Call{PolarRejection}{}}}
+    \State \Return $\mu$ + $\Sigma \cdot Z$
+  \EndFunction
+ \end{algorithmic}
+ \caption{The polar rejection method.}
+ \label{alg:gaussMulti}
+\end{algorithm}
 
 
 \chapter{Basics of option pricing}
