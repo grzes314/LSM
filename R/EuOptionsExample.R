@@ -34,9 +34,9 @@ plotTrajectories <- function(n, K, alpha=0.5, r = 0.05, vol=0.2, S0 = 100, T=1.0
   
   ggplot(data=trs) + xlab("time")  + ylab("asset price") +
     geom_line( aes(x=time, y=value, group=variable), alpha=alpha ) +
-    geom_line( data=quartiles, aes(x=time, y=value, color=variable), size=1 ) +
+    geom_line( data=quartiles, aes(x=time, y=value, color=variable), size=2 ) +
     guides(color=guide_legend(title=NULL)) +
-    theme_bw() + theme(legend.justification=c(0,1), legend.position=c(0,1)) +
+    theme_bw(base_size=12) + theme(legend.justification=c(0,1), legend.position=c(0,1)) +
     scale_y_continuous(breaks = seq(from=50, to=200, by=10)) +
     scale_x_continuous(breaks = (0:10)/10)
 }

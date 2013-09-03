@@ -32,6 +32,30 @@
   {\titlerule
   \vspace{1pc}%
   \Huge}
+  
+\definecolor{comment}{RGB}{96,96,192}
+\definecolor{colorForKeyWord}{RGB}{165,42,42}
+
+\lstdefinestyle{customJava}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=L,
+  xleftmargin=\parindent,
+  language=Java,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\bfseries\color{colorForKeyWord},
+  commentstyle=\itshape\color{comment},
+  identifierstyle=\color{black},
+  stringstyle=\color{orange},
+}
+\lstset{escapechar=@,style=customJava}
+
+\newenvironment{absolutelynopagebreak}
+  {\par\nobreak\vfill\penalty0\vfilneg
+   \vtop\bgroup}
+  {\par\xdef\tpd{\the\prevdepth}\egroup
+   \prevdepth=\tpd}
 
 
 \newtheorem{thm}{Theorem}[chapter]
@@ -41,7 +65,7 @@
 
 \theoremstyle{definition}
 \newtheorem{mydef}{Definition}[chapter]
-\newtheorem{notation}[mydef]{Notation}
+%\newtheorem{notation}[mydef]{Notation}
 \newtheorem{example}{Example}[chapter]
 
 \theoremstyle{remark}
@@ -58,7 +82,7 @@
 \def\Q{{\mathbb{Q}}\,}
 \def\Cov{{\hbox{Cov}}}
 \def\Corr{{\hbox{Corr}}}
-\def\Em{{\mathbb{E}^*}\,}
+\def\Em{{\mathbb{E}^*}}
 \def\Pm{{\mathbb{P}}^*\,}
 \def\R{{\mathbb{R}}}
 \def\conv{\xrightarrow[n \rightarrow \infty]{}}
@@ -76,7 +100,6 @@
 \def\Bpipe{{\Bigl|\Bigr.}}
 \DeclareMathOperator*{\esssup}{ess\,sup}
 
-\definecolor{comment}{RGB}{96,96,192}
 
 
 %opening
@@ -729,34 +752,35 @@ That explains how works Algorithm \ref{alg:gaussMulti} for generating values fro
 
 
 \chapter{Basics of option pricing}
-The main field of interest of the financial mathematics is pricing so-called contingent claims, which are assets whose payoff depends on the stock prices. In case of the European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives price of the option. Antother way of pricing is using Monte Carlo simulations.
-Although the simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of the possibility to adjust them to diffrent contingent claims. 
+One of the main fields of interest in the financial mathematics is pricing so-called contingent claims, which are financial instruments whose value depends on some other assets. In case of the European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives the option's price. Antother way of pricing is using Monte Carlo simulations.
+Although the simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of the possibility to adjust them to very sophisticated contingent claims. 
 
 \section{Elements of arbitrage theory}
+Mathematical approach to the analysis of assets' prices requires modeling the prices as stochastic processes. This section describes fundamental concepts. The notation and the description of the market model presented here is based on \cite{follmer}.
 
-\subsection{Notation}
-Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a \textbf{real measure}, in opposite to artificial \textbf{risk-neutral measure}, which will be later on. Elements of $\Omega$ are called \textbf{market scenarios}.
-Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as set of all events observable up to time $t$.
+\subsection{Underlying framework}
+Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a \textbf{real measure}, in opposite to an artificial \textbf{risk-neutral measure}, which will be later on. Elements of $\Omega$ are called \textbf{market scenarios}.
+Furthermore $\sigma$-algebra $\mathcal{F}_t$ may be seen as a set of all events observable up to time $t$.
 
 We consider a market with $d+1$ assets, where each asset $S^{(i)} = (S^{(i)}_t)_{t=0}^T$ is modelled as a $\R_+$-valued stochastic process adapted to $(\mathcal{F}_t)_{t=0}^T$. The $0$\textsuperscript{th} asset is the money stored in a locally riskless bank account and is given by 
 \[S^{(0)}_t = \exp\left\{ \int\limits_0^t r(t)dt \right\},\]
-where $r(t)$ is a short term riskless interest rate at time $t$. In general $r(t)$ may also be a stochastic process, however often we will assume $r(t) \equiv r$ and then $S^{(0)}$ may also be regarded as a bond, paying $e^{rT}$ at time $T$. By $S$ we will denote a $d$-dimensional vector of prices of the risky assets, i.e.
+where $r(t)$ is a short term riskless interest rate at time $t$. In general $r(t)$ may also be a stochastic process, however, in this thesis we will focus only on the case $r(t) \equiv r$ and then $S^{(0)}$ may also be regarded as a bond, paying $e^{rT}$ at time $T$. By $S$ we will denote a $d$-dimensional (column) vector of prices of the risky assets, i.e.
 \begin{equation*}
- S_t = (S^{(1)}_t, S^{(2)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
+ S_t = (S^{(1)}_t, S^{(2)}_t, \ldots, S^{(d)}_t)', \ \ \ 0 \leq t \leq T.
 \end{equation*}
 We also introduce notation $\Sa$ for a $(d+1)$-dimensional vector of prices of all assets, that is
 \begin{equation*}
- \Sa_t = (S^{(0)}_t, S_t) = (S^{(0)}_t, S^{(1)}_t, \ldots, S^{(d)}_t), \ \ \ 0 \leq t \leq T.
+ \Sa_t = (S^{(0)}_t, S_t)' = (S^{(0)}_t, S^{(1)}_t, \ldots, S^{(d)}_t)', \ \ \ 0 \leq t \leq T.
 \end{equation*}
 
 For convenience we also consider discounted time processes
 \[ X^{(i)}_t = \frac{S^{(i)}_t}{S^{(0)}_t}. \]
 It allows us to compare asset prices quoted at diffrent times. In similar manner as previously we will use notation $X, \Xa$ for vectors of the discounted prices,
 \begin{equation*}
- X_t = (X^{(1)}_t, X^{(2)}_t, \ldots, X^{(d)}_t), \ \ \ 0 \leq t \leq T.
+ X_t = (X^{(1)}_t, X^{(2)}_t, \ldots, X^{(d)}_t)', \ \ \ 0 \leq t \leq T.
 \end{equation*}
 \begin{equation*}
- \Xa_t = (X^{(0)}_t, X^{(1)}_t, \ldots, X^{(d)}_t), \ \ \ 0 \leq t \leq T.
+ \Xa_t = (X^{(0)}_t, X^{(1)}_t, \ldots, X^{(d)}_t)', \ \ \ 0 \leq t \leq T.
 \end{equation*}
 
 Next definition gives us a notation to describe the content of \textbf{portfolio}.
@@ -767,7 +791,7 @@ Each $\xi^{(i)}_t$ has an interpretation of the quantity of shares of the $i$\te
 \[\xia_t \cdot \Sa_t = \sum\limits_{i=0}^d \xi^{(i)}_t S^{(i)}_t,\]
 where $\cdot$ is the inner product of two vectors.
 
-Assume that investor's portfolio is worth 101\$ today and a year ago it was worth 100\$. Did the investor really make a profit? If riskless interest rate equals 5\%, then investor would gain more if he put all his capital into bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
+Assume that investor's portfolio is worth 101,000\$ today and a year ago it was worth 100,000\$. When was the investor's financial condition better, today or a year ago? If the riskless interest rate equals 5\%, then the investor would gain more if he put all his capital into a bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
 \begin{mydef}
  The \textbf{discounted value process} $V^{\xi} = (V^{\xi}_t)_{t=0}^T$ associated with a trading strategy $\xia$ is given by 
  \begin{equation*}
@@ -781,7 +805,7 @@ The value $V^{\xi}_0$ is the initial investment into the portfolio. Following de
  A dynamic trading strategy is called \textbf{self-financing} if and only if for every $0 \leq t \leq T$
  \[ \sum\limits_{i=0}^d d\xi^{(i)}_t (S^{(i)}_t + dS^{(i)}_t) = 0. \]
 \end{mydef}
-This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let's think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $dS_t$. The portfolio needs a rearrangment -- $d\xia_t$ means changes of quantities of the held assets.
+This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let us think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $d\Sa_t$. The portfolio needs a rearrangment -- $d\xia_t$ represents changes of quantities of the held assets.
 Thus $d\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
 
 From now on we will consider only those market models that are efficient in the sense that they are arbitrage-free.
@@ -797,9 +821,9 @@ From now on we will consider only those market models that are efficient in the 
 What does arbitrage opportunity mean in practice? Assume an investor entering the market without any capital. He builds his portfolio by short sale of some assets and purchase of other assets for received money. Arbitrage opportunity is a situation when the investor at time $T$ can cover his short positions by sale of assets held long, and with positive probability he has some remaining cash.
 In the other words, he can make money without exposure to any downside risk. 
 
-Now we are moving to an important concept of martingule measure.
+Now we are moving to an important concept of a martingule measure.
 \begin{mydef}
- A probability measure $\Pm$ is a \textbf{martingale measure} if and only if the discounted price process $X$ is a $\Pm$-martingale, i.e. for all  $0 \leq s \leq t \leq T$
+ A probability measure $\Pm$ is called a \textbf{martingale measure} (or a \textbf{risk neutral measure}) if and only if the discounted price process $X$ is a $\Pm$-martingale, i.e. for all  $0 \leq s \leq t \leq T$
  \begin{equation}
   \label{eq:X-martingale}
   \Em[X_t] < \infty \hbox{\ \ and\ \ } \Em[X_t | \mathcal{F}_s] = X_s
@@ -813,7 +837,7 @@ Now we are moving to an important concept of martingule measure.
  \end{equation*}
 \end{remark}
 
-Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mathcal{F}$ are equivalent if and only if $\forall A \in \mathcal{F}.\ \P(A)=0 \Leftrightarrow \Pm(A)=0$. Next theorem, known as \textbf{first fundamental theorem of asset pricing}, shows importance of martingale measures.
+Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mathcal{F}$ are equivalent if and only if for all $A \in \mathcal{F}$, $\P(A)=0$ if and only if $\Pm(A)=0$. Next theorem, known as the \textbf{first fundamental theorem of asset pricing}, shows the importance of martingale measures.
 \begin{thm}[\bfseries First FTAP]
  \label{thm:fftap}
  The following to statements are \emph{essentialy} equivalent:
@@ -826,17 +850,18 @@ Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``
 
 \section{European contingent claims}
 \label{sec:ECC}
-We start this section with definition of a mentioned contingent claim.
+We start this section with a definition of a mentioned contingent claim.
 \begin{mydef}
  \label{def:cc_eu}
- \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. \textbf{Derivative} of underlying assets $S^{(0)}, S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
+ An \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. A \textbf{derivative} of the underlying assets $S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
 \end{mydef}
-European contingent claims may be seen as assets yielding a random payoff at \textbf{exercise date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim cannot take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
+European contingent claims may be seen as assets yielding a random payoff at the \textbf{expiration date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim cannot take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
+\subsection{Examples of derivatives}
 \begin{mydef}
- An \textbf{European call option} on the asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for a fixed price $E$.
+ An \textbf{European call option} on the asset $S^{(i)}$ with expiration date $T$ and \textbf{strike price} $E$ gives its owner the right, but not the obligation, to \underline{buy} that asset at time $T$ for price $E$.
  
- An \textbf{European put option} on the asset $S^{(i)}$ with exercise date $T$ and \textbf{strike price} $E$ gives it's owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for a fixed price $E$.
+ An \textbf{European put option} on the asset $S^{(i)}$ with expiration date $T$ and \textbf{strike price} $E$ gives its owner the right, but not the obligation, to \underline{sell} that asset at time $T$ for price $E$.
 \end{mydef}
 From the definition
 \begin{equation}
@@ -851,17 +876,17 @@ where $(x)_+ = \max(0,x)$.
 
 Options defined above are also called \textbf{vanilla options}, while derivatives with additional features are called \textbf{exotic options}. \textbf{Barrier options} may serve as an example. Their payoff depends not only on the stock price at the maturity, but also on the historical prices. Barrier options are divided into \textit{knock-in} options, which may be ``turned on'', and \textit{knock-out} options, which may be ``turned off'' in case of reaching some \textbf{barrier}. Let us write down two example definitions.
 \begin{mydef}
-The payoff of the \textbf{up-and-in call} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\bar{B}$, equals
+The payoff of the \textbf{up-and-in call} option on asset $S^{(i)}$ with expiration date $T$, strike price $E$ and barrier $\overline{B}$, equals
 \[ C^{\hbox{\scriptsize call}}_{\hbox{\scriptsize u\&i}} = 
 \begin{cases}
- (S^{(i)}_T - E)_+    & \hbox{if } \sup\limits_{0 \leq t \leq T} S^{(i)}_t \geq \bar{B}\\
+ (S^{(i)}_T - E)_+    & \hbox{if } \sup\limits_{0 \leq t \leq T} S^{(i)}_t \geq \overline{B}\\
  0                    & \hbox{otherwise.}
 \end{cases}
 \]
 \end{mydef}
-\noindent The payoff of the knock-out option is zeroed when barrier is hit.
+\noindent The payoff of the knock-out option is zeroed when the barrier is hit.
 \begin{mydef}
-The payoff of the \textbf{down-and-out put} option on asset $S^{(i)}$ with exercise date $T$, strike price $E$ and barrier $\underline{B}$, equals
+The payoff of the \textbf{down-and-out put} option on asset $S^{(i)}$ with expiration date $T$, strike price $E$ and barrier $\underline{B}$, equals
 \[ C^{\hbox{\scriptsize put}}_{\hbox{\scriptsize d\&o}} = 
 \begin{cases}
  (E - S^{(i)}_T)_+    & \hbox{if } \inf\limits_{0 \leq t \leq T} S^{(i)}_t \leq \underline{B}\\
@@ -869,11 +894,11 @@ The payoff of the \textbf{down-and-out put} option on asset $S^{(i)}$ with exerc
 \end{cases}
 \]
 \end{mydef}
-We have eight types of barrier options, as every one is call or put, up or down, in or out. They are all defined in similar manner. The best way to get a grip on the barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoffs from an up-and-out call option in three diffrent scenarios. 
+We have eight types of barrier options, as each of them is call or put, up or down, in or out. They are all defined in a similar manner. The best way to get a grip on the barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoffs from an up-and-out call option in three diffrent scenarios. 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.3]{images/BasicsOfOptionPricing/barrier.pdf}
-\caption{Consider up-and-out call option with strike 110, barrier 140, expiring at time 1. In the red scenario option is in-the-money at the maturity, however in the past the barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level of 115, barrier wasn't reached, hence payoff equals 5. In case of green scenario payoff is 0, as it would be for vanilla option, because we ended out-of-the-money. }
+ \includegraphics[scale=0.6]{images/BasicsOfOptionPricing/barrier.pdf}
+\caption{Consider an up-and-out call option with strike 100, barrier 130, expiring at time 1. In the red scenario the option is in-the-money at the maturity, however, in the past the barrier was crossed, thus payoff is 0. In the blue scenario stock price ends about the level 113, the barrier was not reached, hence the payoff equals 13. In case of the green scenario the payoff is 0, as it would be for vanilla option, because the option ended out-of-the-money. }
 \label{fig:barrier}
 \end{figure}
 
@@ -889,7 +914,7 @@ Another modification of the vanilla options are the \textbf{Asian options}. Thei
 \[ \bar{S}^{(i)}_T = \frac{1}{K} \sum\limits_{j=0}^K S^{(i)}_{j\cdot T/K}, \]
 for some $K$. 
 
-So far we presented only options on one asset. Multiasset options are also in usage, for example \textbf{basket options} are options on value $\eta \cdot S$. Vector $\eta$ describes quantity of shares of the assets contained in a basket. The basket call option gives us right to buy whole set of assets for the specified price, and the basket put allows us to sell it.
+So far we presented only options on one asset. Multiasset options are also in usage, for example \textbf{basket options} are options on the value $\eta \cdot S$. Vector $\eta$ describes quantity of shares of the assets contained in a basket. The basket call option gives us right to buy whole set of assets for the specified price, and the basket put allows us to sell it.
 \begin{mydef}
  Payoffs of basket call and put options on basket $\eta$ with exercise date $T$ and strike price $E$, are given by
 \begin{align*}
@@ -898,23 +923,29 @@ So far we presented only options on one asset. Multiasset options are also in us
 \end{align*}
 \end{mydef}
 
+\subsection{Motivation for the option usage}
+
 \paragraph{Why do we need derivatives in the first place?}
-The well known anecdote claims that the first man who used derivatives was Tales of Miletus. His extraordinary skills allowed him to predict that the olive harvest next year will be large. During the winter, when nobody needed olive presses, he reserved them for summer. During the season demand for olive presses increased and Tales rented them for a good price. After all, it turned out that he earned much more then paid for the reservation. From this story appears the first reason to use options: they give opportunity to make money on accurate predictions.
+The well known anecdote claims that the first man who used derivatives was Tales of Miletus. His skills allowed him to predict that the olive harvest next year will be extraordinarily large. In the winter, when nobody needed olive presses, he reserved them for summer. During the season demand for the olive presses increased and Tales rented them for a good price. After all, it turned out that he earned much more then paid for the reservation. From this story appears the first reason to use options: they give opportunity to make money on accurate predictions.
 
 Second, and probably more important reason of option usage, is possibility to hedge against unconvienient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If asset price peaks, he can exercise the options. Either way he wins.
 
 
 \paragraph{What is the purpose of exotic options?}
-Altering the rules of ``typical'' payoffs may be caused by many reasons. The seller of a call option puts himself into a risk, induced by the fact, that his maximum loss is unbounded. Thus, he may be interested in entering only contracts with up-and-out barrier, which prevents too large payoffs. The buyer of the call option may want to hedge himself against high prices.
+Altering the rules of ``typical'' payoffs may be caused by many reasons. The seller of a call option puts himself into a risk, induced by the fact, that his maximum possible loss is unbounded. Thus, he may be interested in entering only contracts with up-and-out barrier, which prevents too large payoffs. The buyer of the call option may want to hedge himself against high prices.
 He may purchase cheaper version of the option, with down-and-out  barrier -- maybe if the asset price is low, he does not need any extra hedge. Asian options may be a good choice for risk-averse investors, because they are less sensitive to changes in the underlying price, especially in the time close to the maturity.
 
-Described stories show that derivatives idea comes up in a natural way. In both stories there was an exchange of money for some goods. In the real live, however, situation is not always that clear. Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off.
+Both described stories show that derivatives idea arises in a natural way. In both stories there was an exchange of the money for some goods. In the real live, however, situation is not always that clear. Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off.
 It may seem that the derivatives are artificial tools, created by people living only in the theoretical, mathematical models. Some exotic options may be really complicated and at the first glance no one can tell what was the motivation of entering such contract. However, it is worth to remember, that many of the derivative contracts are designed by investors, economist or producers, and they correspond to their real needs. Mathematical models lend a hand in pricing such contracts.
 
 
 \section{Black-Scholes model}
 \label{sec:blackScholes}
-In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options. At first we discuss a case when $d=1$, i.e. the model has only one risky asset and a bond. For convenience we will write $S$ instead of $S^{(1)}$, and $B$ instead of $S^{(0)}$. We will use this convention every time when considering a market with one risky asset.
+So far we discussed a very general market model. In order to obtain some specific results, we have to make several more assumptions.
+In this section we recall famous Black-Scholes model, leading to a straightforward formula for the price of the European options.
+
+\subsection{One-asset model}
+At first we discuss a case when $d=1$, i.e. the model has only one risky asset and a bond. For convenience we will write $S$ instead of $S^{(1)}$, and $B$ instead of $S^{(0)}$. We will use this convention every time when considering a market with one risky asset.
 
 The assumptions are following:
 \begin{enumerate}
@@ -936,7 +967,7 @@ Investors may both, borrow and lend, any amount of money at rate $r$.
 
   \item[BS6.] \textbf{The underlying does not pay a dividend.}
   
-  \item[BS7.] We have to make one additional assumption on the options value. Many authors forget to mention it, altough it is required for It\^{o}'s lemma. Let $F$ be the process of the price of the option\footnotemark.
+  \item[BS7.] We have to make one additional assumption on the options value. Many authors forget to mention it, altough it is required for It\^{o}'s lemma. Let $F$ be the process of the option's price\footnotemark.
   \textbf{For some smooth function $\varphi$ the price process has the form:}
     \begin{equation}
     \label{eq:PriceProcessForm}
@@ -948,14 +979,14 @@ This assumption looks entirely natural, but it cannot be concluded from what we 
 
 Instead of (\ref{eq:PriceProcessForm}) we will write $F_t = F(S_t, t)$. Then $F$ has an ambigous meaning -- left $F$ denotes the price process and the right one is some function. However, as in many other literature, we will identify them, since it does not lead to misunderstanding.
 
-Suppose we are constructing a portfolio consisting of a short position in one option and a long position in $\Delta$ shares. Let $\Pi$ be the value process of the portfolio. Equation of portfolio is given by
+Suppose that we are constructing a portfolio consisting of a short position in one option and a long position in $\Delta$ shares. Let $\Pi$ be the value process of the portfolio. Equation of the portfolio is given by
 \begin{equation}
  \label{eq:portfolio}
   \Pi = \Delta S - F 
 \end{equation}
 We analyze how much the portfolio will change in a short period of time. We have
 \[ d\Pi = \Delta dS - dF  \]
-Note that we do not have to differentiate $\Delta$, because it is constant in an infinitesimal increment of time. To handle $dV$ we will use It\^{o}s lemma. Thus
+Note that we do not have to differentiate $\Delta$, because it is constant in an infinitesimal increment of time. To handle $dF$ we will use It\^{o}'s lemma. Thus
 \[ d\Pi = \Delta dS - \frac{\partial F}{\partial S}dS - \frac{\partial F}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt  \]
 The risk in an increment of the portfolio is carriered by changes of the stock price. By choosing
 \begin{equation}
@@ -976,10 +1007,10 @@ which after simple calculation gives
  \label{eq:BSeq}
  \frac{\partial F}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2} + r\frac{\partial F}{\partial S} S - rF = 0.
 \end{equation}
-Formula (\ref{eq:BSeq}) is known as \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about the payoff off the option, thus this is a general equation. For European options it has straightforward solution, known as \textbf{Black-Scholes formula}.
+Formula (\ref{eq:BSeq}) is known as the \textbf{Black-Scholes equation}. Note that so far we did not say anything about the final condition of (\ref{eq:BSeq}), i.e. about the payoff off the option, thus this is a general equation. For European options it has straightforward solution, known as \textbf{Black-Scholes formula}.
 \begin{prop}
 \label{prop:BSFormula}
-Prices of the European call and put options with time to expiration $T$, strike price $E$ and the underlying dynamics given by (\ref{eq:BS_dynamics}) are given by the following equations:
+Prices of the European call and put options with time to the expiration $T$, strike price $E$ and the underlying dynamics given by (\ref{eq:BS_dynamics}) are given by the following equations:
 \begin{equation*}
   \begin{split}
     F_t\textsuperscript{call} &= S_t \Phi\bigl( d_1(t) \bigr) - e^{-r(T-t)} E \Phi\bigl(d_2(t) \bigr),\\
@@ -990,13 +1021,13 @@ where
 \begin{align*}
 d_1(t) &= \frac{\ln\left(\frac{S_t}{E}\right)+\left(r+\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}}\\
 d_2(t) &= \frac{\ln\left(\frac{S_t}{E}\right)+\left(r-\frac{\sigma^{2}}{2}\right)(T-t)}{\sigma\sqrt{T-t}} = d_{1}(t)-\sigma\sqrt{T-t},\\
-\Phi & \hbox{ is the distibution function of the standard normal distribution. } 
+\Phi & \hbox{ is the distribution function of the standard normal distribution. } 
 \end{align*}
 \end{prop}
 We prove this proposition at the end of the section \ref{sec:risk-neutral}, using the risk-neutral measure.
 
-\paragraph{Multiasset model.}
-All above assumptions move instantly to the market model with many assets, maybe with little edition:
+\subsection{Multiasset model.}
+All assumptions for a one-asset model carry over almost instantly to a multiasset model with just a little edition:
 \begin{enumerate}
  \item[BS2.] \textbf{Stock prices of all risky assets follow a geometric brownian motion.} Each risky asset $S^{(i)}$ has constant drift $\mu_i$ and volatility $\sigma_i$. In symbolic form:
 \begin{equation}
@@ -1007,7 +1038,7 @@ All above assumptions move instantly to the market model with many assets, maybe
 \[ dS^{(0)}_t = rS^{(0)}_t dt. \]
 \end{enumerate}
   
-The movements of the asset prices are not independent.
+The movements of the asset prices are usually not independent.
 \begin{mydef}
  We say that the correlation between two risky assets $S^{(i)}$ and $S^{(j)}$ equals $\varrho_{ij}$ if and only if $\Corr(W^{(i)}, W^{(j)}) = \varrho_{ij}$.
 \end{mydef}
@@ -1018,20 +1049,20 @@ In the other words by the correlation of two assets we understand the correlatio
            \varrho_{21} & \varrho_{22} & \cdots & \varrho_{2d} \\
            \vdots & \vdots & \ddots & \vdots \\
            \varrho_{d1} & \varrho_{d2} & \cdots & \varrho_{dd} \\
-          \end{array} \right)
+          \end{array} \right).
 \end{equation*}
 
 \textbf{The assumptions described in this section will hold true to the rest of the thesis.}
 
 \section{Model calibration}
-By looking at the previous section we can specify a set of values by which the model is parameterised:
+By looking at the previous section we can specify a set of values by which the model is parameterized:
 \begin{itemize}
  \item drifts $\mu_1, \mu_2, \ldots, \mu_d$,
  \item volatilities $\sigma_1, \sigma_2, \ldots, \sigma_d$,
  \item correlation $\Sigma$,
  \item riskless interest rate $r$.
 \end{itemize}
-While calibrating a model it is conveniet to assume that today is time $0$. We are interested in modeling asset prices in the future, up to time $T$. It is natural to use negative $t$ to denote times in the past. For example $S^{(i)}_{-0.5}$ means the price of the $i$\textsuperscript{th} asset half of a year ago. Hence for $t > 0,\ S_t$ is random vector, which we are about to model, and for $t \leq 0,\ S_t$ is a vector with historical prices, which may be obtained from stock archives.
+While calibrating a model it is conveniet to assume that today is time $0$. We are interested in modeling asset prices in the future, up to time $T$. It is natural to use negative $t$ to denote times in the past. For example $S^{(i)}_{-0.5}$ means the price of the $i$\textsuperscript{th} asset half of a year ago. Hence for $t > 0,\ S_t$ is random vector, which we are about to model, and for $t \leq 0,\ S_t$ is a vector with historical prices, which may be obtained from the stock archives.
 
 Since asset prices follow (\ref{eq:BS_multi_dynamics}) and its solution is given by (\ref{eq:gmb_sol}), thus for all $i$
 \[  S^{(i)}_{t_{n+1}} = S^{(i)}_{t_n} \exp\left\{ (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t + \sigma_i \sqrt{\Delta t} Z_i \right\}, \]
@@ -1043,10 +1074,9 @@ The key to the calibration is an assumption that in the past, price processes fo
 \[  \bigl( S^{(i)}_{t_0}, S^{(i)}_{t_1}, \ldots,S^{(i)}_{t_N} \bigr), \]
 from which we obtain a vector
 \[ \bigl( L^{(i)}_{1}, L^{(i)}_{2}, \ldots, L^{(i)}_{N} \bigr) \]
-with $N$ samples from distribution $\mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$.
+with $N$ samples from the distribution $\mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$.
 
-In practice, usually $\Delta t = 1/252$, because there are about 252 working days in a year. However, it is debatable how long should be $\overline{T}$. Values taken most often vary from ... to ...
-{\Large \color{red} TODO TODO TODO TODO }
+In practice, usually $\Delta t = 1/252$, because there are about 252 working days in a year. However, it is debatable how long should be $\overline{T}$. 
 
 Finally, we present how to obtain values of model parameters.
 \paragraph{Drifts and volatilities.}
@@ -1088,7 +1118,7 @@ Values $\alpha_i$ and $\beta_i$ are unbiased estimators of expectation and varia
 \[ \varrho_{i,j} = \frac{1}{N-1} \frac{\sum\limits_{k=1}^N(L^{(i)}_k - \alpha_i)(L^{(j)}_k - \alpha_j)}{\sqrt{\beta_i \beta_j}} \]
 
 \paragraph{Riskless interest rate.}
-In order to calculate the interest rate it is necessary to choose a bond whose maturity is close to the expiry of valuated option. The interest rate implied by that bond reflects well the real interest rate in the concerned time.
+In order to calculate the interest rate it is necessary to choose a bond whose maturity is close to the expiry of the valuated option. The interest rate implied by that bond reflects well the real interest rate in the concerned time.
 
 It is clear that
 \[ C = Ne^{-rT}, \]
@@ -1097,9 +1127,11 @@ where $C$ is price of the bond, $N$ is its nominal value, $r$ is the interest ra
 r = \dfrac{\ln(\frac{N}{C})}{T}.
 \end{equation*}
 
-\section{Risk-neutral pricing}
+\section{Pricing general contingent claims}
 \label{sec:risk-neutral}
-Black-Scholes formula allows us to price only European vanilla options. In this section we present a general method of pricing European contingent claims. 
+Black-Scholes formula allows us to price only European vanilla options. In this section we present a general method for pricing European contingent claims. 
+
+\subsection{Risk neutral pricing}
 \begin{mydef}
  The discounted value of the contingent claim $C$ is given by
  \begin{equation*}
@@ -1108,17 +1140,14 @@ Black-Scholes formula allows us to price only European vanilla options. In this 
  Random variable $H$ is called a \textbf{discounted claim}.
 \end{mydef}
 
-Values $C$ and $H$ correspond to the payoff of an instrument. We need notation to talk about its price also before maturity.
-\begin{notation}
- The (discounted) \textbf{price process} is denoted by $V_t$. 
-\end{notation}
-\begin{remark}
- In section \textit{Black-Scholes model} value $V_t$ denoted price of the option at time $t$ (no discounting). From now on $V_t$ is price of the contingent claim at time $t$ discounted to time~$0$.
-\end{remark}
-
-Next theorem is the key to defining prices of contingent claims. But first we define a class of claims for which pricing is pretty straightforward. 
+Values $C$ and $H$ correspond to the payoff of an instrument. We need notation to talk about its price also before the expiration.
 \begin{mydef}
- A contingent claim is called \textbf{attainable} if there exists a self-financing trading strategy $\xia$ whose portfolio coincides with $C$ at maturity, i.e.
+ The (discounted) \textbf{price process} of the contingent claim is denoted by $V_t$. 
+\end{mydef}
+
+The next theorem is the key to defining prices of contingent claims. But first we define a class of claims for which valuation is pretty straightforward. 
+\begin{mydef}
+ A contingent claim is called \textbf{attainable} if there exists a self-financing trading strategy $\xia$ whose portfolio coincides with $C$ at the expiration, i.e.
  \[ C = \xia \cdot \Sa_T. \]
  The trading strategy $\xia$ is then called the \textbf{replicating strategy} for $C$.
 \end{mydef}
@@ -1131,25 +1160,25 @@ Next theorem is the key to defining prices of contingent claims. But first we de
   V^\xi_t = \Em[H | \mathcal{F}_t] \hbox{ P-a.s., } 0 \leq t \leq T .
  \end{equation}
 \end{thm}
-Proof of this theorem reader may find in \cite{follmer}.
+Proof of this theorem reader may find in \cite{follmer} (Theorem 5.26).
 
 Since there is no $\xia$ in term $\Em[H | \mathcal{F}_t]$, so value $V^\xi_t$ does not depend on choice of $\xia$. Note also that
 \begin{equation*}
  \Em[H | \mathcal{F}_t]  = \Em[\xia \cdot \Xa_T | \mathcal{F}_t]  = \xia \cdot \Xa_t
 \end{equation*}
-Thus, value $\Em[H | \mathcal{F}_t]$ does not depend on choice of $\Pm$. 
+Thus, value $\Em[H | \mathcal{F}_t]$ does not depend on the choice of $\Pm$. 
 Since attainable discounted claim $H$ and its replicating strategy $\xia$ have the same payoff at time $T$, thus no-arbitrage assumption induces
 \[ V_t = V^\xi_t,\ \ 0 \leq t \leq T. \]
 Thus in particular it implies
-\begin{coro}
+\begin{coro}[\textbf{Risk neutral valuation formula}]
 \label{coro:price_mth}
-Let $H$ be a discounted contingent claim and $V$ be its price process. Then
+Let $H$ be a discounted attainable contingent claim and $V$ be its price process. Then
 \begin{equation}
  \label{eq:price_mtg}
  V_0 = \Em[H].
 \end{equation}
 \end{coro}
-\noindent This equation tells us that \textbf{value of the option is an expectation of its payoff} (under the risk-neutral measure).
+\noindent This equation tells us that the \textbf{value of the option is an expectation of its discounted payoff} under the risk-neutral measure.
 
 The above theorem suggests how price processes should look in general.
 \begin{mydef}
@@ -1159,10 +1188,14 @@ The above theorem suggests how price processes should look in general.
  \end{equation*}
  Such $V$ is a $\Pm$-martingale.
 \end{mydef}
-For general claims process $V$ depends on the choice of an equivalent martingale measure. However, it may be proven that the market model consisting of the discounted assets $(X^{(0)}, X^{(1)},\ldots,X^{(d)}, V)$ is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
+For general claims process $V$ depends on the choice of an equivalent martingale measure. However, it may be proven that the market model consisting of the discounted assets
+\[(X^{(0)}, X^{(1)},\ldots,X^{(d)}, V)\]
+is arbitrage-free, regardless of the choice of $\Pm$. In that sense every possible price process $V$ is equally good.
 
-\subsection*{Change of the measure}
-We have discussed how equivalent martingale measures can be used for option pricing, but so far we did not tell how to find them. It is difficult to find in literature suitable theorem, which would exactly match our needs, thus we have to prove some facts ourselves.
+\subsection{Change of the measure}
+The martingale measure allows us to write the option's value if a form of a concise formula, but so far we did not tell how to find it. It turns out that we do not really need the martingale measure itself. The only matter is how the asset's price process can be expressed under the risk neutral measure. 
+
+In the literature there are many formulations of the theory which is presented here. However, instead of referring to any other authors, we will prove some facts which exactly match our needs.
 
 \begin{lemma}
 \label{lemma:measure_change}
@@ -1171,59 +1204,60 @@ We have discussed how equivalent martingale measures can be used for option pric
   \label{eq:dynamics_real}
   dS^{(i)} = \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)},\ \ \ (i=1,2,\ldots,d)
  \end{equation}
- where each $\bar{W}^{(i)}$ is a Brownian motion under measure $\P$ and $\Corr(\bar{W}^{(i)}, \bar{W}^{(j)}) = \rho_{ij}$. For every vector $(\nu_1, \nu_2, \ldots, \nu_d)$ there exists equivalent probability measure $\mathbb{Q}$, such that the equation (\ref{eq:dynamics_real}) may be rewritten in the form
+ where each $\bar{W}^{(i)}$ is a Brownian motion under measure $\P$ and $\Corr(\bar{W}^{(i)}, \bar{W}^{(j)}) = \rho_{ij}$. For every vector $(\nu_1, \nu_2, \ldots, \nu_d)$ there exists an equivalent probability measure $\mathbb{Q}$, such that the equation (\ref{eq:dynamics_real}) may be rewritten in the form
   \begin{equation}
   dS^{(i)} = \nu_i S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)},\ \ \ (i=1,2,\ldots,d)
  \end{equation}
- where each $W^{(i)}$ is a Brownian motion under equivalent measure $Q$ and\\ $\Corr^Q(W^{(i)}, W^{(j)}) = \rho_{ij}$.
+ where each $W^{(i)}$ is a Brownian motion under the equivalent measure $\mathbb{Q}$ and\\ $\Corr^Q(W^{(i)}, W^{(j)}) = \rho_{ij}$.
 \end{lemma}
 
 \begin{proof}
- Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a covariance matrix (which in this case is the same as correlation matrix). Cholesky's algorithm allows us to decompose $\Sigma$ to the form
+ Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a correlation matrix. Cholesky's algorithm allows us to decompose $\Sigma$ to the form
  \[ \Sigma = LL^T, \]
  where $L$ is lower traingular matrix. Hence, $\bar{W}$ may be written in the form
  \[ \bar{W} = L \bar{V}, \]
- where $\bar{V}$ is a standard $d$-dimensional Wiener process under measure $\P$. Let us apply Theorem \ref{thm:girsanov} (Girsanov theorem) with $\varphi = (\theta_1, \theta_2, \ldots, \theta_d)'$, where all $\theta_i$ are constant. It implies that
+ where $\bar{V}$ is a standard $d$-dimensional Wiener process under measure $\P$. Let us apply Theorem \ref{thm:girsanov} (Girsanov theorem) with $\varphi := \theta = (\theta_1, \theta_2, \ldots, \theta_d)'$, where all $\theta_i$ are some constants. It implies that
  \[ V_t = \bar{V}_t - t\theta \]
- is $d$-dimensional standard Wiener process under measure $\mathbb{Q}$, which is defined as
- \[\frac{d\mathbb{Q}}{d\P} = \exp\left\{ \sum\limits_{i=1}^d \theta_i \bar{W}^{(i)}_T - \frac{T}{2} ||\theta||^2 \right\}.\] Thus
+ is a $d$-dimensional standard Wiener process under an equivalent measure $\mathbb{Q}$, which is defined as
+ \[\frac{d\mathbb{Q}}{d\P} = \exp\left\{ \sum\limits_{i=1}^d \theta_i \bar{W}^{(i)}_T - \frac{T}{2} ||\theta||^2 \right\}.\]
+ Let $W := LV$. Thus
  \begin{equation*}
   \begin{split}
    dS^{(i)} &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\bar{W}^{(i)} \\
             &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^i l_{ik} \bar{V}^{(k)}\right) \\
             &= \mu_i S^{(i)} dt + \sigma_i S^{(i)} d\left(\sum\limits_{k=1}^i \bigl[ l_{ik}\theta_k t + l_{ik} V^{(k)} \bigr] \right) \\    
-            &= \left[ \mu_i + \sigma_i \sum\limits_{k=1}^i l_{ik}\theta_k \right] S^{(i)}dt + d\sum\limits_{k=1}^i l_{ik} V^{(k)} \\      
+            &= \left[ \mu_i + \sigma_i \sum\limits_{k=1}^i l_{ik}\theta_k \right] S^{(i)}dt + \sigma_i S^{(i)} d\left( \sum\limits_{k=1}^i l_{ik} V^{(k)} \right) \\    
+            &= \left[ \mu_i + \sigma_i \sum\limits_{k=1}^i l_{ik}\theta_k \right] S^{(i)}dt + \sigma_i S^{(i)} dW^{(i)}. \\      
   \end{split}
  \end{equation*}
  By substituting
  \begin{align*}
   \theta_1 &:= \frac{\nu_1 - \mu_1}{\sigma_1 l_{11}}\\
   \theta_i &:= \frac{\nu_i - \mu_i - \sigma_i \sum\limits_{k=1}^{i-1} l_{ik}\theta_k}{\sigma_il_{ii}}\ \ \ (i=2,3,\ldots,d)\\
-         W &:= LV
  \end{align*}
  we get the thesis.
 \end{proof}
 
-Above lemma allows us to describe vector of price processes in terms of some equivalent measures, however we need a very particular measure -- the martingale measure.
+The above lemma allows us to describe the vector of price processes in terms of some equivalent measures, however we need a very particular measure -- the martingale measure.
 
 \begin{prop}
 \label{prop:rn-dynamics}
- In real measure $\P$ the risky assets follow a geometric Brownian motion, as in equation (\ref{eq:dynamics_real}). Under equivalent martingale measure $\Pm$ the dynamics has the form
+ Under the real measure $\P$ the risky assets follow a geometric Brownian motion, as in equation (\ref{eq:dynamics_real}). There exists an equivalent martingale measure $\Pm$, such that the dynamics has the form
  \begin{equation}
   \label{eq:dynamics_neutral}
   dS^{(i)} = r S^{(i)} dt + \sigma_i S^{(i)} dW^{(i)}.
  \end{equation}
 \end{prop}
 \begin{proof}
- Lemma \ref{lemma:measure_change} states that there exist equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
+ Lemma \ref{lemma:measure_change} states that there exists an equivalent measure $\Pm$ under which price processes are described by equation (\ref{eq:dynamics_neutral}). We will show that it is martingale measure.
  From (\ref{eq:gmb_sol})
  \[ X_t = e^{-rt} S_t = S_0 e^{ -\frac{1}{2}\sigma^2 t + \sigma W_t }. \]
  Let $0 \leq s \leq t \leq T$. We have
  \begin{equation*}
   \begin{split}
    \Em[X_t | \mathcal{F}_s] &= \Em[ S_0 e^{ -\frac{1}{2}\sigma^2 t + \sigma W_t } | \mathcal{F}_s] \\
-       &= S_0 e^{-\frac{1}{2}\sigma^2 t} \Em[ e^{  \sigma W_s} e^{ \sigma (W_t - W_s) } | \mathcal{F}_s] \\
-       &= S_0 e^{-\frac{1}{2}\sigma^2 t + \sigma W_s} \Em[ e^{ \sigma (W_t - W_s) }] \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 t} \cdot \Em[ e^{  \sigma W_s} e^{ \sigma (W_t - W_s) } | \mathcal{F}_s] \\
+       &= S_0 e^{-\frac{1}{2}\sigma^2 t + \sigma W_s} \cdot \Em[ e^{ \sigma (W_t - W_s) }] \\
        &= S_0 e^{-\frac{1}{2}\sigma^2 t + \sigma W_s}  e^{ \frac{1}{2}\sigma^2(t-s) } \\
        &= S_0 e^{-\frac{1}{2}\sigma^2 s + \sigma W_s} = X_s.
   \end{split}
@@ -1239,7 +1273,7 @@ Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucia
  \begin{equation*}
   \begin{split}
     F_t\textsuperscript{call} &= e^{-r(T-t)} \Em\left[(S_T-E)_+ | \mathcal{F}_t \right] = e^{-r(T-t)} \Em\left[(S_T-E)_+ |S_t\right] \\
-    &= e^{-r(T-t)} \Em\left[(s e^Z-E)_+ \right] = e^{-r(T-t)} \Em\left[(s e^Z-E) \mathbbm{1}\left({\textstyle Z \geq \ln\left(\frac{E}{s}\right)} \right) \right] \\
+    &= e^{-r(T-t)} \Em\left[(s e^Z-E)_+ \right] = e^{-r(T-t)} \Em\left[(s e^Z-E) \cdot \mathbbm{1}\left({\textstyle Z \geq \ln\left(\frac{E}{s}\right)} \right) \right] \\
     &= e^{-r(T-t)} \int\limits_{\ln(E/s)}^\infty (se^z - E)f_Z(z) dz \\
     &= s\int\limits_{\ln(E/s)}^\infty e^{-r(T-t)}e^z f_Z(z) dz - e^{-r(T-t)} E\int\limits_{\ln(E/s)}^\infty f_Z(z) dz = (\bigstar)
   \end{split}
@@ -1404,7 +1438,7 @@ Figure \ref{fig:trajectories} shows a thousand of trajectories simulated accordi
 
 \begin{figure}[ht]
 \centering
- \includegraphics[scale=0.4]{images/PricingEuropean/trajectories50.pdf}
+ \includegraphics[scale=0.75]{images/PricingEuropean/trajectories50.pdf}
 \caption{A thousand of simulated trajectories of the asset price, under paratemeters ${T=1},\ {\sigma=0.2}$, ${r=0.5},\ {S_0=100}$. Each path was generated in $K=50$ points. The darker is the area the greater is the concentration of trajectories.}
 \label{fig:trajectories}
 \end{figure}
@@ -1534,13 +1568,6 @@ Hence in most cases if option ended in the money, then the barrier was not hit, 
 In the case of put@100 with down-and-in barrier 70, barrier is set very low; hitting it happens seldom, thus often option expires worthless even if analogous vanilla option ends in the money. In consequence correlation between payoffs of the barrier and the vanilla option becomes low, and in this case AV method gives slightly better accuracy. 
 
 At the end of this section, it is worth to mention, that there exist analitical formulas for prices of European barrier options, see \cite{wilmott}, chapter 23.
-
-\begin{figure}[!h]
-\centering
- \includegraphics[scale=0.5]{images/PricingEuropean/chart3dCallUaO.png}
-\caption{Value of an European option call option with up-and-out barrier as a function of strike and barrier values.}
-\label{fig:barrier3d}
-\end{figure}
 
 \section{Multiasset instruments}
 \label{sec:multi-asset}
@@ -1889,8 +1916,8 @@ Unfortunately, this is a very ineffective procedure. Computing $\Em\bigl[ V_{k+1
 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/LSM/LSMidea1.pdf}
-\caption{The illustration of the difficulties occuring with attempts to involve Monte Carlo method in pricing American claims. }
+ \includegraphics[scale=0.6]{images/LSM/LSMidea1.pdf}
+\caption{The illustration of difficulties occuring with attempts to involve Monte Carlo method in pricing American claims. At each time point we have to generate subtrajectories in order to calculate expected value of continuation.}
 \label{fig:MC_difficulties}
 \end{figure}
 
@@ -2186,115 +2213,242 @@ In our example the average of realized cashflows equals 2.99. It is greater than
 \section{Mathematical background of LSM}
 
 \chapter{Application architecture}
-An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This part describes architecture of the created financial library which is application's back end. The library is to some extent an implementation of algorithms presented in previous parts, however, they are generalized and adjusted to the object oriented language.
+An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This part describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
 
 \section{Scenarios and trajectories}
-The basis of Monte Carlo pricing is trajectory generation. Hence, we begin with a presentation of classes performing this task. Corresponding class diagram is presented in Figure \ref{fig:arch:traj}.
+The basis of the Monte Carlo pricing is the trajectory generation. Hence, we begin with a presentation of classes performing this task. The corresponding class diagram is presented in Figure \ref{fig:arch:traj}.
 
 \begin{sidewaysfigure}
 \centering
- \includegraphics[scale=0.75]{images/Architecture/trajectories.png}
+ \includegraphics*[scale=0.75, viewport = 30 165 800 580]{images/Architecture/trajectories.pdf}
 \caption{Diagram presenting classes designated for scenario generation.}
 \label{fig:arch:traj}
 \end{sidewaysfigure}
 
-Class \texttt{TimeSupport} is a simple auxiliary class allowing to switch between discrete and continous time. Let $T$ be the final time on a trajectory and $K$ be the natural number such that the trajectory is generated in points $0 = t_0 < t_1 < \ldots < t_K$, where $t_k = k \cdot \Delta T$ and $\Delta T = T / K$. Method \texttt{nrToTime} from class \texttt{TimeSupport} for given $k$ returns $t_k$. Method \texttt{timeToNr} is somewhat an opposite and for given $t$ returns natural number $k$ such that $t_k \leq t < t_{k+1}$. 
+Class \texttt{TimeSupport} is a simple auxiliary class allowing to switch between discrete and continuous time. Let $T$ be the final time on a trajectory and $K$ be the natural number such that the trajectory is generated in points $0 = t_0 < t_1 < \ldots < t_K$, where $t_k = k \cdot \Delta T$ and $\Delta T = T / K$. Method \texttt{nrToTime} from class \texttt{TimeSupport} for given $k$ returns $t_k$. Method \texttt{timeToNr} is somewhat an opposite and for given $t$ returns natural number $k$ such that $t_k \leq t < t_{k+1}$. 
 
-\texttt{Trajectory} is an interface for classes representing realization of price movements of one asset. Method \texttt{price} returns price of that asset at k\textsuperscript{th} time point. Interface provides also several auxiliary functions like \texttt{average} which returns average price of the option in time between given time points, or \texttt{cumMax} which returns asset's maximum price until given time point. These methods are useful for determining payoffs from instruments like asian, barrier or lookback options. Class \texttt{ConcreteTrajectory} is an implementation of the \texttt{Trajectory} interface.
+\texttt{Trajectory} is an interface for classes representing realizations of price movements of one asset. Method \texttt{price} returns price of that asset at k\textsuperscript{th} time point. Interface provides also several auxiliary functions like \texttt{average}, which gives an average price of the option during the time between given time points, or \texttt{cumMax}, which returns asset's maximum price until given time point. These methods are useful for determining payoffs from instruments like Asian, barrier or lookback options. Class \texttt{ConcreteTrajectory} is an implementation of the \texttt{Trajectory} interface.
 
-\texttt{Scenario} is an interface for classes representing realization of whole market scenario. A scenario may be considered as a set of trajectories of all assets. Method \texttt{getNumberOfAssets} answers how many assets are in the model. We can obtain trajectory of chosen asset by call to \texttt{getTrajectory}, which takes as an argument asset's name. \texttt{TimeSupport} object obtained by a call to \texttt{getTimeSupport} represents set of points in which trajectory was generated. Anthitetic variates method makes a use from \texttt{getAnthi} which returns anthitetic scenario. \texttt{Scenario} is implemented by class \texttt{MultiTrScenario}.
+\texttt{Scenario} is an interface for classes representing realizations of whole market scenarios. A scenario may be considered as a set of trajectories of all assets. Method \texttt{getNumberOfAssets} answers how many assets are in the model. We can obtain trajectory of chosen asset by a call to \texttt{getTrajectory}, which takes as an argument the asset's name. A \texttt{TimeSupport} object obtained by a call to \texttt{getTimeSupport} represents set of points in which the trajectory was generated. Antithetic variates method makes a use from \texttt{getAnti} which returns antithetic scenario. \texttt{Scenario} is implemented by class \texttt{MultiTrScenario}.
 
 When we have classes for holding scenarios and trajectories we can finally develop their generators. They must implement \texttt{Generator} interface, which provides a method \texttt{generate} returning an array of Scenarios. Class \texttt{MultiTrGenerator}, which is an implementation of \texttt{Generator}, follows Algorithm \ref{alg:multi-tr} from section \ref{sec:multi-asset}.
 
 \section{Instrument hierarchy}
-Classes representing financial instruments are arranged in a hierarchy based on the so-called decorator pattern. Idea of such construction arises from the fact that instruments like barrier options are just modifications of vanilla options. Moreover, we can add several modifications to one instrument. Decorator pattern allows us to take into account diffrent sets of modifications without a need to create a seperate class for each set. Figure \ref{fig:arch:instr} shows the instrument hierarchy.
+\lstset{language=Java, basicstyle=\small}
+
+Classes representing financial instruments are arranged in a hierarchy based on the so-called decorator pattern. Idea of such construction arises from the fact that instruments like barrier options are just modifications of vanilla options. Moreover, we can add several modifications to one instrument. The decorator pattern allows us to take into account different sets of modifications without a need to create a separate class for each set. Figure \ref{fig:arch:instr} shows the instrument hierarchy.
 \begin{sidewaysfigure}
 \centering
- \includegraphics[scale=0.75]{images/Architecture/instr.png}
+ \includegraphics*[scale=0.75, viewport = 30 120 785 590]{images/Architecture/instr.pdf}
 \caption{Class diagram presenting hierarchy of financial instruments.}
 \label{fig:arch:instr}
 \end{sidewaysfigure}
 
 
-\texttt{Instr} is an abstract class representing a general financial instrument. It stores field \texttt{T} which holds time to the expiration. Classes deriving from \texttt{Instr} must implement methods \texttt{exAvail} and \texttt{payoff}. The first method, for specified Scenario and time point, answers if the exercise is possible. For example an European option may be exercised if and only if given time point is the last one on the trajectory. On the other hand, exercise of knock-out option is possible if and only if barrier was not hit in given Scenario. Method \texttt{payoff} returns a real number which means what would be the payoff obtained in given scenario if the instrument was exercised at given time point.
-
-\texttt{Bond} and \texttt{Option} are concrete instruments. As the name indicates \texttt{Bond} represents instruments paying \texttt{nominal} after time \texttt{T}. Implementation of the methods for class \texttt{Instr} looks as follows: 
-\lstset{language=Java, basicstyle=\small}
+\texttt{Instr} is an abstract class representing a general financial instrument. It stores a field \texttt{T} which holds time to the expiration. Classes deriving from \texttt{Instr} must implement methods \texttt{exAvail} and \texttt{payoff\_}. The first method, for specified scenario and time point, answers if the exercise is available. For example an European option may be exercised if and only if given time point is the last one on the trajectory. On the other hand, exercise of knock-out option is possible if and only if barrier was not hit in given Scenario. Method \texttt{payoff\_} returns a real number which means what would be the payoff obtained in given scenario if the exercise was possible and the instrument was exercised at given time point. Method \texttt{price} from class \texttt{Instr} uses both aforementioned methods:
 \begin{lstlisting}
-    protected boolean exAvail(Scenario s, int k) {        
-        return s.getTS().getK() == k;
-    }
-    protected double payoff(Scenario s, int k) {
-        return nominal;
-    }
+  public double payoff(Scenario s, int k) {
+      if (exAvail(s,k)) return payoff_(s,k);
+      else return 0;
+  }
+\end{lstlisting}
+Clearly, \texttt{payoff} returns the value which would be obtained from the immediate exercise, it the exercise is possible, otherwise it returns zero. Since \texttt{payoff} is a ``sketch'', which delegates part of the logic to subclasses, hence we may say that we used here the factory method pattern. 
+
+\texttt{Bond} and \texttt{Option} are concrete instruments. As the name indicates \texttt{Bond} represents instruments paying \texttt{nominal} after time \texttt{T}. Implementation of the methods from class \texttt{Instr} looks as follows: 
+\begin{lstlisting}
+  protected boolean exAvail(Scenario s, int k) {        
+      return s.getTS().getK() == k;
+  }
+  protected double payoff_(Scenario s, int k) {
+      return nominal;
+  }
 \end{lstlisting}
 
 	
 Class \texttt{Option} is designed for American options. It stores information about the strike price, its type (call or put) and name of the underlying asset. American vanilla option may be exercised at any time, hence \texttt{exAvail} has the form:
 \begin{lstlisting}
-    protected boolean exAvail(Scenario s, int k) {
-        return true;
-    }
+  protected boolean exAvail(Scenario s, int k) {
+      return true;
+  }
 \end{lstlisting}
 Implementation of \texttt{payoff} is also not complicated:
 \begin{lstlisting}
-    protected double payoff(Scenario s, int k) {
-        Trajectory tr = s.getTr(underlying);
-        double spot = tr.price(k);
-        if (type == CALL) return max(0, spot - strike);
-        else return max(0, strike - spot);
-    }
+  protected double payoff_(Scenario s, int k)
+  {
+      Trajectory tr = s.getTr(underlying);
+      double spot = tr.price(k);
+      if (type == CALL) return max(0, spot - strike);
+      else return max(0, strike - spot);
+  }
 \end{lstlisting}
 
-\texttt{Modificator} class is the place where decorator pattern comes in. \texttt{Modificator} is just a wrapper for another instrument, but deriving classes can modify its \texttt{payoff} and \texttt{exAvail}. Let us discuss it on several examples. \texttt{EuExercise} and \texttt{Barrier} do not change the payoff, thus corresponding function has the form
+\texttt{Modificator} class is the place where the decorator pattern does its job. \texttt{Modificator} is a wrapper for another instrument, which allows for a modification of its payoff and exercise availability. \texttt{EuExercise} and \texttt{Barrier}, as well as many other modifications, do not change the payoff, hence \texttt{payoff\_} is coded in \texttt{Modificator} as follows (of course it may be changed in subclasses):
 \begin{lstlisting}
-    protected double payoff(Scenario s, int k) {
-        return wrapped.payoff(s, k);
-    }
+  protected double payoff_(Scenario s, int k) {
+      return wrapped.payoff_(s, k);
+  }
 \end{lstlisting}
-but \texttt{exAvail} is modified. In class \texttt{EuExercise} we modify the instrument in such a way, that it may be exercised only in final time point, hence
+On the other hand, while determining if the exercise is available we have to take into account that an instrument may have many modifications. We are allowed to exercise the option if all \texttt{Modificator}s agree. Hence, we introduce new abstract method \texttt{modExAvail}, which checks if a single modification permits for the option exercise, and we define \texttt{exAvail} as
 \begin{lstlisting}
-    protected boolean exAvail(Scenario s, int k) {
-        return s.getTS().getK() == k;
-    }
+  protected final boolean exAvail(Scenario s, int k) {
+      return wrapped.exAvail(s, k) && modExAvail(s,k);
+  }
 \end{lstlisting}
-Class \texttt{Barrier} checks if the barrier was hit. And then, depending on whether the option is knock-out or knock-in, it allows for option's exercise or not. 
+That way, if the instrument has many modifications, all of them are checked.
+
+Let us discuss it on several examples. In class \texttt{EuExercise} we modify the instrument in such a way, that it may be exercised only in the final time point, hence
 \begin{lstlisting}
-    public boolean exAvail(Scenario s, int k) {
-        Trajectory tr = s.getTr(underlying);
-        boolean hit;
-        if (bp.isFromUp())
-            hit = tr.cumMax(k) >= bp.level;
-        else
-            hit = tr.cumMin(k) <= bp.level;
-        return (bp.isKnockIn() ? hit : !hit);
-    }
+  protected boolean modExAvail(Scenario s, int k) {
+      return s.getTS().getK() == k;
+  }
 \end{lstlisting}
-Class \texttt{Binary} does not change method \texttt{exAvail}, but payoff function is modified:
+Class \texttt{Barrier} checks if the barrier was hit and then, depending on whether the option is knock-out or knock-in, it allows for the option's exercise or not. Object \texttt{bp}, which is used below, stores the information about the type of the barrier and its level.
 \begin{lstlisting}
-    protected double payoff(Scenario s, int k) {
-        return wrapped.payoff(s, k) > 0 ? 1 : 0;
+  public boolean modExAvail(Scenario s, int k)
+  {
+      Trajectory tr = s.getTr(underlying);
+      boolean hit;
+      if (bp.isFromUp())
+	  hit = tr.cumMax(k) >= bp.level;
+      else
+	  hit = tr.cumMin(k) <= bp.level;
+      return (bp.isKnockIn() ? hit : !hit);
+  }
+\end{lstlisting}
+Class \texttt{Binary} does not change the exercise availability, thus its \texttt{modExAvail} simply returns \texttt{true}, but the payoff function is modified:
+\begin{lstlisting}
+  protected double payoff(Scenario s, int k) {
+      return wrapped.payoff(s, k) > 0 ? 1 : 0;
     }
 \end{lstlisting}
 	
-This design may look overly complicated. Let us explain what is its advantage. Suppose that at some point we will have a need to price not only typical barrier options, but also options with double barrier, for example knock-out corridor options, which has zero payoff if the stock price goes beyond some specified range during option's lifetime. Our design lets us to instantiate an object representing such instrument without necessity to write any additional classes! We just write\footnote{Constructors' arguments which are irrelevant for the example were omitted.}:
+This design may look overly complicated. Let us explain what is its advantage. Suppose that at some point we will have a need to price not only typical barrier options, but also options with double barrier, for example knock-out corridor options, which has zero payoff if the stock price goes beyond some specified range during the option's lifetime. Our design lets us to instantiate an object representing such instrument without necessity to write any additional classes! We just type\footnote{Constructors' arguments which are irrelevant for the example were omitted.}:
 \begin{lstlisting}
-    Instr corridor = new Barrier(new Barrier(new Option()));
+  Instr corridor = new Barrier(new Barrier(new Option()));
 \end{lstlisting}
-That's it! What if we would like to price European binary option with double barrier? Do we need some additional code? Of course not, we simply type
+That's it! What if we would like to price European binary option with a double barrier? Do we need some additional code? Of course not, we simply write
 \begin{lstlisting}
-    Instr veryExotic = new European(new Barrier(new Barrier(
-                                    new Binary(new Option()))));
+  Instr veryExotic = new EuExercise(new Barrier(new Barrier(
+				  new Binary(new Option()))));
 \end{lstlisting}
-If we had to create special classes for such instruments as the one mentioned above, then soon we would have dozens of instrument classes and the code would become unmaintainable.
+If we had to create special classes for such instruments as the one mentioned above, then soon we would sink in the sea of instrument classes and the code would become unmaintainable.
 	
-\section{Pricing methods}
-\begin{sidewaysfigure}
+\section{Method hierarchy}
+In the thesis several versions of the Monte Carlo method were presented. Each of them has its own representation in the methods' class hierarchy presented in Figure \ref{fig:arch:MonteCarlo}.
+\begin{figure}
 \centering
- \includegraphics[scale=0.59]{images/Architecture/method.png}
+ \includegraphics*[scale=0.75, viewport = 20 405 575 750]{images/Architecture/MonteCarlo2.pdf}
 \caption{Class diagram presenting hierarchy of classes used for option pricing.}
-\label{fig:arch:method}
-\end{sidewaysfigure}
+\label{fig:arch:MonteCarlo}
+\end{figure}
+
+In the top there is an interface named \texttt{Method}. It has only one method\footnote{Coincidental name clash.} called \texttt{price}. It takes an arbitrary \texttt{Instr} and returns its price as a number of type \texttt{double}.
+
+\subsection{"Classic" Monte Carlo}
+\texttt{Monte Carlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing}, \texttt{oneSimulation}, \texttt{currentResult}:
+
+\begin{lstlisting}
+  public double price(Instr instr) throws InterruptedException
+  {
+      initPricing(instr);
+      for (int i = 1 ; i <= N; ++i) {
+	  oneSimulation(instr);
+	  // other instructions responsible for notifying progress
+	  // observers, handling interruption, preparing data
+	  // for convargance plot.
+      }
+      return currentResult(N);
+  }
+\end{lstlisting}
+   
+This design extracts all the actions which are common for each method, and allows subclasses to perform some particular operations in their specific way. For example method \texttt{currentResult}, which returns intermediate results after given number of simulations, simply calculates mean in case of \texttt{CMC} and \texttt{AV}, but in \texttt{CV} it also determines value $c$ (recall equation (\ref{eq:CV})). Method \texttt{oneSimulation} also differs between classes -- in \texttt{CMC} it has the form
+
+\begin{lstlisting}
+  protected void oneSimulation(Instr instr)
+  {
+      Scenario scenario = gen.generate();
+      double p = getDiscountedPayoff(instr, scenario);
+      sum += p;
+      sumSq += p*p;
+  }
+\end{lstlisting}
+   
+but in \texttt{AV} it uses antithetic variates, and in \texttt{CV} it calculates also the value of the control variate.
+
+Here we can see the incredible power of the Monte Carlo method, especially when it is joined with polymorphism in OO programming languages. The \textbf{pricing algorithm is entirely independent from the instrument under valuation.} The only place where the properties of the instrument are taken into account is a method determining the realized payoff, e.g. in \texttt{CMC} it has the form
+
+\begin{lstlisting}
+  private double getDiscountedPayoff(Instr instr, Scenario scenario)
+  { 
+      return instr.payoff(scenario, K) *
+	      Math.exp(-params.getR()*instr.getT());
+  }
+\end{lstlisting}
+
+The payoff is obtained via a polymorphic call to \texttt{payoff} from class \texttt{Instr}. It has an important and very pleasant consequence. When we come up with an idea of a completely new contract, we do not have to implement any new class for performing valuation. The only thing we have to do is create a class for that contract as a member of \texttt{Instr} hierarchy. Note that most pricing algorithms do not have that property, they require specific adjustments to price some instruments, e.g. in the finite difference method one has to ensure that a barrier is lying on the grid if he is pricing a barrier option.
+   
+
+\subsection{LSM}
+Diagram in the figure is a LSM branch of the \texttt{Method} hierarchy.
+\begin{figure}
+\centering
+ \includegraphics*[scale=0.6, viewport = 5 130 670 575]{images/Architecture/LSM2.pdf}
+\caption{Class diagram presenting hierarchy of classes used for option pricing.}
+\label{fig:arch:LSM}
+\end{figure}
+
+An abstract class \texttt{LSMRoot} is an implementation of \texttt{Method} which employs Least Squares Monte Carlo. Unfortunately,  it is not as universal as the ordinary Monte Carlo, because, for example, path-dependent options require  special treatment. Thus, several variants of LSM were implemented: \texttt{LSM} is a basic version of LSM, which follows the original algorithm, \texttt{LSM2} is for options depending on two assets, for example basket options, \texttt{LSM\_Asian} can price Asian options.
+However, while implementing these methods we also strived to avoid code repetition, so the factory method pattern was involved once again. The following code snippet presents how the \texttt{price} method was implemented in \texttt{LSMRoot}.
+\begin{lstlisting}
+  public double price(Instr instr) throws InterruptedException
+  {       
+      initPricing(instr);
+      Generator gen = makeGenerator();
+      Scenario[] paths = gen.generate(N);
+      CashFlow[] realizedCF = realizedCashFlows(paths, instr);
+      double payoffAtTime0 = instr.payoff(paths[0], 0);
+      Result res = makeResult(realizedCF);
+      return Math.max(res.result, payoffAtTime0);
+  }
+  
+  protected CashFlow[] realizedCashFlows(Scenario[] paths, Instr instr)
+	  throws InterruptedException
+  {
+      CashFlow[] realizedCF = new CashFlow[N];
+      for (int i = 0; i < N; ++i)
+	  realizedCF[i] = new CashFlow(instr.payoff(paths[i], K), getT());
+      for (int j = K-1; j > 0; --j)
+      {
+	  FutureEstimatedFlow fef = calcFutureEstimatedFlow(
+	      paths, realizedCF, j, instr);
+	  updateRealizedCFs(paths, instr, realizedCF, fef, j);
+	  // other instructions responsible for notifying progress
+	  // observers, handling interruption
+      }       
+      return realizedCF;
+  }
+\end{lstlisting} 
+
+
+The general scheme is the same for all variants of LSM. Classes inheriting \texttt{LSMRoot} must implement three methods. In \texttt{initPricing} subclasses can set auxiliary variables specific for their variant of LSM. Method \texttt{makeGenerator} returns generator of scenarios. For example, the version of LSM for Asian options returns \texttt{Generator} which generates scenarios that have two trajectories: one is the proper asset price and the second is the cumulative average. The main difference between LSM for options depending on one and two assets is the estimation of the future flow. This task is done in the third abstract method of \texttt{LSM} -- \texttt{calcFutureEstimatedFlow}. In case of the basic LSM only one explanatory variable is used in regression, while in LSM for two assets or for path-dependent options future estimated flow is a function of two variables. Introduction of \texttt{calcFutureEstimatedFlow} allows to isolate these differences. It returns an object of a class implementing \texttt{FutureEstimatedFlow}. It has a single method \texttt{getEstimation} which for given scenario and time step returns estimated value of continuation. With its help updating the table of realized cash flows is very convenient:
+
+\begin{lstlisting}
+  private void updateRealizedCFs(Scenario[] paths, Instr instr,
+      CashFlow[] realizedCF, FutureEstimatedFlow fef, int timeStep)
+  {
+      for (int i = 0; i < N; ++i)
+      {
+	  double expected = fef.getEstimation(paths[i], timeStep);
+	  double payoff = instr.payoff(paths[i], timeStep);
+	  if (payoff > 0 && payoff > expected)
+	      realizedCF[i] = new CashFlow(payoff,ts.nrToTime(timeStep));
+      }
+  }
+\end{lstlisting}
+   
+Since regression is very similar for those versions of LSM which use two explanatory variables, so class \texttt{LSM2\_Support} was designed. It performs the calculation of the estimated future flow basing on two assets. Classes like \texttt{LSM2} or \texttt{LSM\_Asian} simply delegate \texttt{calcFutureEstimatedFlow} to \texttt{LSM2\_Support}.
+   
+As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
 
 \chapter{Results illustrations}
  
@@ -2302,7 +2456,7 @@ If we had to create special classes for such instruments as the one mentioned ab
 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/Results/vanillaEuAndAmPut.pdf}
+ \includegraphics[scale=0.4]{images/Results/vanillaEuAndAmPut.pdf}
 \caption{Chcem sprawdzic jak obrazek wyglada w pracy}
 \label{fig:results:dupa1}
 \end{figure}
