@@ -2,6 +2,7 @@
 package finance.trajectories;
 
 import finance.methods.common.ProgressObservable;
+import java.util.Collection;
 
 /**
  * Interface for classes generating market scenarios.
@@ -47,4 +48,7 @@ public interface Generator extends ProgressObservable
      * @return generated market scenario.
      */
     public Scenario generate(Anthi anthi);
+    
+    
+    public void setDividends(Collection<Dividend> dividends);
 }

@@ -11,7 +11,9 @@ import finance.parameters.BarrierParams;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
+import finance.trajectories.Dividend;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,6 +162,12 @@ public class BSMethod implements Method
     public void notifyObservers(Progress pr) {}
     @Override
     public void addObserver(ProgressObserver ob){}
+
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
     
     private BlackScholes blackScholes;

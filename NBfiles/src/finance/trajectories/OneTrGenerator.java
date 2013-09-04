@@ -60,10 +60,12 @@ public class OneTrGenerator extends GeneratorRoot
     {
         SimpleTrajectory tr = new SimpleTrajectory(ts.getK(), auxStats);
         tr.set(0, S);
+        maybeDividend(tr, 0);
         for (int j = 1; j <= ts.getK(); ++j)
         {
             tr.set(j, tr.price(j-1)*exp(
                     dvol*rt.normal() + dm - dvol*dvol/2) );
+            maybeDividend(tr, j);
         }
         tr.setReady();
         return new OneTrScenario(ts,tr);  
@@ -75,6 +77,8 @@ public class OneTrGenerator extends GeneratorRoot
         SimpleTrajectory neg = new SimpleTrajectory(ts.getK(), auxStats);
         pos.set(0, S);
         neg.set(0, S);
+        maybeDividend(pos, 0);
+        maybeDividend(neg, 0);
         for (int j = 1; j <= ts.getK(); ++j)
         {
             double N = rt.normal();
@@ -82,13 +86,36 @@ public class OneTrGenerator extends GeneratorRoot
                     dvol*N + dm - dvol*dvol/2) );
             neg.set(j, neg.price(j-1)*exp(
                     dvol*(-N) + dm - dvol*dvol/2) );
+            maybeDividend(pos, j);
+            maybeDividend(neg, j);
         }
         pos.setReady();
         neg.setReady();
         return new OneTrScenario(ts, pos, neg);        
     }
+
+    private void maybeDividend(SimpleTrajectory tr, int j)
+    {
+        Collection<Dividend> dividends = ds.getDivindent(j);
+        for (Dividend d: dividends)
+            handleDividend(tr, j, d);
+    }
+    
+    private void handleDividend(SimpleTrajectory tr, int j, Dividend d)
+    {
+        double price = tr.price(j);
+        double v = d.getDividend(price);
+        tr.set(j, price-v);
+    }
+    
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        ds = new DividendsSupport(ts, dividends);
+    }
     
     private double S, dm, dvol;
+    private DividendsSupport ds;
     private TimeSupport ts;
     private RandomTools rt = new RandomTools();
     private Collection<Auxiliary> auxStats;

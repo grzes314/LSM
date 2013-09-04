@@ -7,6 +7,7 @@ import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
 import finance.trajectories.*;
+import java.util.Collection;
 import java.util.HashSet;
 
 /**
@@ -125,6 +126,12 @@ class GeneratorForLookback extends GeneratorRoot
             maxTr.set(k, max);
         }
         return maxTr;
+    }
+
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        generator.setDividends(dividends);
     }
     
     protected VanillaOptionParams.CallOrPut type;

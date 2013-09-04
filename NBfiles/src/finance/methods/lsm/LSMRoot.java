@@ -6,9 +6,11 @@ import finance.methods.common.Method;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObserver;
 import finance.methods.montecarlo.Result;
+import finance.trajectories.Dividend;
 import finance.trajectories.Generator;
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeSupport;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import math.matrices.Vector;
@@ -70,6 +72,7 @@ abstract public class LSMRoot implements Method
                 notifyObservers(pr);
             }
         } );
+        gen.setDividends(dividends);
         Scenario[] paths = gen.generate(N);
         CashFlow[] realizedCF = realizedCashFlows(paths, instr);
         double payoffAtTime0 = instr.payoff(paths[0], 0);
@@ -167,9 +170,20 @@ abstract public class LSMRoot implements Method
     {
         return lastResult;
     }
+
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        this.dividends = dividends;
+    }
+    
+    public TimeSupport getLastTS()
+    {
+        return ts;
+    }
     
     private Result lastResult;
     protected int N, K, M;
     protected TimeSupport ts;
     private List<ProgressObserver> observers = new LinkedList<>();
+    private Collection<Dividend> dividends;
 }

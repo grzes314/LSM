@@ -3,6 +3,7 @@ package finance.trajectories;
 
 import finance.parameters.ModelParams;
 import finance.trajectories.Trajectory.Auxiliary;
+import java.util.ArrayList;
 import java.util.Collection;
 import math.matrices.Matrix;
 import math.matrices.NotPositiveDefiniteMatrixException;
@@ -19,7 +20,8 @@ public class MultiTrGenerator extends GeneratorRoot
     {
         this.ts = ts;
         this.auxStats = SimpleTrajectory.makeAllAuxiliary();
-        extractNecssaryData(params, measure);
+        this.modelParams = params;
+        extractNecssaryData(measure);
     }
     
     public MultiTrGenerator(ModelParams params, Measure measure, TimeSupport ts,
@@ -27,54 +29,55 @@ public class MultiTrGenerator extends GeneratorRoot
     {
         this.ts = ts;
         this.auxStats = auxiliary;
-        extractNecssaryData(params, measure);
+        this.modelParams = params;
+        extractNecssaryData(measure);
     }
     
-    private void extractNecssaryData(ModelParams params, Measure measure)
+    private void extractNecssaryData(Measure measure)
     {
-        extractNumberOfAssets(params);
-        extractNames(params);
-        extractCholeskyDecomposition(params);
-        extractAssetData(params, measure);
+        extractNumberOfAssets();
+        extractNames();
+        extractCholeskyDecomposition();
+        extractAssetData(measure);
     }
 
-    private void extractNumberOfAssets(ModelParams params)
+    private void extractNumberOfAssets()
     {
-        numberOfAssets = params.getNumberOfAssets();
+        numberOfAssets = modelParams.getNumberOfAssets();
     }
     
-    private void extractNames(ModelParams params)
+    private void extractNames()
     {
         names = new String[numberOfAssets+1];
         for (int i = 1; i <= numberOfAssets; ++i)
-            names[i] = params.getName(i);
+            names[i] = modelParams.getName(i);
     }
 
-    private void extractCholeskyDecomposition(ModelParams params)
+    private void extractCholeskyDecomposition()
             throws IllegalArgumentException
     {
         try {
-            decomp = params.getCorrelation().cholesky();
+            decomp = modelParams.getCorrelation().cholesky();
         } catch (NotPositiveDefiniteMatrixException ex) {
             throw new IllegalArgumentException("Correlation matrix is invalid", ex);
         }
     }
 
-    private void extractAssetData(ModelParams params, Measure measure)
+    private void extractAssetData(Measure measure)
     {
-        extractSpot(params);
-        extractDm(params, measure);
-        extractDvol(params);
+        extractSpot();
+        extractDm(measure);
+        extractDvol();
     }
     
-    private void extractSpot(ModelParams params)
+    private void extractSpot()
     {
         spot = new double[numberOfAssets+1];
         for (int i = 1; i <= numberOfAssets; ++i)
-            spot[i] = params.getParams(i).S;
+            spot[i] = modelParams.getParams(i).S;
     }
     
-    private void extractDm(ModelParams params, Measure measure)
+    private void extractDm(Measure measure)
     {
         dm = new double[numberOfAssets+1];
         for (int i = 1; i <= numberOfAssets; ++i)
@@ -82,19 +85,19 @@ public class MultiTrGenerator extends GeneratorRoot
             switch (measure)
             {
                 case REAL:
-                    dm[i] = params.getParams(i).mu * ts.getDt();
+                    dm[i] = modelParams.getParams(i).mu * ts.getDt();
                     break;
                 case MART:
-                    dm[i] = params.getR() * ts.getDt();                    
+                    dm[i] = modelParams.getR() * ts.getDt();                    
             }
         }
     }
     
-    private void extractDvol(ModelParams params)
+    private void extractDvol()
     {
         dvol = new double[numberOfAssets+1];
         for (int i = 1; i <= numberOfAssets; ++i)
-            dvol[i] = params.getParams(i).vol * Math.sqrt(ts.getDt());
+            dvol[i] = modelParams.getParams(i).vol * Math.sqrt(ts.getDt());
     }
     
     private double getDt()
@@ -131,10 +134,12 @@ public class MultiTrGenerator extends GeneratorRoot
     private void fillTrajectories()
     {
         callFillFirst();
+        maybeDividend(0);
         for (int k = 1; k <= getTimePoints(); ++k)
         {
             Vector Z = drawZ();
             callFillNext(k, Z);
+            maybeDividend(k);
         }
         callSetReady();
     }
@@ -184,6 +189,25 @@ public class MultiTrGenerator extends GeneratorRoot
             trs[i].set( timePoint, trs[i].price(timePoint-1) * Math.exp(
                      dm[i] - dvol[i]*dvol[i]/2 + dvol[i]*Z.get(i) ) );
     }
+        
+    private void maybeDividend(int k)
+    {
+        ArrayList<Dividend> dividends = ds.getDivindent(k);
+        for (Dividend d: dividends)
+        {
+            handleDividend(k, pos, d);
+            if (genAnthi)
+                handleDividend(k, neg, d);
+        }
+    }
+    
+    private void handleDividend(int k, SimpleTrajectory[] trs, Dividend d)
+    {
+        int i = modelParams.getNr(d.underlying);
+        double S = trs[i].price(k);
+        double v = d.getDividend(S);
+        trs[i].set(k, Math.max(0, S-v));
+    }
     
     private Scenario makeResult()
     {
@@ -193,8 +217,15 @@ public class MultiTrGenerator extends GeneratorRoot
             return new MultiTrScenario(ts, names, pos);
     }
     
-    private TimeSupport ts;
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        ds = new DividendsSupport(ts, dividends);
+    }
     
+    private TimeSupport ts;
+    private DividendsSupport ds;
+    private ModelParams modelParams;
     private RandomTools rt = new RandomTools();
     private int numberOfAssets;
     private boolean genAnthi;
@@ -204,4 +235,5 @@ public class MultiTrGenerator extends GeneratorRoot
     private SimpleTrajectory[] pos;
     private SimpleTrajectory[] neg;
     private Collection<Auxiliary> auxStats;
+
 }

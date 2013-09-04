@@ -14,6 +14,12 @@ import finance.parameters.SimpleModelParams;
 import static finance.parameters.SimpleModelParams.onlyAsset;
 import finance.parameters.VanillaOptionParams;
 import finance.parameters.VanillaOptionParams.CallOrPut;
+import finance.trajectories.Dividend;
+import finance.trajectories.DividendPerc;
+import finance.trajectories.Generator;
+import finance.trajectories.OneTrGenerator;
+import finance.trajectories.Scenario;
+import finance.trajectories.TimeSupport;
 import finance.trajectories.Trajectory;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +27,14 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import math.approx.Polynomial;
+
+
+
+
+
+
+
 
 /**
  *
@@ -32,9 +46,10 @@ public class LauncherForThesis
     {
         LauncherForThesis l = new LauncherForThesis();
         File file = new File("/home/grzes/Printed.R");
-        PrintStream out = new PrintStream( file );
-        l.callAll(out);
-        //l.makeAmericanBinaryCall3D(System.out);
+        //PrintStream out = new PrintStream( file );
+        //l.callAll(out);
+        
+        l.makeAmForwardPut(System.out);
     }
     
     void callAll(PrintStream out)
@@ -43,6 +58,12 @@ public class LauncherForThesis
 //**************************** Vanilla options ****************************************************/
         try { makeEuAndAmPut(out); }
         catch (Throwable t) { System.err.println("makeEuAndAmPut sie zesralo"); }
+        try { makeAmCallDividend(out); }
+        catch (Throwable t) { System.err.println("makeAmCallDividend sie zesralo"); }
+        try { makeAmCallDividend3D(out); }
+        catch (Throwable t) { System.err.println("makeAmCallDividend3D sie zesralo"); }
+        try { makeAmCallDividendValueAndPayoff(out); }
+        catch (Throwable t) { System.err.println("makeAmCallDividend3D sie zesralo"); }
 
 //**************************** European barrier options *******************************************/
         try { compareEuBarrierAndVanillaCall(out); }
@@ -62,14 +83,25 @@ public class LauncherForThesis
         try { compareAmAndEuBarrierAndVanillaCall(out); }
         catch (Throwable t) { System.err.println("compareAmAndEuBarrierAndVanillaCall sie zesralo"); }
         
+//**************************** Forward options ****************************************************/
+        try { makeAmForwardCall(out); }
+        catch (Throwable t) { System.err.println("makeAmForwardCall sie zesralo"); }
+        try { makeAmForwardPut(out); }
+        catch (Throwable t) { System.err.println("makeAmForwardPut sie zesralo"); }
         
-//**************************** European binary options *******************************************/
+        
+        
+//**************************** Binary options *******************************************/
         try { makeEuropeanBinaryPut2D(out); }
         catch (Throwable t) { System.err.println("makeEuropeanBinaryPut2D sie zesralo"); }
         try { makeEuropeanBinaryCall3D(out); }
         catch (Throwable t) { System.err.println("makeEuropeanBinaryCall3D sie zesralo"); }
         try { makeAmericanBinaryCall3D(out); }
         catch (Throwable t) { System.err.println("makeAmericanBinaryCall3D sie zesralo"); }
+        
+//************************************** Other ****************************************************/
+        try { makeTrajectoryWithDividends(out); }
+        catch (Throwable t) { System.err.println("makeTrajectoryWithDividends sie zesralo"); }
     }
     
     private void makeEuAndAmPut(PrintStream out)
@@ -121,6 +153,191 @@ public class LauncherForThesis
         out.println(str);
     }
     
+    private ArrayList<Dividend> makeDividends(int k, double perc)
+    {
+        ArrayList<Dividend> divs = new ArrayList<>();
+        for (int i = 1; i <= k; ++i)
+            divs.add(new DividendPerc(perc, (double)i / (k+1), onlyAsset));
+        return divs;
+    }    
+    
+    private ArrayList<Dividend> makeDividend(double t, double perc)
+    {
+        ArrayList<Dividend> divs = new ArrayList<>();
+        divs.add(new DividendPerc(perc, t, onlyAsset));
+        return divs;
+    }
+    
+    private void makeAmCallDividend(PrintStream out)
+    {
+        final BSMethod bs = new BSMethod();
+        final LSM[] lsm = new LSM[3];
+        double[] perc = { 1, 5, 10 };
+        for (int i = 0; i < 3; ++i)
+        {
+            lsm[i] = new LSM(new ArrayList<Trajectory.Auxiliary>() /*No auxiliary statistics */);
+            lsm[i].setMethodParams(100000, 50, 3);
+            lsm[i].setDividends(makeDividends(2, perc[i]));
+        }
+        
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0, 0.05);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
+        final Instr opt = new Option(vop, onlyAsset);
+        final Instr eu = new EuExercise(opt);
+        double[] S = new double[100];
+        for (int i = 0; i < 100; ++i)
+            S[i] = 50 + 1.2 * i;
+        DataForMaker_2D maker = new DataForMaker_2D(S) { 
+            @Override int getNumberOfYVals() {
+                return 4;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "price";
+            }
+            @Override String getLegend(int i) {
+                if (i == 0) return "No dividends";
+                else if (i == 1) return "1% dividends";
+                else if (i == 2) return "5% dividends";
+                else return "10% dividends";
+            }
+            @Override String getDesc() {
+                return "American vanilla call on a stock paying dividend twice " + 
+                       " with E=100, T=1, vol=0.2, r=0.05";
+            }
+            @Override void setXVal(double d) {
+                try {
+                    bs.setModelParams(smp.withS(d));
+                    for (int i = 0; i < 3; ++i)
+                        lsm[i].setModelParams(smp.withS(d));
+                } catch (WrongModelException ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            @Override double getPrice(int i) {
+                try {
+                    if (i == 0) return bs.price(eu);
+                    else return lsm[i-1].price(opt);
+                } catch (WrongInstrException | InterruptedException ex) {
+                    throw new RuntimeException();
+                }
+            }            
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
+    private double getPrice(Polynomial future, VanillaOptionParams vop, double S)
+    {
+        return Math.max(vop.intrisnicValue(S), future.value(S));
+    }
+    
+    private void makeAmCallDividend3D(PrintStream out)
+    {
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0, 0.05);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
+        final LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>() /*No auxiliary statistics */);
+        lsm.setMethodParams(100000, 50, 3);
+        lsm.setDividends(makeDividend(0.5, 20));
+        final Instr opt = new Option(vop, onlyAsset);
+        try {
+            lsm.setModelParams(smp);
+            lsm.price(opt);
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        } 
+        final TimeSupport ts = lsm.getLastTS();
+        double[] S = new double[20];
+        for (int i = 0; i < 20; ++i)
+            S[i] = 80 + 3 * i;
+        double[] T = new double[20];
+        for (int i = 0; i < 20; ++i)
+            T[i] = 0.2 + 0.035 * i;
+        
+        DataForMaker_3D maker = new DataForMaker_3D(S, T) {
+            @Override String fstName() {
+                return "asset price";
+            }
+            @Override String sndName() {
+                return "time";
+            }
+            @Override String getDesc() {
+                return "Preparing 3D chart of the price of american call " +
+                        "option on a dividend paying stock.";
+            }
+            @Override void setFst(double d) {
+                currS = d;
+            }
+            @Override void setSnd(double d) {
+                currStep = ts.timeToNr(d);
+            }
+            @Override
+            double getPrice() {
+                Polynomial future = lsm.getEst()[currStep];
+                return getPrice(future, vop, currS);
+            }
+            double currS;
+            int currStep;
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
+    private void makeAmCallDividendValueAndPayoff(PrintStream out)
+    {
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0.05);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
+        final LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>() /*No auxiliary statistics */);
+        lsm.setMethodParams(100000, 50, 3);
+        lsm.setDividends(makeDividend(0.5, 20));
+        final Instr opt = new Option(vop, onlyAsset);
+        try {
+            lsm.setModelParams(smp);
+            lsm.price(opt);
+        } catch (Exception ex) {
+            throw new RuntimeException();
+        } 
+        final TimeSupport ts = lsm.getLastTS();
+        double[] S = new double[50];
+        for (int i = 0; i < 50; ++i)
+            S[i] = 80 + 2 * i;
+        double t = 0.48;
+        final int timeStep = ts.timeToNr(t);
+        DataForMaker_2D maker = new DataForMaker_2D(S) {
+            @Override
+            int getNumberOfYVals() {
+                return 2;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "";
+            }
+            @Override String getLegend(int i) {
+                if (i == 0) return "immediate payoff";
+                else return "price";
+            }
+            @Override String getDesc() {
+                return "Comparision of options value and payoff before dividend.";
+            }
+            @Override void setXVal(double d) {
+                currS = d;
+            }
+            @Override double getPrice(int i) {
+                if (i == 0)
+                    return vop.intrisnicValue(currS);
+                else
+                    return getPrice(lsm.getEst()[timeStep], vop, currS);
+            }
+            double currS;
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+     
     private void compareEuBarrierAndVanillaCall(PrintStream out)
     {
         final BSMethod bs = new BSMethod();
@@ -471,6 +688,116 @@ public class LauncherForThesis
         out.println(str);
     }
     
+    private void makeAmForwardCall(PrintStream out)
+    {
+        final BSMethod bs = new BSMethod();
+        final LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>());
+        lsm.setMethodParams(10000, 50, 3);
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0.05);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
+        double[] spots = new double[60];
+        for (int i = 0; i < 60; ++i)
+            spots[i] = 40 + i*2;
+        final Instr am = new Forward( 0.5, new Option(vop, onlyAsset) );
+        final Instr eu = new EuExercise(new Option(vop, onlyAsset));
+        DataForMaker_2D maker = new DataForMaker_2D(spots) {
+            @Override int getNumberOfYVals() {
+                return 2;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "price";
+            }
+            @Override String getLegend(int i) {
+                if (i == 0) return "vanilla call";
+                else return "forward call";
+            }
+            @Override String getDesc() {
+                return "Comparision of vanilla and forward call.";
+            }
+            @Override void setXVal(double d)  {
+                try {
+                    bs.setModelParams(smp.withS(d));
+                    lsm.setModelParams(smp.withS(d));
+                } catch (WrongModelException ex) {
+                    throw new RuntimeException();
+                }
+            }
+            @Override double getPrice(int i) {
+                try {
+                    if (i == 0) 
+                        return bs.price(eu);
+                    else
+                        return lsm.price(am);
+                } catch (Exception ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException();
+                }
+            }
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
+    private void makeAmForwardPut(PrintStream out)
+    {
+        final BSMethod bs = new BSMethod();
+        final LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>());
+        lsm.setMethodParams(10000, 50, 3);
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0.1);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.PUT);
+        double[] spots = new double[60];
+        for (int i = 0; i < 60; ++i)
+            spots[i] = 40 + i*2;
+        final Instr forward1 = new Forward(0.5, new Option(vop, onlyAsset));
+        final Instr forward2 = new Forward(0.8, new Option(vop, onlyAsset));
+        final Instr eu = new EuExercise(new Option(vop, onlyAsset));
+        DataForMaker_2D maker = new DataForMaker_2D(spots) {
+            @Override int getNumberOfYVals() {
+                return 3;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "price";
+            }
+            @Override String getLegend(int i) {
+                if (i == 0) return "vanilla put";
+                else if (i == 1) return "forward put since 0.5";
+                else return "forward put since 0.8";
+            }
+            @Override String getDesc() {
+                return "Comparision of vanilla and forward put.";
+            }
+            @Override void setXVal(double d)  {
+                try {
+                    bs.setModelParams(smp.withS(d));
+                    lsm.setModelParams(smp.withS(d));
+                } catch (WrongModelException ex) {
+                    throw new RuntimeException();
+                }
+            }
+            @Override double getPrice(int i) {
+                try {
+                    if (i == 0) 
+                        return bs.price(eu);
+                    else if (i == 1)
+                        return lsm.price(forward1);
+                    else
+                        return lsm.price(forward2);
+                } catch (Exception ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException();
+                }
+            }
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
     private void makeEuropeanBinaryPut2D(PrintStream out)
     {
         final BSMethod bs = new BSMethod();
@@ -619,14 +946,49 @@ public class LauncherForThesis
         out.println(str);
     }
      
+    private void makeTrajectoryWithDividends(PrintStream out)
+    {
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0.1, 0);
+        final TimeSupport ts = new TimeSupport(1,252);
+        double[] t = new double[ts.getK()+1];
+        for (int k = 0; k <= ts.getK(); ++k)
+            t[k] = ts.nrToTime(k);
+        OneTrGenerator gen = new OneTrGenerator(smp, Generator.Measure.REAL, ts);
+        ArrayList<Dividend> divs = new ArrayList<>();
+        divs.add(new DividendPerc(20, 1.0/3, onlyAsset));
+        divs.add(new DividendPerc(20, 2.0/3, onlyAsset));
+        gen.setDividends(divs);
+        final Scenario sc = gen.generate(Generator.Anthi.NO);
+        
+        DataForMaker_2D maker = new DataForMaker_2D(t) {
+            @Override int getNumberOfYVals() {
+                return 1;
+            }
+            @Override String getXLabel() {
+                return "time";
+            }
+            @Override String getYLabel() {
+                return "asset price";
+            }
+            @Override String getLegend(int i) {
+                return "trajectory";
+            }
+            @Override String getDesc() {
+                return "Example trajectory generation";
+            }
+            @Override void setXVal(double d) {
+                k = ts.timeToNr(d);
+            }
+            @Override double getPrice(int i) {
+                return sc.getTr(1).price(k);
+            }
+            int k = 0;
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+
 }
-
-
-
-
-
-
-
 abstract class DataForMaker_3D
 {
 
@@ -772,6 +1134,7 @@ abstract class DataForMaker_2D
                 arr[j] = getPrice(i);
             }
             System.out.print((int)(100.0 * (j+1) / xVals.length) + " ");
+            System.out.flush();
         }
         System.out.println();
     }

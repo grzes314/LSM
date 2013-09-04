@@ -3,6 +3,8 @@ package finance.methods.common;
 
 import finance.instruments.Instr;
 import finance.parameters.ModelParams;
+import finance.trajectories.Dividend;
+import java.util.Collection;
 
 /**
  *
@@ -16,7 +18,7 @@ public interface Method extends ProgressObservable
      * @throws WrongModelException when given parameters are for some reason inappropriate
      * for concrete method.
      */
-    abstract void setModelParams(ModelParams mp) throws WrongModelException;
+    public void setModelParams(ModelParams mp) throws WrongModelException;
     
     /**
      * Prices given instrument.
@@ -24,14 +26,14 @@ public interface Method extends ProgressObservable
      * @return value of the instrument.
      * @throws WrongInstrException when implementarion cannot price this instrument.
      */
-    abstract double price(Instr instr) throws WrongInstrException, InterruptedException;
+    public double price(Instr instr) throws WrongInstrException, InterruptedException;
     
     /**
      * Answers if method can price given instrument.
      * @param instr
      * @return 
      */
-    abstract boolean isPriceable(Instr instr);
+    public boolean isPriceable(Instr instr);
     
     /**
      * Return description of the method. It may contain several lines and in general
@@ -39,5 +41,7 @@ public interface Method extends ProgressObservable
      * very brief, one-line description of the method.
      * @return description of the method.
      */
-    abstract String getDesc();
+    public String getDesc();
+    
+    public void setDividends(Collection<Dividend> dividends);
 }

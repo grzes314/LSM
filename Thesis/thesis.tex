@@ -2220,7 +2220,7 @@ The basis of the Monte Carlo pricing is the trajectory generation. Hence, we beg
 
 \begin{sidewaysfigure}
 \centering
- \includegraphics*[scale=0.75, viewport = 30 165 800 580]{images/Architecture/trajectories.pdf}
+ \includegraphics*[scale=1, viewport = 25 270 610 590]{images/Architecture/trajectories.pdf}
 \caption{Class diagram presenting classes designated for scenario generation.}
 \label{fig:arch:traj}
 \end{sidewaysfigure}
@@ -2239,7 +2239,7 @@ When we have classes for holding scenarios and trajectories we can finally devel
 Classes representing financial instruments are arranged in a hierarchy based on the so-called decorator pattern. Idea of such construction arises from the fact that instruments like barrier options are just modifications of vanilla options. Moreover, we can add several modifications to one instrument. The decorator pattern allows us to take into account different sets of modifications without a need to create a separate class for each set. Figure \ref{fig:arch:instr} shows the instrument hierarchy.
 \begin{sidewaysfigure}
 \centering
- \includegraphics*[scale=0.75, viewport = 30 120 785 590]{images/Architecture/instr.pdf}
+ \includegraphics*[scale=1, viewport = 25 285 580 595]{images/Architecture/instr.pdf}
 \caption{Class diagram presenting the hierarchy of financial instruments.}
 \label{fig:arch:instr}
 \end{sidewaysfigure}
@@ -2478,7 +2478,8 @@ As we can see, in case of LSM we do not have the property that every new instrum
 \label{fig:results:dupa3}
 \end{figure}
 
-\chapter*{Concluding remarks}
+\newpage
+\section{Concluding remarks}
  
 
 \begin{thebibliography}{99}

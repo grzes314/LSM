@@ -7,6 +7,8 @@ import finance.methods.common.*;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
+import finance.trajectories.Dividend;
+import java.util.Collection;
 /**
  *
  * @author Grzegorz Los
@@ -109,7 +111,13 @@ public class FDMethod implements Method
         this.K = K;
     }
     
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     private int I = 1;
     private int K = 1;
-    private FiniteDifference fd = new FiniteDifference();    
+    private FiniteDifference fd = new FiniteDifference();
 }

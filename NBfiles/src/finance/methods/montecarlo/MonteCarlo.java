@@ -7,6 +7,8 @@ import finance.methods.common.ObservableSupport;
 import finance.methods.common.Progress;
 import finance.methods.common.ProgressObserver;
 import finance.parameters.ModelParams;
+import finance.trajectories.Dividend;
+import java.util.Collection;
 
 /**
  * Base for Monte Carlo Pricers.
@@ -168,7 +170,13 @@ public abstract class MonteCarlo implements Method
         if (i % 1000 == 0)
             convergence.add(i, currentResult(i).result);
     }
-       
+           
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
     /**
      * Returns name of the pricing method.
      * @return name of the pricing method.

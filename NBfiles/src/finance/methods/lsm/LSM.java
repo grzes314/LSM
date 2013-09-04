@@ -138,6 +138,7 @@ public class LSM extends LSMRoot
     private Polynomial[] est;
     private Collection<Trajectory.Auxiliary> auxTrStats;
 }
+
 class Future implements FutureEstimatedFlow
 {
     public Future(Polynomial p)

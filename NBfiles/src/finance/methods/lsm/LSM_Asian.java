@@ -6,6 +6,7 @@ import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
 import finance.trajectories.*;
+import java.util.Collection;
 import java.util.HashSet;
 
 /**
@@ -98,7 +99,14 @@ class GeneratorForAsian extends GeneratorRoot
         return avg;
     }
     
+    @Override
+    public void setDividends(Collection<Dividend> dividends)
+    {
+        generator.setDividends(dividends);
+    }
+    
     private SimpleModelParams smp;
     private TimeSupport ts;
     private OneTrGenerator generator;
+
 }
