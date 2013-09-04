@@ -37,28 +37,29 @@ LSMidea1 <- function()
 
 LSMidea2 <- function()
 {
-  colors <- c("red", "blue", "green", "orange", "violet")
   K <- 100
-  S1 <- trajectory(0, K, K)
-  qp <- qplot((0:75)/K, S1[1:76], xlim=c(0,1), ylim=c(0,1.8*S1[1]),
-          xlab="time", ylab="stock") + geom_line(size=2)
-  qp2 <- qplot((75:100)/K, S1[76:101], size=1)
-  qp <- qp + geom_line((75:100)/K, S1[76:101], size=1)
-  lines(K1:K/K, S1[K1:K])
-  points(0.8, S1[K1], bg="black", pch=21)
-  abline(v=0.8)
-  abline(h=S1[K1])
-  
-  nr <- 1
-  while (nr < 6)
+  n <- 5
+  trs <- data.frame( matrix(nrow = K+1, ncol = n+1) )
+  colnames(trs) <- c("time", sapply(1:n, function(i) paste("tr", i, sep="")))
+  trs$time <- (0:K) / K
+  for (i in 1:n)
   {
-    S2 <- trajectory(K, r, vol, S0, T=1)
-    if (abs(S2[K1] - S1[K1])/S1[K1] < 0.2)
+    good <- FALSE
+    while (!good)
     {
-      lines((1:K)/K, S2, col=colors[nr])
-      points(0.8, S2[K1], bg=colors[nr], pch=21)
-      nr = nr+1
+      trs[,i+1] <- trajectory(0,K,K, vol=0.3)
+      if (abs(trs[61,i+1] - 100) < 10)
+        good <- TRUE
     }
   }
+  wers <- trs[61,]
+  wers <- melt(wers, id="time")
+  trs <- melt(trs, id="time")
+  ggplot(data=trs) + xlab("time")  + ylab("asset price") +
+    geom_line( aes(x=time, y=value, color=variable) ) +
+    geom_point( data=wers, aes(x=time, y=value, color=variable), size=5) +
+    theme_bw(base_size=14) + theme(legend.position = "none") +
+    scale_y_continuous(limits = c(60,140)) +
+    scale_x_continuous(breaks = (0:10)/10) +
+    geom_vline(aes(xintercept=wers[1,1]), color="#AAAAAA")
 }
-

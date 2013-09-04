@@ -1806,7 +1806,7 @@ The above proposition simply says that \textbf{it is never worth to exercise the
 Unfortunately the above definition of the value process is not constructive. It does not tell us how to find the optimal exercise strategy nor how to compute options value. We need to involve a little more theory. Following two definitions are formulated for general measure $\Q$. 
 
 \begin{mydef}
- Let $X$ and $Y$ be two processes on the same probability space\\ $(\Omega, (\mathcal{F}_t)_{t=0}^T, \Q)$. We say that $X$ \textbf{dominates} $Y$ if $ X_t \geq Y_t$ $\Q$-a.s. for all $t \geq 0$.
+ Let $X$ and $Y$ be two processes on the same probability space $(\Omega, (\mathcal{F}_t)_{t=0}^T, \Q)$. We say that $X$ \textbf{dominates} $Y$ if $ X_t \geq Y_t$ $\Q$-a.s. for all $t \geq 0$.
 \end{mydef}
  
 \begin{mydef}
@@ -1931,8 +1931,8 @@ Note that we have exactly the same problem on every path. Look at the Figure \re
 
 \begin{figure}[!ht]
 \centering
- \includegraphics[scale=0.5]{images/LSM/LSMidea2.pdf}
-\caption{The illustration of the idea allowing to bypass the difficulties with Monte Carlo described in previous section.}
+ \includegraphics[scale=0.6]{images/LSM/LSMidea2.pdf}
+\caption{The illustration of the idea allowing to overcome the difficulties with Monte Carlo described in the previous section. Suppose that we are following the purple path and we decide whether the option should be exercised at time $0.6$. We cannot release new subpaths exactly from the purple point in order to get the estimated value of continuation, but we can use remainders of the rest of trajectories. They start almost in the purple point and the differences will be compensated by regression.}
 \label{fig:LSMidea}
 \end{figure}
 
@@ -2221,7 +2221,7 @@ The basis of the Monte Carlo pricing is the trajectory generation. Hence, we beg
 \begin{sidewaysfigure}
 \centering
  \includegraphics*[scale=0.75, viewport = 30 165 800 580]{images/Architecture/trajectories.pdf}
-\caption{Diagram presenting classes designated for scenario generation.}
+\caption{Class diagram presenting classes designated for scenario generation.}
 \label{fig:arch:traj}
 \end{sidewaysfigure}
 
@@ -2240,7 +2240,7 @@ Classes representing financial instruments are arranged in a hierarchy based on 
 \begin{sidewaysfigure}
 \centering
  \includegraphics*[scale=0.75, viewport = 30 120 785 590]{images/Architecture/instr.pdf}
-\caption{Class diagram presenting hierarchy of financial instruments.}
+\caption{Class diagram presenting the hierarchy of financial instruments.}
 \label{fig:arch:instr}
 \end{sidewaysfigure}
 
@@ -2334,7 +2334,10 @@ That's it! What if we would like to price European binary option with a double b
 If we had to create special classes for such instruments as the one mentioned above, then soon we would sink in the sea of instrument classes and the code would become unmaintainable.
 	
 \section{Method hierarchy}
-In the thesis several versions of the Monte Carlo method were presented. Each of them has its own representation in the methods' class hierarchy presented in Figure \ref{fig:arch:MonteCarlo}.
+In the thesis several versions of the Monte Carlo algorithm were presented. Methods have their own class hierarchy, on the top of which lies an interface named not other than \texttt{Method}. It has only one method\footnote{Coincidental name clash.} called \texttt{price}. It takes an arbitrary \texttt{Instr} and returns its price as a number of type \texttt{double}.
+
+\subsection{"Classic" Monte Carlo}
+Every variant of the Monte Carlo has its own representation in the methods' class hierarchy shown in Figure \ref{fig:arch:MonteCarlo}.
 \begin{figure}
 \centering
  \includegraphics*[scale=0.75, viewport = 20 405 575 750]{images/Architecture/MonteCarlo2.pdf}
@@ -2342,10 +2345,7 @@ In the thesis several versions of the Monte Carlo method were presented. Each of
 \label{fig:arch:MonteCarlo}
 \end{figure}
 
-In the top there is an interface named \texttt{Method}. It has only one method\footnote{Coincidental name clash.} called \texttt{price}. It takes an arbitrary \texttt{Instr} and returns its price as a number of type \texttt{double}.
-
-\subsection{"Classic" Monte Carlo}
-\texttt{Monte Carlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing}, \texttt{oneSimulation}, \texttt{currentResult}:
+\texttt{MonteCarlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing}, \texttt{oneSimulation}, \texttt{currentResult}:
 
 \begin{lstlisting}
   public double price(Instr instr) throws InterruptedException
