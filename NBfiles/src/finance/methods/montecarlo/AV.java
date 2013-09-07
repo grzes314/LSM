@@ -3,10 +3,8 @@ package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
 import finance.parameters.ModelParams;
-import finance.trajectories.Generator;
-import finance.trajectories.MultiTrGenerator;
-import finance.trajectories.Scenario;
-import finance.trajectories.TimeSupport;
+import finance.trajectories.*;
+import java.util.Collection;
 
 /**
  *
@@ -60,6 +58,12 @@ public class AV extends MonteCarlo
         Scenario pos = scenario, neg = scenario.getAnthi();
         return 0.5 * ( instr.payoff(pos, K)*Math.exp(-params.getR()*instr.getT())
                      + instr.payoff(neg, K)*Math.exp(-params.getR()*instr.getT()) );
+    }
+
+    @Override
+    protected void passDividendsToGenerator(Collection<Dividend> dividends)
+    {
+        gen.setDividends(dividends);
     }
     
     private Generator gen;

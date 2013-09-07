@@ -7,10 +7,12 @@ import finance.parameters.ModelParams;
 import finance.parameters.OneAssetParams;
 import finance.parameters.SimpleModelParams;
 import finance.parameters.VanillaOptionParams;
+import finance.trajectories.Dividend;
 import finance.trajectories.Generator;
 import finance.trajectories.MultiTrGenerator;
 import finance.trajectories.Scenario;
 import finance.trajectories.TimeSupport;
+import java.util.Collection;
 import math.matrices.Vector;
 import math.utils.Statistics;
 
@@ -188,6 +190,12 @@ public class CV extends MonteCarlo
         return new Result(mean, se);
     }
 
+    @Override
+    protected void passDividendsToGenerator(Collection<Dividend> dividends)
+    {
+        gen.setDividends(dividends);
+    }
+    
     private Generator gen;
     private ControlVariate cv;
     private Vector payoffs, controls;

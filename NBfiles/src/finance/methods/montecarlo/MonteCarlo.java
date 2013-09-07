@@ -28,7 +28,7 @@ public abstract class MonteCarlo implements Method
 
     public MonteCarlo() 
     {
-        N = K = 1;
+        this(null);
     }
 
     @Override
@@ -134,6 +134,7 @@ public abstract class MonteCarlo implements Method
     {
         convergence = new Convergence();
         initPricing(instr);
+        passDividendsToGenerator(dividends);
         for (int i = 1 ; i <= N; ++i)
         {
             oneSimulation(instr);
@@ -174,7 +175,7 @@ public abstract class MonteCarlo implements Method
     @Override
     public void setDividends(Collection<Dividend> dividends)
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.dividends = dividends;
     }
     
     /**
@@ -188,10 +189,13 @@ public abstract class MonteCarlo implements Method
     abstract protected void oneSimulation(Instr instr);
     
     abstract protected Result currentResult(int simulation);
+
+    abstract protected void passDividendsToGenerator(Collection<Dividend> dividends);
     
     protected ModelParams params;
     protected int N, K;
     private ObservableSupport os = new ObservableSupport();
     protected Result lastResult;
     private Convergence convergence;
+    private Collection<Dividend> dividends;
 }

@@ -3,11 +3,9 @@ package finance.methods.montecarlo;
 
 import finance.instruments.Instr;
 import finance.parameters.ModelParams;
-import finance.trajectories.Generator;
+import finance.trajectories.*;
 import finance.trajectories.Generator.Measure;
-import finance.trajectories.MultiTrGenerator;
-import finance.trajectories.Scenario;
-import finance.trajectories.TimeSupport;
+import java.util.Collection;
 
 /**
  *
@@ -61,6 +59,12 @@ public class CMC extends MonteCarlo
     {
         return instr.payoff(scenario, K) * 
                 Math.exp(-params.getR()*instr.getT());
+    }
+    
+    @Override
+    protected void passDividendsToGenerator(Collection<Dividend> dividends)
+    {
+        gen.setDividends(dividends);
     }
     
     private Generator gen;

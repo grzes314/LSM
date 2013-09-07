@@ -171,6 +171,7 @@ abstract public class LSMRoot implements Method
         return lastResult;
     }
 
+    @Override
     public void setDividends(Collection<Dividend> dividends)
     {
         this.dividends = dividends;
