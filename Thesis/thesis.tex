@@ -16,10 +16,13 @@
 \usepackage{bbm}
 \usepackage{subfig} % placing floats side by side
 \usepackage{rotating}
+\usepackage{sidecap}
+\usepackage{wrapfig}
+
 
 % pretty display of a chapter/part
 \addto\captionsenglish{
-  \renewcommand\chaptername{Part}}
+  \renewcommand\chaptername{}}
 \titleformat{\chapter}[display]
   {\normalfont\Large\filcenter\sffamily}
   {\titlerule[1pt]%
@@ -66,15 +69,15 @@
 \theoremstyle{definition}
 \newtheorem{mydef}{Definition}[chapter]
 %\newtheorem{notation}[mydef]{Notation}
-\newtheorem{example}{Example}[chapter]
+%\newtheorem{example}{Example}[chapter]
 
 \theoremstyle{remark}
 \newtheorem{remark}{Remark}[chapter]
 
-% \newcounter{example}
-% \newenvironment{example}
-%   {\refstepcounter{example} \par\medskip\noindent \textbf{Example~\arabic{example}.}  }
-%   {\begin{flushright}$\square$\end{flushright}}
+\newcounter{example}[chapter]
+\newenvironment{example}
+   {\refstepcounter{example} \par\medskip\noindent \textbf{Example~\arabic{chapter}.\arabic{example}.}  }
+   {\hfill $\diamondsuit$\par\noindent\ignorespacesafterend}
   
 \def\Var{{\rm Var}}
 \def\E{{\mathbb{E}}}
@@ -132,7 +135,7 @@ Instytut Matematyczny}\\
 \vspace{3cm}
 {\hspace*{6.5cm}\large Master's thesis\\
 \hspace*{6.5cm}\large  written under the supervision of\\
-\hspace*{6.5cm}\large  Dr. Paweł Kawa }
+\hspace*{6.5cm}\large  Dr Paweł Kawa }
 \vfill
 \begin{center}
 {\large Wrocław 2013}\\
@@ -161,11 +164,11 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
   This thesis presents techniques of option pricing based on Monte Carlo simulations. Mathematical theories underlying the presented methods are recalled, however, the thesis is practical in nature, hence it not always gets deep into mathematical details.
   Instead, it provides many algorithms in the form of concise pseudocode, which outline how to use the theory in practice. The utility of depicted methods is affirmed by implementations in R and Java programming languages. This paper is filled with illustrations of the results obtained by the created application.
   
-  The first part of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s lemma Girsanov theorem, a general description of Monte Carlo methtods.
+  The first part of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s, lemma Girsanov theorem, a general description of Monte Carlo methtods.
   In the second part, Reader may find an introduction to option pricing. It contains description of the market model, Black-Scholes paradigm, definition of the martingale measure. It also provides a detailed explanation how to calibrate parameters of the Black-Scholes model from the real-world market's history.
   In the next part, the Monte Carlo pricing procedure for European options is described. It starts with simple vanilla options, and gradually moves to more complicated exotic instruments, whose exercise may depend on multiple assets or on the whole history of the market scenario. 
   The fourth part introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method, which may be used to price American options, is described.
-  The next part depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
+  The next chapter depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
   In the last part, illustrations of several pricing results are collected.
 \end{quotation}
 
@@ -572,9 +575,9 @@ To compare presented Monte Carlo methods let us calculate value of $I = \int_0^1
    \CV[n] &= \frac{1}{n} \sum\limits_{i=1}^{n} \left( g(U_i) + c(U_i - \frac{1}{2}) \right),
   \end{split}
  \end{equation*}
-where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. The results of comparision of all presented methods are gathered in Table \ref{tab:MCcompare} and Figures \ref{fig:boxMC}, \ref{fig:convergenceMC}.
+where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are taking twice as much simulations in crude Monte Carlo method, since it does not use pairs of random variables. The results of comparison of all presented methods are gathered in Table \ref{tab:MCcompare} and Figures \ref{fig:boxMC}, \ref{fig:convergenceMC}.
 
-\begin{table}[h]
+\begin{table}
 \centering
  \caption{Results of calculating $\int_0^1 e^x dx$ by simulation.}
  \label{tab:MCcompare}
@@ -600,11 +603,11 @@ where $c$ is as in (\ref{eq:CVc}) with $Y = g(U)$ and $X = U$. Note that we are 
 \begin{figure}
 \centering
  \includegraphics[scale=0.6]{images/Preliminaries/convergenceMC.pdf}
-\caption{Comparision of the speed of convergence. }
+\caption{Comparison of the speed of convergence. }
 \label{fig:convergenceMC}
 \end{figure}
 
-We see that in this case antithetic and control variates methods gave approximatly equal results, while crude Monte Carlo is far behind them. When performing one million simulations (in case of CMC two millions) standard error turned out 50 times smaller in AV and CV than in CMC. It means that results from the first two methods are more than one digit more accurate.
+We see that in this case antithetic and control variates methods gave approximately equal results, while crude Monte Carlo is far behind them. When performing one million simulations (in case of CMC two millions) standard error turned out 50 times smaller in AV and CV than in CMC. It means that results from the first two methods are more than one digit more accurate.
 
 Box plot in Figure \ref{fig:boxMC} shows that a variance of the crude Monte Carlo estimator is much more greater than in the two other methods. In practice it means, that if we ran simulations with AV estimator or CV estimator, then every time we would obtain more or less equal result. For CMC the discrepancy between the results would be far greater.
 Figure \ref{fig:convergenceMC} explains that fact -- speed of convergence of CMC is definitely lower than two other methods.
@@ -707,7 +710,7 @@ We have proven following
                     1    & 0 \\
                     \varrho & \sqrt{1 - \varrho^2}
                     \end{array} \right).$
- Clearly, vector $N = (N_1, N_2)'$ from Proposition \ref{prop:corrNorm} has the Gaussian distribution $\mathcal{N}(0, \Sigma)$. Moreover, $N = LZ$. There is an intresting correspondance between $\Sigma$ and $L$ -- simple matrix multiplication shows that $\Sigma = LL'$.  
+ Clearly, vector $N = (N_1, N_2)'$ from Proposition \ref{prop:corrNorm} has the Gaussian distribution $\mathcal{N}(0, \Sigma)$. Moreover, $N = LZ$. There is an interesting correspondence between $\Sigma$ and $L$ -- simple matrix multiplication shows that $\Sigma = LL'$.  
 \end{remark}
 
 The derivation of the above fact was intuitive, but we need a more general version. It turns out that Proposition \ref{prop:corrNorm} can be generalized for higher dimensions.
@@ -716,7 +719,7 @@ The derivation of the above fact was intuitive, but we need a more general versi
 \end{thm}
 Matrix $L$ from the above theorem may be obtained by the \textbf{Cholesky algorithm}. Utility of the Cholesky decomposition arises from the following fact.
 \begin{prop}
- Let $Z$ be a random vector with the multivariate normal distribution $\mathcal{N}(0, \mathbbm{I})$. Let $\Sigma$ be a covariance matrix and $\Sigma = LL'$. Then vector $N = \mu + LZ$ has the distribution $\mathcal{N}(\mu, \Sigma)$.
+ Let $Z$ be a random vector with the multivariate normal distribution $\mathcal{N}(0, \mathbbm{I})$. Let $\Sigma$ be a co variance matrix and $\Sigma = LL'$. Then vector $N = \mu + LZ$ has the distribution $\mathcal{N}(\mu, \Sigma)$.
 \end{prop}
 \begin{proof}
  It is clear that $N$ has the multivariate normal distribution. Morever,
@@ -1290,20 +1293,20 @@ Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucia
 
 
 \chapter[{Pricing European options using Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
-The Black-Scholes theory gives us compact formula for pricing european vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instrumets, whose value cannot be derived analitically. Thus, other methods must be used.
-The most popular are finite diffrence, binomial trees and Monte Carlo. In this thesis only the last one is presented.
+The Black-Scholes theory gives us compact formula for pricing European vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instruments, whose value cannot be derived analytically. Thus, other methods must be used.
+The most popular are finite difference, binomial trees and Monte Carlo. In this thesis we present the last one.
 
 \section{Vanilla options}
 \label{sec:pricing_vanilla}
 
-In order to use the Monte Carlo method in option pricing, we need to involve the theory presented in the section \ref{sec:risk-neutral}. First we will focus on the case, when the only instruments traded in the market are $B = S^{(0)}$ -- a riskless bank account, and a risky asset $S = S^{(1)}$.
+In order to use the Monte Carlo method in the option pricing, we need to involve the theory presented in the section \ref{sec:risk-neutral}. First we will focus on the case, when the only instruments traded in the market are $B = S^{(0)}$ -- a riskless bank account, and a risky asset $S = S^{(1)}$.
 
-From Corollary \ref{coro:price_mth} we have
+As in previous chapter, $V_0$ is the option's price and $H$ is the discounted payoff. From Corollary \ref{coro:price_mth} we have
 \begin{equation}
  \label{eq:price_for_MC}
- V_0 = \Em[H].% = \Em[\frac{C}{S^{(0)}_T}] = e^{-rT} \Em[C].
+ V_0 = \Em[H].
 \end{equation}
-By comparision with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. To calculate options price we have to replicate its payoff many times and take an average. Note, however, that expectaion is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{prop:rn-dynamics} describes its dynamics:
+By comparison with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. To calculate options price we have to replicate its payoff many times and take the mean. Note, however, that expectation is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{prop:rn-dynamics} describes its dynamics:
 \[ dS = rSdt + \sigma S dW. \]
 Lemma \ref{prop:solution_dynamics} gives the solution to above SDE:
 \begin{equation}
@@ -1315,9 +1318,9 @@ In case of vanilla options only the value at the end of the trajectory is import
 \label{eq:vanilla_ST}
  S_T = S_0 \exp\left\{ (r - \frac{1}{2}\sigma^2)T + \sigma W_T \right\},
 \end{equation}
-where, from properties of the Wiener process, $W_T \sim \mathcal{N}(0,T)$. Value of $S_T$ depends on $W_T$, hence it is justified to write $S_T = S_T(W_T)$.
+where, from properties of the Wiener process, $W_T \sim \mathcal{N}(0,T)$. The value of $S_T$ depends on $W_T$, hence it is justified to treat $S_T$ as a function of $W_T$ and write $S_T = S_T(W_T)$.
 
-Let $H = g(S_T)$ and $E$ be the strike price. For instance, if $H$ is a call option $g(x) = (x - E)_+$, and if $H$ is a put $g(x) = (E - x)_+$, but in fact $H$ might be any claim whose payoff depends only on $S_T$. Equation (\ref{eq:vanilla_ST}) tells us how to generate the asset price; by applying function $g$ we generate the payoff.
+Let $H = g(S_T)$ and $E$ be the strike price. For instance, if $H$ is a call option \linebreak ${g(x) = e^{-rT}(x-E)_+}$, and if $H$ is a put $g(x) = e^{-rT}(E - x)_+$, but in fact $H$ might be any claim whose payoff depends only on $S_T$. Equation (\ref{eq:vanilla_ST}) tells us how to generate the asset price; by applying function $g$ we generate the payoff.
 Since $S_T$ is also a function of some $Z \sim \mathcal{N}(0,T)$, thus actually $H = g(S_T(Z)) =: f(Z)$, for $f = g \circ S_T$. By $Z_i, i = 1,2,...$, we will denote replications of $Z$.
 The crude Monte Carlo estimator has the form:
 \begin{equation}
@@ -1329,10 +1332,10 @@ We will also use antithetic variates, where an antithetic variable to $f(Z_i)$ w
  \label{eq:vanilla_AV}
  \AVa[H, n] = \frac{1}{n}\sum\limits_{i=1}^{n} \frac{f(Z_i) + f(-Z_i)}{2}.
 \end{equation}
-To use the control variates method, recall that $S_0 = \Em[S_T]$. It implies that we can take $S_T$ as a control variate, hence
+To use the control variates method, recall that $e^{rT} S_0 = \Em[S_T]$. It implies that we can take $S_T$ as a control variate, hence
 \begin{equation}
  \label{eq:vanilla_CV}
- \CVa[H, n] = \frac{1}{n}\sum\limits_{i=1}^{n} \left( f(Z_i) + c (S_T(Z_i) - S_0) \right),
+ \CVa[H, n] = \frac{1}{n}\sum\limits_{i=1}^{n} \left( f(Z_i) + c (S_T(Z_i) - e^{rT}S_0) \right),
 \end{equation}
 where $c$ is a value calculated as in equation (\ref{eq:CVc}).
 
@@ -1361,114 +1364,129 @@ To get a grip on using above estimators in practice, we present how exactly look
 \end{algorithm}
 Values calculated in lines 12-14 are price of the option, variance and standard error of the estimation.
 
-Implementation of an option pricer based on estimators (\ref{eq:vanilla_CMC})-(\ref{eq:vanilla_CV}) allows us to compare these methods. In sections \ref{sec:pricing_vanilla} and \ref{sec:pricing_complicated} we will always assume following parameters:
+An implementation of an option pricer based on estimators (\ref{eq:vanilla_CMC})-(\ref{eq:vanilla_CV}) allows us to compare these methods. In sections \ref{sec:pricing_vanilla} and \ref{sec:pricing_complicated} we will always assume following parameters:
 \begin{equation}
 \label{eq:marketParams}
 \begin{split}
  S &= 100 \\
  \sigma &= 0.20 \\
  r &= 0.05 \\
- T &= 1 \hbox{\ \ \ (options expire after one year)}
+ T &= 1 \hbox{\ \ \ (options expire after one year)}.
 \end{split}
 \end{equation}
+
+\begin{example}
 First consider a call option with strike 90. The Black-Scholes value of the option is 16.70. Results of the Monte Carlo pricing are shown in Table \ref{tab:vanilla1} and Figure \ref{fig:vanilla1}.
+
+It is clear, that in this case CV method proved itself the best. It is caused by the fact, that in most simulations option expires in the money. In consequence the payoff is highly correlated with the asset price at the end of the path. 
+\end{example}
 
 \begin{table}
 \centering
  \caption{Results of pricing call@90. Black-Scholes price is 16.70.}
  \label{tab:vanilla1}
-\begin{tabular} {||r | c | c | c | c |c | c ||}  
+\begin{tabular} {||c | c | c | c | c |c | c ||}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-1000   & 17.09 & 0.393 & 16.67 & 0.185 & 16.74 & 0.127 \\ \hline 
-10000  & 16.98 & 0.123 & 16.66 & 0.061 & 16.67 & 0.041 \\ \hline 
-100000 & 16.71 & 0.039 & 16.67 & 0.019 & 16.70 & 0.013 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+  3 & 17.09 & 0.393 & 16.67 & 0.185 & 16.74 & 0.127 \\ \hline 
+  4 & 16.98 & 0.123 & 16.66 & 0.061 & 16.67 & 0.041 \\ \hline 
+  5 & 16.71 & 0.039 & 16.67 & 0.019 & 16.70 & 0.013 \\ \hline 
+  6 & 16.69 & 0.012 & 16.70 & 0.006 & 16.70 & 0.004 \\ \hline 
 \end{tabular}  
 \end{table}
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxCall90.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergenceCall90.pdf}
-\caption{Accuracy of pricing call@90. Box plot on the left was created by running estimation 100 times for each method, each estimation used 10000 replicated pairs. Chart on the right shows speed of convargence, i.e. how the estimation changes as the number of performed replications increases. The horizontal line is the options value calculated form Black-Scholes formula. }
+\caption{The accuracy of pricing call@90. Box plot on the left was created by running estimation 100 times for each method, each estimation used 10000 replicated pairs. The chart on the right shows speed of the convergence, i.e. how the estimation changes as the number of performed replications increases. The horizontal line is the options value calculated form Black-Scholes formula. }
 \label{fig:vanilla1}
 \end{figure}
 
-It is clear, that in this case CV method proved itself the best. It is caused by the fact, that in many simulations option expires in the money. In consequence the payoff is highly correlated with the asset price at the end of the path. Let us consider now a call with higher strike, 130, whose Black-Scholes price equals 1.64. Look at the Table \ref{tab:vanilla2} and Figure \ref{fig:vanilla2}. 
+\begin{example}
+Let us consider now a call with higher strike, 130, whose Black-Scholes price equals 1.64. Look at the Table \ref{tab:vanilla2} and Figure \ref{fig:vanilla2}. 
+ 
+This time the asset price usually ended above the options strike, what means that in most simulations payoff was 0. Thus, correlation between payoff and assets final price is low, and in consequence CV did not bring a significant improvement.
+\end{example}
+
 
 \begin{table}
 \centering
  \caption{Results of pricing call@130. Black-Scholes price is 1.64.}
  \label{tab:vanilla2}
-\begin{tabular} {||r | c | c | c | c |c | c ||}  
+\begin{tabular} {||c | c | c | c | c |c | c ||}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-1000   & 1.67 & 0.135 & 1.56 & 0.126 & 1.67 & 0.147 \\ \hline 
-10000  & 1.61 & 0.043 & 1.60 & 0.041 & 1.60 & 0.046 \\ \hline 
-100000 & 1.63 & 0.014 & 1.64 & 0.013 & 1.64 & 0.015 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+ 3 & 1.67 & 0.135 & 1.56 & 0.126 & 1.67 & 0.147 \\ \hline 
+ 4 & 1.61 & 0.043 & 1.60 & 0.041 & 1.60 & 0.046 \\ \hline 
+ 5 & 1.63 & 0.014 & 1.64 & 0.013 & 1.64 & 0.015 \\ \hline 
+ 6 & 1.64 & 0.004 & 1.64 & 0.004 & 1.64 & 0.005 \\ \hline 
 \end{tabular}  
 \end{table}
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxCall130.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergenceCall130.pdf}
-\caption{Accuracy of pricing call@130. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing call@130. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
 \label{fig:vanilla2}
 \end{figure}
-This time the asset price usually ended above the options strike, what means that in most simulations payoff was 0. Thus, correlation between payoff and assets final price is low, and in consequence CV did not bring a significant improvement.
+
 \begin{remark}
  Box plot from Figure \ref{fig:vanilla2} shows that CMC estimator has smaller dispersion than AV and CV. That is because we compare $\CMCa[H, 2n]$ (index is $2n$) with $\AVa[H, n]$ and $\CVa[H, n]$. We do so, because then the number of used random variables is the same in each estimator.
- However, generating an antithetic variate or a control variate is often instantaneous. Hence calculating $\CMCa[H, 2n]$ may be much slower. If in time $t$ we can compute  $\CMCa[H, a]$, $\AVa[H, b]$ and $\CVa[H, c]$, then $\CMCa[H, a]$ will always\footnote{Of course we assume that antithetic variate is really antithetic, i.e. it is negatively correlated with the base variate, and control variate is not independent from the base variate.} have greater variance than $\AVa[H, b]$ and $\CVa[H, c]$.
+ However, generating an antithetic variate or a control variate is often instantaneous. Hence, in many cases calculating $\CMCa[H, 2n]$ may take almost twice as much time. If in time $t$ we can compute  $\CMCa[H, a]$, $\AVa[H, b]$ and $\CVa[H, c]$, then $\CMCa[H, a]$ will always\footnote{Of course we assume that antithetic variate is really antithetic, i.e. it is negatively correlated with the base variate, and control variate is not independent from the base variate.} have greater variance than $\AVa[H, b]$ and $\CVa[H, c]$.
 \end{remark}
 
-\section{Path-depenent instruments}
+\section{Path-dependent instruments}
 \label{sec:pricing_complicated}
 
-To price vanilla options it was sufficient to generate the asset price only at the maturity. However, there are contingent claims whose payoff depends on the entire history, for example barrier options or Asian options. Of course, we cannot generate the entire trajectory, since it has continuum points. Thus, values of the asset must be generated in a finite number $K$ of points. By taking $K$ large enough, a continous model is approximated sufficiently.
+To price vanilla options it was sufficient to generate the asset price only at the maturity. However, there are contingent claims whose payoff depends on the entire history, for example barrier options or Asian options. Of course, we cannot generate the entire trajectory, since it has continuum points. Thus, values of the asset must be generated in a finite number $K$ of points. To approximate a continuous model we have to take sufficiently large $K$.
 
 It follows from equation (\ref{eq:vanilla_St}) that
 \begin{equation}
  \label{eq:priceChange}
  S_{t + {\Delta} t} = S_t \exp\left\{ (r - \frac{1}{2}\sigma^2)\Delta t + \sigma \sqrt{\Delta t} Z \right\},
 \end{equation}
-where $Z$ is standard normal. Above formula allows us to generate prices of the asset in specified points step by step.
+where $Z$ is standard normal. The above formula allows us to generate asset's prices in specified points step by step.
 
 Figure \ref{fig:trajectories} shows a thousand of trajectories simulated accordingly to equation (\ref{eq:priceChange}). Note that the mean of the asset price at the final time is slightly above $S_0 = 100$. It corresponds to the fact that $\Em [S_T] = e^{rT}S_0$, which for parameters of the simulations equals $100\cdot e^{0.05} \approx 105.13$.
 
 \begin{figure}[ht]
 \centering
  \includegraphics[scale=0.75]{images/PricingEuropean/trajectories50.pdf}
-\caption{A thousand of simulated trajectories of the asset price, under paratemeters ${T=1},\ {\sigma=0.2}$, ${r=0.5},\ {S_0=100}$. Each path was generated in $K=50$ points. The darker is the area the greater is the concentration of trajectories.}
+\caption{A thousand of simulated trajectories of the asset price, under parameters ${T=1},\ {\sigma=0.2}$, ${r=0.05},\ {S_0=100}$. Each path was generated in $K=50$ points. The darker is the area the greater is the concentration of trajectories.}
 \label{fig:trajectories}
 \end{figure}
 
 In theory, value of the discounted claim now has the form $H = g(S)$, for some $g$, i.e. $H$ is a function of the whole process $S$. As mentioned before, in order to make $H$ computable, we are forced to treat $H$ as a function of $S$ in limited number of points, that is $H = g\bigl(S_0, S_{\Delta t}, ..., S_T\bigr),\ T = K\cdot\Delta t$.
-Path replications will be denoted by $S_i\ (i=1,2,...$), i.e. value $S_{i,t}$ means what was the asset price at time $t$, on $i$-th simulated path. The CMC estimator is analogous to (\ref{eq:vanilla_CMC})
+
+Further in this chapter we will use following notation. Path replications are denoted by $S_i\ (i=1,2,...$), and value $S_{i,t}$ means what was the asset price at time $t$, on $i$-th simulated path.
+
+The CMC estimator is analogous to (\ref{eq:vanilla_CMC})
 \begin{equation*}
  \CMCa[H, n] = \frac{1}{n}\sum\limits_{i=1}^n g\bigl(S_{i,0}, S_{i,\Delta t}, ..., S_{i,T}\bigr)
 \end{equation*}
 For example for Asian call option
 \begin{equation*}
- \CMCa[H, n] = \frac{1}{n}\sum\limits_{i=1}^n \left( \frac{1}{K} \sum\limits_{j=1}^K S_{i,j \Delta t} - E \right)_+
+ \CMCa[H, n] = \frac{1}{n}\sum\limits_{i=1}^n \left( \frac{1}{K} \sum\limits_{j=0}^K S_{i,j \Delta t} - E \right)_+
 \end{equation*}
 and for a put option with down-and-out barrier $B$
 \begin{equation*}
  \CMCa[H, n] = \frac{1}{n}\sum\limits_{i=1}^n \left( (E - S_{i,T})_+ \cdot \prod\limits_{j=0}^K \mathbbm{1}\bigl(S_{i,j \Delta t} \geq B\bigr) \right).
 \end{equation*}
-Adjusting above estimators to use control variates does not bring any difficulties. The asset price at the end of the path may still be the control variate, however, better suited is the payoff from the analogous vanilla option (at least for barrier and Asian options). For instance for Asian put option
+Adjusting above estimators to use control variates does not bring any difficulties. The asset price at the end of the path may still be the control variate, however, for many contingent claims a better control variate is the payoff from a similar vanilla option. For instance for Asian put option
 \begin{equation*}
  \CVa[H, n] = \CMCa[H, n] + \frac{c}{n} \sum\limits_{i=1}^n \Bigl( (E - S_{i,T})_+ - \Em (E - S_T)_+ \Bigr),
 \end{equation*}
-where $c$ is calculated as in (\ref{eq:CVc}) and value $\Em (E - S_T)_+$ is known from Black-Scholes formula.
+where $c$ is calculated as in (\ref{eq:CVc}) and value $\Em (E - S_T)_+$ is known from the Black-Scholes formula.
 
-In previous section while using AV method, we generated negatively correlated variables representing the asset price at the expiry of the option. Since now payoff depends on the whole process, thus we have to generate the antithetic trajectories. Algorithm \ref{alg:single-tr} describes how to do it. Figure \ref{fig:trajectoriesAnti} gives an idea how antithetic paths look like.
-We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and overly complicated. Analysing an example application of AV method should be sufficient to understand how it works in general. To this end, we present procedure of pricing Asian call options (Algorithm \ref{fig:trajectoriesAnti}).
+In previous section while using AV method, we generated negatively correlated variables representing the asset price at the option's expiry. Since now, payoff depends on the whole process, thus we have to generate the antithetic trajectories. Algorithm \ref{alg:single-tr} presents a proper procedure. Figure \ref{fig:trajectoriesAnti} gives an idea how antithetic paths look like.
+We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and overly complicated. Analyzing an example application of AV method should be sufficient to understand how it works in general. To this end, we present procedure of pricing Asian call options (Algorithm \ref{alg:priceAsianAV}).
 
 \begin{figure}
 \centering
  \includegraphics[scale=0.8]{images/PricingEuropean/trajectoriesAnti.pdf}
-\caption{Pair of antithetic trajectories generated by an implementation of Algorithm \ref{alg:single-tr}.}
+\caption{One pair of antithetic trajectories generated by an implementation of Algorithm \ref{alg:single-tr}.}
 \label{fig:trajectoriesAnti}
 \end{figure}
 \begin{algorithm}
@@ -1513,74 +1531,84 @@ We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and o
 
 In a similar manner we can value any path-dependent options. For instance we present results of pricing some barrier options. In this section we still set market parameters as in (\ref{eq:marketParams}), moreover we take
 \[ K = 50, \]
-it may be regarded as checking once a week if barrier was hit.
+it may be regarded as checking once a week if the barrier was hit. As a control variate we used the payoff from a vanilla put with strike equal to the spot price (i.e. 100).
 
-Suppose $S$ is an exchange rate between some currencies. Consider an exporter whose production becomes unprofitable when exchange rate becomes too low. He would like to be hedged for pesimistic scenarios, thus he is interested in purchasing put options with strike 100, whose price from the Black-Scholes formula is 5.57.
-In order to save some capital he prefers cheaper barrier options rather than vanilla options. He may think the following: ``If the exchange rate at some point will be very high, then it is very likely that my option will expire worthless. It means that I will not need an option when the rate is high.''. Thus he may decide to buy put options with strike 100 and with up-and-out barrier 115.
-Monte Carlo methods allow us to price such an instrument, and the results are gathered in Table \ref{tab:barrier1} and Figure \ref{fig:barrier1}. On the other hand, the exporter may think: ``I can stand if the rate is not too bad. However, if the situation gets really ugly, I would like to sell part of my production for good money.''. Hence, he may be interested in put options with strike 100 and with down-and-in barrier 70.
-Table \ref{tab:barrier2} and Figure \ref{fig:barrier2} present results of pricing such instrument with Monte Carlo methods.
+\begin{example}
+Suppose that $S$ is an exchange rate between some currencies. Consider an exporter whose production becomes unprofitable when exchange rate becomes too low. He would like to be hedged for pessimistic scenarios, thus he is interested in purchasing put options with strike 100, whose price from the Black-Scholes formula is 5.57.
+In order to save some capital he prefers cheaper barrier options rather than vanilla options. He may think the following: ``If the exchange rate at some point will be very high, then the profit made at that time will cover any eventual losses when the rate sinks down''. Thus he may decide to buy put options with strike 100 and with up-and-out barrier 115.
+
+Monte Carlo methods allow us to price such an instrument, and the results are gathered in Table \ref{tab:barrier1} and Figure \ref{fig:barrier1}. 
+\end{example}
 
 \begin{table}
 \centering
- \caption{Results of pricing put@100 with up-and-out barrier 115. Black-Scholes price of the option without barrier equals 5.57.}
+ \caption{Results of pricing put@100 with an up-and-out barrier 115. Black-Scholes price of the option without barrier equals 5.57.}
  \label{tab:barrier1}
-\begin{tabular} {||r | c | c | c | c |c | c ||}  
+\begin{tabular} {||c | c | c | c | c |c | c ||}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-1000   & 5.10 & 0.189 & 5.13 & 0.150 & 5.20 & 0.072 \\ \hline 
-10000  & 5.14 & 0.060 & 5.15 & 0.049 & 5.15 & 0.023 \\ \hline 
-100000 & 5.20 & 0.019 & 5.17 & 0.015 & 5.18 & 0.007 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+ 3  & 5.10 & 0.189 & 5.13 & 0.150 & 5.20 & 0.072 \\ \hline 
+ 4  & 5.14 & 0.060 & 5.15 & 0.049 & 5.15 & 0.023 \\ \hline 
+ 5  & 5.20 & 0.019 & 5.17 & 0.015 & 5.18 & 0.007 \\ \hline 
+ 6  & 5.18 & 0.006 & 5.17 & 0.005 & 5.18 & 0.002 \\ \hline 
 \end{tabular}  
 \end{table}
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxPut100UaO115.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergencePut100UaO115.pdf}
-\caption{Accuracy of pricing put@100 with up-and-in barrier 115. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing put@100 with an up-and-in barrier 115. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
 \label{fig:barrier1}
 \end{figure}
+
+\begin{example}
+ On the other hand, the exporter from the previous example may think: ``My losses are not too severe, until the exchange rate sinks down extremely low. In this case I would like to retrieve my losses at the option's expiration date.''. Hence, he may be interested in put options with strike 100 and with down-and-in barrier 70.
+Table \ref{tab:barrier2} and Figure \ref{fig:barrier2} present results of pricing such instrument with Monte Carlo methods.
+\end{example}
+
 
 \begin{table}
 \centering
  \caption{Results of pricing put@100 with down-and-in barrier 70. Black-Scholes price of the option without barrier equals 5.57.}
  \label{tab:barrier2}
-\begin{tabular} {|r |c |c |c |c |c |c |}  
+\begin{tabular} {|c |c |c |c |c |c |c |}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-1000   & 1.33 & 0.138 & 1.38 & 0.135 & 1.37 & 0.152 \\ \hline 
-10000  & 1.29 & 0.043 & 1.31 & 0.043 & 1.31 & 0.049 \\ \hline 
-100000 & 1.38 & 0.014 & 1.36 & 0.014 & 1.36 & 0.016 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+ 3 & 1.33 & 0.138 & 1.38 & 0.135 & 1.37 & 0.152 \\ \hline 
+ 4 & 1.29 & 0.043 & 1.31 & 0.043 & 1.31 & 0.049 \\ \hline 
+ 5 & 1.38 & 0.014 & 1.36 & 0.014 & 1.36 & 0.016 \\ \hline 
+ 6 & 1.35 & 0.004 & 1.35 & 0.004 & 1.36 & 0.004 \\ \hline 
 \end{tabular}
 \end{table}  
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxPut100DaI70.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergencePut100DaI70.pdf}
-\caption{Accuracy of pricing put@100 with down-and-in barrier 70. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing put@100 with a down-and-in barrier 70. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
 \label{fig:barrier2}
 \end{figure}
 
-As previously, CV seems to be the best method when payoffs from vanilla option and barrier options are highly correlated. It is the case when pricing put@100 with up-and-out barrier 115. Option expires in the money when asset prices are low, while reaching the barrier happens when prices are high.
-Hence in most cases if option ended in the money, then the barrier was not hit, and if the barrier was hit, then option would expire worthless anyway. Thus payoff of barrier and vanilla options are highly correleated.
+As previously, CV seems to be the best method when payoffs from vanilla option and barrier options are highly correlated. It is the case during the valuation of put@100 with up-and-out barrier 115. The option expires in the money when asset prices are low, while reaching the barrier happens when prices are high.
+Hence, in most cases if the option ended in the money, then the barrier was not hit, and if the barrier was hit, then the option would expire worthless anyway. Thus, the payoff of barrier and vanilla options are highly correlated.
 
-In the case of put@100 with down-and-in barrier 70, barrier is set very low; hitting it happens seldom, thus often option expires worthless even if analogous vanilla option ends in the money. In consequence correlation between payoffs of the barrier and the vanilla option becomes low, and in this case AV method gives slightly better accuracy. 
+In the case of put@100 with down-and-in barrier 70, the barrier is set very low; hitting it happens seldom, thus often the option expires worthless even if an analogous vanilla option ends in the money. In consequence the correlation between payoffs of the barrier and vanilla options becomes low, and in this case AV method gives slightly better accuracy. 
 
-At the end of this section, it is worth to mention, that there exist analitical formulas for prices of European barrier options, see \cite{wilmott}, chapter 23.
+At the end of this section, it is worth to mention, that there exist analytical formulas for prices of European barrier options, see \cite{wilmott}, chapter 23.
 
 \section{Multiasset instruments}
 \label{sec:multi-asset}
-Valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlation between the assets. Let
+The valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlations between the assets. Let
 \[ \Sigma = \left( \varrho_{ij} \right)_{i,j=1}^d \]
-be the matrix describing correlation between risky assets (recall that by that we understand the correlation between Wiener processes appearing in assets dynymics). Equation (\ref{eq:priceChange}) holds for every asset, i.e.
+be the matrix describing correlation between risky assets (recall that by that we understand the correlation between Wiener processes appearing in assets dynamics). Equation (\ref{eq:priceChange}) holds for every asset, i.e.
 \begin{equation}
  \label{eq:priceChangeMulti}
   S^{(i)}_{t + {\Delta} t} = S^{(i)}_t \exp\left\{ (r - \frac{1}{2}\sigma_i^2)\Delta t + \sigma_i \sqrt{\Delta t} Z_i \right\}\ \ (i = 1,2,\ldots,d),
 \end{equation}
 where each $Z_i$ is standard normal. However, we have to take into account correlation between variables $Z_i$. To be precise $Z \sim \mathcal{N}(0, \Sigma)$.
 
-Equation (\ref{eq:priceChangeMulti}) is the key to genarating multiasset scenarios. Its usage is shown in Algorithm \ref{alg:multi-tr}, which creates two antithetic scenarios of market evolution. Figure \ref{fig:corrPaths} illustrates trajectories of prices of correlated assets.
+Equation (\ref{eq:priceChangeMulti}) is the key to generating multiasset scenarios. Its usage is shown in Algorithm \ref{alg:multi-tr}, which creates two antithetic scenarios of market evolution. Figure \ref{fig:corrPaths} illustrates trajectories of prices of correlated assets.
 
 \begin{algorithm}
  \begin{algorithmic}[1]
@@ -1613,7 +1641,7 @@ Equation (\ref{eq:priceChangeMulti}) is the key to genarating multiasset scenari
 \begin{figure}
 \centering
  \includegraphics[scale=0.75]{images/PricingEuropean/correlatedPaths.pdf}
-\caption{Price trajectories of correlated assets.Correlation between red and green equals 0.8, between red and blue -0.8, and between green and blue also -0.8.}
+\caption{Price trajectories of correlated assets. The correlation between red and green equals 0.8, between red and blue -0.8, and between green and blue also -0.8.}
 \label{fig:corrPaths}
 \end{figure}
 
@@ -1626,7 +1654,7 @@ Equation (\ref{eq:priceChangeMulti}) is the key to genarating multiasset scenari
 
 \end{remark}
 
-While having a method for scenario generation, valuation of the multiasset options is pretty straightforward. For example we write a procedure for pricing basket put options using AV method. The basket is described by an array $\eta$, where $\eta[i]$ means how many units of asset $i$-th asset are contained in a basket.
+Since we have a method for scenario generation, valuation of the multiasset options is pretty straightforward. For example we write a procedure for pricing basket put options using AV method. The basket is described by an array $\eta$, where $\eta[i]$ means how many units of $i$-th asset are contained in a basket. In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. 
 
 \begin{algorithm}
  \begin{algorithmic}[1]
@@ -1656,10 +1684,10 @@ While having a method for scenario generation, valuation of the multiasset optio
 \end{algorithm}
 
 
-In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. However, modifications of options and their payoffs are only bounded by investors imagination (and by some integrability assumptions, but it is hard bo believe that investors can invent a claim which would not be sufficiently integrable).
-It should be clear how to modify Algorithm \ref{alg:priceBasketPutAV} to price options with any arbitrary payoff, even path-dependent. This is the main adventage of Monte Carlo methods in option pricing -- flexibility, which cannot be provided by finite diffrence or binomial trees.
+Modifications of options and their payoffs are only bounded by investors imagination, however, it should be clear how to modify Algorithm \ref{alg:priceBasketPutAV} to price options with any arbitrary payoff, even path-dependent. This is the main advantage of Monte Carlo methods in option pricing -- flexibility, which cannot be provided by the finite difference or binomial trees.
 
-We used described technique to price basket vanilla call option. We took following parameters:
+\begin{example}
+We used the described technique to price a basket vanilla call option. We took following parameters:
 \begin{equation}
 \label{eq:EuBasketParams}
  \begin{split}
@@ -1673,20 +1701,22 @@ We used described technique to price basket vanilla call option. We took followi
   E &= 90,\ \eta = (10, -2, 1),\ T=1
  \end{split}
 \end{equation}
-Such contract gives its owner right to change at expiration date 2 shares of the second asset and amount of money $E$ for 10 shares of the first asset and one of the third. The results are gathered in Table \ref{tab:EuBasket} and Figure \ref{fig:EuBasket}. In CV method value of the basket at the expiry was used as the control variate. From section \ref{sec:risk-neutral} we know its expectation: $\Em[\eta \cdot S_T] = \eta \cdot S_0$. 
+Such contract at the expiration date gives its owner right to change 2 shares of the second asset and amount of money $E$ for 10 shares of the first asset and one of the third. The results are gathered in Table \ref{tab:EuBasket} and Figure \ref{fig:EuBasket}. In CV method value of the basket at the expiry was used as the control variate. From section \ref{sec:risk-neutral} we know its expectation: $\Em[\eta \cdot S_T] = \eta \cdot S_0$. 
 CV method gave the most accurate prices.
+\end{example}
 
 \begin{table}
 \centering
- \caption{Results of pricing basket option described in equations (\ref{eq:EuBasketParams}). }
+ \caption{Results of pricing the basket option described in equations (\ref{eq:EuBasketParams}). }
  \label{tab:EuBasket}
-\begin{tabular} {|r |c |c |c |c |c |c |}  
+\begin{tabular} {|c |c |c |c |c |c |c |}  
  \hline 
   & \multicolumn{2}{|c|}{ CMC } & \multicolumn{2}{|c|}{ AV } & \multicolumn{2}{|c|}{ CV } \\
-  n & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
-1000   & 18.91 & 0.507 & 19.90 & 0.444 & 19.85 & 0.241 \\ \hline 
-10000  & 19.66 & 0.165 & 19.84 & 0.143 & 19.73 & 0.077 \\ \hline 
-100000 & 19.65 & 0.052 & 19.68 & 0.045 & 19.70 & 0.024 \\ \hline 
+  $\log_{10}(n)$ & \multicolumn{1}{c}{ $\CMCa[H, 2n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\AVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } & \multicolumn{1}{c}{ $\CVa[H, n]$ } & \multicolumn{1}{c|}{ s.e. } \\ \hline \hline 
+ 3  & 18.91 & 0.507 & 19.90 & 0.444 & 19.85 & 0.241 \\ \hline 
+ 4  & 19.66 & 0.165 & 19.84 & 0.143 & 19.73 & 0.077 \\ \hline 
+ 5  & 19.65 & 0.052 & 19.68 & 0.045 & 19.70 & 0.024 \\ \hline 
+ 6  & 19.72 & 0.017 & 19.70 & 0.014 & 19.70 & 0.008 \\ \hline 
 \end{tabular}
 \end{table}  
 \begin{figure}
@@ -1791,6 +1821,7 @@ V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t].
 \end{proof}
 
 \begin{prop}
+\label{prop:amCall}
  Assume that the interest rate $r$ is nonnegative. The exercise strategy $\tau \equiv T$ is optimal for an American call option on non-dividend-paying stock.
 \end{prop}
 \begin{proof}
@@ -1801,7 +1832,17 @@ V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t].
  \[ V_t \geq e^{-r(T-t)}\Em[S_T - E | \mathcal{F}_t] = S_t - e^{-r(T-t)}E > S_t - E.\]
  The obtained inequality tells us that value of the option is always higher than the immediate exercise, thus it is more profitable to sell the option rather than exercise it.
 \end{proof}
-The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay any dividend and interest rate is nonnegative). A similar proof shows that for negative interest rate $r$ American put options should be exercised only at the maturity, however, this a very rare situation.
+The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay a dividend and the interest rate is nonnegative). American puts do not have that property -- for low prices of the underlying it is optimal to exercise the option immediately. These facts are illustrated in the Figure \ref{fig:lsm:amPrice}.
+
+\begin{figure}
+\centering
+ \includegraphics[scale=0.5]{images/LSM/put.pdf}
+ \includegraphics[scale=0.5]{images/LSM/call.pdf}
+\caption{Prices of American and European vanilla options. In case of a put (left picture), we see that for low stock ratings the European option's price is lower than its intrisnic value. On the other hand, the price of the put with an American exercise feature coincides with the immediate payoff for low asset prices -- this is the situation when the option should be exercised immediately. In case of a call (right picture), the option's price is always greater than its intrisnic value. We cannot see the curve of the European option's price, because it is entirely covered by the line of the American option's price -- their values are the same for every spot price. Calculations were performed under parameters: strike~$=100,\ T=1,\ \sigma=0.3,\ r=0.08$.}
+\label{fig:lsm:amPrice}
+\end{figure}
+
+For negative interest rates the situation is inversed. A similar proof shows that in this case exercise of an American put should be postponed to expiry and American calls should be exercised for high stock prices. However, a negative interest rate is a very rare situation and somewhat pathological.
 
 Unfortunately the above definition of the value process is not constructive. It does not tell us how to find the optimal exercise strategy nor how to compute options value. We need to involve a little more theory. Following two definitions are formulated for general measure $\Q$. 
 
@@ -2211,6 +2252,7 @@ In our example the average of realized cashflows equals 2.99. It is greater than
 \end{prop}
 
 \section{Mathematical background of LSM}
+\section{Modifications of LSM}
 
 \chapter{Application architecture}
 An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This part describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
@@ -2450,15 +2492,68 @@ Since regression is very similar for those versions of LSM which use two explana
    
 As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
 
-\chapter{Results illustrations}
- 
-\section{Vanilla options}
+\chapter{Illustrations of results}
+This part presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which created presented charts using \texttt{ggplot2} library.
 
-\begin{figure}[!ht]
+\begin{remark}
+ Many charts have bothering irregularities in their shape. Keep in mind that they were obtained by simulation, which is vitiated by an error, what causes these plots to be not as smooth as they should be.
+\end{remark}
+
+
+\section{Vanilla options}
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{images/Results/vanillaEuAndAmPut.pdf}
+  \end{center}
+  \caption{Comparison of prices of vanilla European and American puts depending on the spot price. Parameters: $vol = 30\%$, $r=8\%$, strike $=100$, $T=1$.}
+\label{fig:results:vanillaEuAndAmPut}
+\end{wrapfigure}
+
+From Proposition \ref{prop:amCall} we know that the value of an American call on a share of non-dividend paying stock is equal to its European counterpart. Figure \ref{fig:results:vanillaEuAndAmPut} show that the same does not hold for put options.
+
+% \begin{SCfigure}
+% \centering
+%  \includegraphics[scale=0.5]{images/Results/vanillaEuAndAmPut.pdf}
+% \caption{Comparison of prices of vanilla European and American puts depending on the spot price. Parameters: $vol = 30\%$, $r=8\%$, strike $=100$, $T=1$.}
+% \label{fig:results:vanillaEuAndAmPut}
+% \end{SCfigure}
+
+\begin{figure}
 \centering
- \includegraphics[scale=0.4]{images/Results/vanillaEuAndAmPut.pdf}
-\caption{Chcem sprawdzic jak obrazek wyglada w pracy}
-\label{fig:results:dupa1}
+ \includegraphics[scale=0.6]{images/Results/vanillaAmCallPriceBeforeDividend.pdf}
+\caption{Comparison of option's value and immediate payoff just before dividend payoff. Parameters: $vol = 30\%$, $r=5\%$, strike $=100$, $T=1$. }
+\label{fig:results:vanillaAmCallPriceBeforeDividend}
+\end{figure}
+
+It turns out that it may be optimal to exercise an American call if the underlying pays a dividend. 
+% \begin{figure}
+%  \parbox{.45\linewidth} {
+%    \centering
+%    \caption{Paths simulated under the risk-neutral measure.}
+%    \label{tab:LSM_paths}
+%    \includegraphics[scale=0.4]{images/Results/vanillaEuAndAmPut.pdf}
+%  }
+%  \qquad 
+%  \parbox{.45\linewidth} {
+%   \centering
+%   \caption{Cash flows obtained conditional on not exercising the option before the maturity.}
+%   \label{tab:LSM_cashflows_t3}
+%   \includegraphics[scale=0.4]{images/Results/vanillaAmCallDividend.pdf}
+% }
+% \end{figure}
+
+\begin{figure}
+\centering
+ \includegraphics[scale=0.6]{images/Results/vanillaAmCallDividend.pdf}
+\caption{}
+\label{fig:results:vanillaAmCallDividend}
+\end{figure}
+
+\begin{figure}
+\centering
+ \includegraphics[scale=0.6]{images/Results/vanillaAmCallDividend3D.pdf}
+\caption{}
+\label{fig:results:vanillaAmCallDividend3D}
 \end{figure}
 
 \section{Barrier options}
@@ -2478,9 +2573,16 @@ As we can see, in case of LSM we do not have the property that every new instrum
 \label{fig:results:dupa3}
 \end{figure}
 
-\newpage
-\section{Concluding remarks}
- 
+\chapter*{Concluding remarks}
+In the thesis we explained how Monte Carlo methods may be used for option pricing. Let us sum up their pros and cons.
+
+In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analitical formulas. However, for exotic options Monte Carlo may be the best choice.
+
+
+The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multiargument polynomials (in case of multiasset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunetly, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large number of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
+
+
+Due to the possibility of pricing a vast class of options, methods based on Monte Carlo simulations have a great significance in finance. Time consumption may be regarded as their weakness, however, the computational power of modern processors is constantly increasing. Moreover, algorithms based on Monte Carlo are suitable for dividing into multiple threads and being run on huge computer clusters. Every year obtaining some fixed accuracy takes less time. Therefore, the methods presented in the thesis, which already are very popular, will over time even increase their importance.
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{\bfseries References}
