@@ -48,16 +48,17 @@ public class LauncherForThesis
         File file = new File("/home/grzes/Printed.R");
         //PrintStream out = new PrintStream( file );
         //l.callAll(out);
-        
-        l.makeAmForwardPut(System.out);
+        l.makeAmPutBoxPlot(System.out);
     }
     
     void callAll(PrintStream out)
     {
         
 //**************************** Vanilla options ****************************************************/
-        try { makeEuAndAmPut(out); }
-        catch (Throwable t) { System.err.println("makeEuAndAmPut sie zesralo"); }
+        try { makeEuAndAmVanilla(out, CallOrPut.PUT); }
+        catch (Throwable t) { System.err.println("makeEuAndAmVanilla(put) sie zesralo"); }
+        try { makeEuAndAmVanilla(out, CallOrPut.CALL); }
+        catch (Throwable t) { System.err.println("makeEuAndAmVanilla(put) sie zesralo"); }
         try { makeAmCallDividend(out); }
         catch (Throwable t) { System.err.println("makeAmCallDividend sie zesralo"); }
         try { makeAmCallDividend3D(out); }
@@ -104,12 +105,12 @@ public class LauncherForThesis
         catch (Throwable t) { System.err.println("makeTrajectoryWithDividends sie zesralo"); }
     }
     
-    private void makeEuAndAmPut(PrintStream out)
+    private void makeEuAndAmVanilla(PrintStream out, CallOrPut callOrPut)
     {
         final BSMethod bs = new BSMethod();
         final FDMethod fd = new FDMethod(); fd.setI(100); fd.setK(10000);
         final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0.08);
-        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.PUT);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, callOrPut);
         final Instr am = new Option(vop, onlyAsset);
         final Instr eu = new EuExercise(am);
         double[] S = new double[100];
@@ -117,7 +118,7 @@ public class LauncherForThesis
             S[i] = 50 + 1.2 * i;
         DataForMaker_2D maker = new DataForMaker_2D(S) { 
             @Override int getNumberOfYVals() {
-                return 2;
+                return 3;
             }
             @Override String getXLabel() {
                 return "spot";
@@ -127,15 +128,17 @@ public class LauncherForThesis
             }
             @Override String getLegend(int i) {
                 if (i == 0) return "European";
-                else return "American";
+                else if (i == 1) return "American";
+                else return "Payoff";
             }
             @Override String getDesc() {
-                return "Am and Eu vanilla put with E=100, T=1, vol=0.3, r=0.08";
+                return "Am and Eu vanilla with E=100, T=1, vol=0.3, r=0.08";
             }
             @Override void setXVal(double d) {
                 try {
                     bs.setModelParams(smp.withS(d));
                     fd.setModelParams(smp.withS(d));
+                    currS = d;
                 } catch (WrongModelException ex) {
                     Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -143,14 +146,54 @@ public class LauncherForThesis
             @Override double getPrice(int i) {
                 try {
                     if (i == 0) return bs.price(eu);
-                    else return fd.price(am);
+                    else if (i == 1) return fd.price(am);
+                    else return vop.intrisnicValue(currS);
                 } catch (WrongInstrException | InterruptedException ex) {
                     throw new RuntimeException();
                 }
-            }            
+            }
+            double currS;
         };
         String str = maker.makeCode();
         out.println(str);
+    }
+        
+    private void makeAmPutBoxPlot(PrintStream out)
+    {
+        final LSM lsm = new LSM(); lsm.setMethodParams(10000, 100, 3);
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0, 0.05);
+        try {
+            lsm.setModelParams(smp);
+        } catch (WrongModelException ex) {
+            throw new RuntimeException();
+        }
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.PUT);
+        final Instr am = new Option(vop, onlyAsset);
+        DataForBoxPlotMaker maker = new DataForBoxPlotMaker(3, 10, "", "price") {
+            @Override String getLegend(int i) {
+                if (i == 0) return "1,000";
+                else if (i == 1) return "10,000";
+                else return "100,000";
+            }
+            @Override String getDesc() {
+                return "Creating a box plot with result discrepancy. " +
+                        "America vanilla put, S=100, E=100, vol=0.2, r=0.05";
+            }
+            @Override void prepareForBox(int i) {
+                if (i == 0) lsm.setN(1000);
+                else if (i == 1) lsm.setN(10000);
+                else lsm.setN(100000);
+            }
+            @Override double getPrice() {
+                try {
+                    return lsm.price(am);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException();
+                }
+            }
+        };
+        out.println(maker.makeCode());
     }
     
     private ArrayList<Dividend> makeDividends(int k, double perc)
@@ -991,7 +1034,6 @@ public class LauncherForThesis
 }
 abstract class DataForMaker_3D
 {
-
     public DataForMaker_3D(double[] fstVals, double[] sndVals)
     {
         this.fstVals = fstVals;
@@ -1146,6 +1188,105 @@ abstract class DataForMaker_2D
     String yLab;
 }
 
+
+abstract class DataForBoxPlotMaker
+{
+
+    public DataForBoxPlotMaker(int boxes, int repetions, String xLab, String yLab)
+    {
+        this.boxes = boxes;
+        this.repetions = repetions;
+        this.xLab = xLab;
+        this.yLab = yLab;
+    }
+    
+    abstract String getLegend(int i);
+    abstract String getDesc();
+    abstract void prepareForBox(int i);
+    abstract double getPrice();
+    
+    String makeCode()
+    {
+        calcValues();
+        StringBuilder sb = new StringBuilder();
+        makeFrame(sb);
+        makeFunctionCall(sb);
+        wrapInComments(sb);
+        return sb.toString();
+    }  
+
+    private void wrapInComments(StringBuilder sb)
+    {
+        sb.insert(0, 
+            "######################################################################\n" +
+            "### " + getDesc() + " ###\n" );
+        sb.append("######################################################################\n");
+    }
+    
+    private void makeFrame(StringBuilder sb)
+    {
+        sb.append("frame <- data.frame(\n");
+        for (int i = 0; i < boxes; ++i)
+        {
+            sb.append("    ").append(makeVector("box" + i, vals.get(i)));
+            if (i == boxes-1)
+                    sb.append("\n");
+            else
+                sb.append(",\n");
+        }
+        sb.append(")\n");
+    }
+    
+    private String makeVector(String name, ArrayList<Double> arr)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name.replace(' ', '_')).append(" = c(").append(arr.get(0));
+        for (int i = 1; i < arr.size(); ++i)
+            sb.append(", ").append(arr.get(i));
+        sb.append(")");
+        return sb.toString();
+    }
+    
+    private void makeFunctionCall(StringBuilder sb)
+    {
+        sb.append("makeBoxPlot(frame, labels=c(");
+        for (int i = 0; i < boxes; ++i)
+            if (i == boxes-1)
+                sb.append(inQuotes(getLegend(i))).append("), ");
+            else
+                sb.append(inQuotes(getLegend(i))).append(", ");
+        sb.append(inQuotes(xLab)).append(", ").append(inQuotes(yLab)).append(")\n");
+    }
+    
+    private String inQuotes(String str)
+    {
+        return '"' + str + '"';
+    }
+    
+    private void calcValues()
+    {
+        System.out.println("Doing: " + getDesc());
+        for (int i = 0; i < boxes; ++i)
+        {
+            prepareForBox(i);
+            System.out.print("Box " + i + ": "); System.out.flush();
+            vals.add(new ArrayList<Double>());
+            for (int j = 0; j < repetions; ++j)
+            {
+                vals.get(i).add(getPrice());
+                System.out.print((int)(100.0 * (j+1) / repetions) + " ");
+                System.out.flush();
+            }
+            System.out.println();
+        }
+    }
+    ArrayList<ArrayList<Double>> vals = new ArrayList<>();
+    int boxes;
+    int repetions;
+    String xLab;
+    String yLab;
+}
+    
 class CodeFor2DChart
 {
     public CodeFor2DChart(double[] xVals, ArrayList<double[]> yVals,
