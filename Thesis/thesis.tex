@@ -164,17 +164,17 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
   This thesis presents techniques of option pricing based on Monte Carlo simulations. Mathematical theories underlying the presented methods are recalled, however, the thesis is practical in nature, hence it not always gets deep into mathematical details.
   Instead, it provides many algorithms in the form of concise pseudocode, which outline how to use the theory in practice. The utility of depicted methods is affirmed by implementations in R and Java programming languages. This paper is filled with illustrations of the results obtained by the created application.
   
-  The first part of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s, lemma Girsanov theorem, a general description of Monte Carlo methtods.
+  The first chapter of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s, lemma Girsanov theorem, a general description of Monte Carlo methods.
   In the second part, Reader may find an introduction to option pricing. It contains description of the market model, Black-Scholes paradigm, definition of the martingale measure. It also provides a detailed explanation how to calibrate parameters of the Black-Scholes model from the real-world market's history.
   In the next part, the Monte Carlo pricing procedure for European options is described. It starts with simple vanilla options, and gradually moves to more complicated exotic instruments, whose exercise may depend on multiple assets or on the whole history of the market scenario. 
-  The fourth part introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method, which may be used to price American options, is described.
-  The next chapter depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
+  The fourth chapter introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method, which may be used to price American options, is described.
+  The next part depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
   In the last part, illustrations of several pricing results are collected.
 \end{quotation}
 
 \chapter{Preliminaries}
 There exists several approaches to the analysis of assets' prices, for example fundamental analysis, technical analysis and quantitative analysis. Mathematicians are interested in the last one, in which every asset is considered to be a stochastic process.
-Despite the fact that noone really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. However, this approach requires nontrivial mathematical background whose essentials are collected in this part.
+Despite the fact that nobody really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. However, this approach requires non-trivial mathematical background whose essentials are collected in this part.
 
 \section{Elements of stochastic analysis}
 We expect from Reader some basic knowledge of the probability theory and stochastic processes. Purpose of this section is to recall definitions and facts essential for this work and to establish notation.
@@ -200,7 +200,7 @@ We expect from Reader some basic knowledge of the probability theory and stochas
   \item for any $t,\ W_t \sim \mathcal{N}(0,t)$,
   \item increments of $W$ are independent (i.e. for any $t_0 \leq t_1 \leq \ldots \leq t_n$ random variables $W_{t_0}, W_{t_1} - W_{t_0},\ \ldots, W_{t_n} - W_{t_{n-1}}$ are independent,
   \item increments of $W$ are stationary (i.e. for every $0 \leq s < t,\ W_t-W_s$ is equal in distribution to $W_{t-s})$,
-  \item trajectories of $W$ are continous a.s.
+  \item trajectories of $W$ are continuous a.s.
  \end{itemize}
 \end{mydef}
 \noindent \textbf{In this thesis $W$ will always denote Brownian motion.}
@@ -239,7 +239,7 @@ If $X$ is a process corresponding to some risky game, then a stopping time may b
  \begin{samepage}
   \begin{itemize}
   \item $W_t \sim \mathcal{F}_t$,
-  \item $\E|W_t| \leq \sqrt{t} < \infty$ (becuase from Jensen's inequality: $(\E|W_t|)^2 \leq \E W_t^2 = t$),
+  \item $\E|W_t| \leq \sqrt{t} < \infty$ (because from Jensen's inequality: $(\E|W_t|)^2 \leq \E W_t^2 = t$),
   \item $\E[W_t|\mathcal{F}_s] = \E[W_t-W_s|\mathcal{F}_s] + \E[W_s|\mathcal{F}_s] = \E[W_t-W_s] + W_s = W_s$.
  \end{itemize}
  \end{samepage}
@@ -285,7 +285,7 @@ where
   \int_0^{t} X_s dW_s = \lim_{n \rightarrow \infty} \sum\limits_{i=1}^n X_{t_{i-1}} (W_{t_i} - W_{t_{i-1}}).
 \end{equation}
 and for each $n$, $\{t_i\}_{i=0}^n$ is a partition of the interval $[0,t]$, whose diameter converges to 0 as $n$ tends to infinity.
-As we can see It\^{o} integral is similar to the Stieltjes integral, which is defined for $g$ with locally bounded variation, and continous $f$, as
+As we can see It\^{o} integral is similar to the Stieltjes integral, which is defined for $g$ with locally bounded variation, and continuous $f$, as
 \[  \int_0^{t} f(s) dg(s) = \lim_{n \rightarrow \infty} \sum\limits_{i=1}^n f(t_{i-1}) (g(t_i) - g(t_{i-1})). \]
 However, on almost all trajectories $W$ has locally unbounded variation. In order to give sense to equation (\ref{eq:ito_integral}), the limit has to be taken in $L_2$.
 
@@ -322,13 +322,13 @@ Next definition presents one of the most important type of processes, used to mo
   dS_t = \mu S_t dt + \sigma S_t dW_t, 
   \label{eq:gbm}
  \end{equation}
-where $\mu,\sigma \in \R$ is called a \textbf{geometic Brownian motion}.
+where $\mu,\sigma \in \R$ is called a \textbf{geometric Brownian motion}.
 \end{mydef}
 
 Now we can formulate a version of It\^{o}'s lemma, which is widely used in financial mathematics.
 \begin{thm}[It\^{o}'s lemma]
  \label{thm:ito}
-  Let $S$ be a geometic Brownian motion as in (\ref{eq:gbm}), $F:\ \R^2 \rightarrow \R,\ F \in C^2$. Then 
+  Let $S$ be a geometric Brownian motion as in (\ref{eq:gbm}), $F:\ \R^2 \rightarrow \R,\ F \in C^2$. Then 
   \begin{equation*}
    F(S_t, t) = F(S_0, 0) + \int\limits_0^t \frac{\partial F}{\partial S}(S_r,r)dS_r + \int\limits_0^t \frac{\partial F}{\partial t}(S_r,r)dr + \frac{1}{2}\sigma^2 S_t^2 \int\limits_0^t \frac{\partial^2 F}{\partial S^2}(S_r,r)dr
   \end{equation*}
@@ -342,7 +342,7 @@ Now we can formulate a version of It\^{o}'s lemma, which is widely used in finan
 \noindent In the books on the stochastic processes It\^{o}'s lemma is proven in much greater generality. However, for our purposes, as in many other literature on financial mathematics, the formulated theorem will be sufficient.
 Equation (\ref{eq:ito}) is also called an It\^{o}'s formula.
 
-It\^{o}'s lemma is a very powerfull tool, indispensable in Black-Scholes theory. We will show how it can be used to solve equation (\ref{eq:gbm}).
+It\^{o}'s lemma is a very powerful tool, indispensable in Black-Scholes theory. We will show how it can be used to solve equation (\ref{eq:gbm}).
 \begin{prop}
 \label{prop:solution_dynamics}
  Let $S$ be a geometric Brownian motion, as in (\ref{eq:gbm}).
@@ -444,7 +444,7 @@ Value $\CMC[n]$ is called \textbf{crude Monte Carlo (CMC)} estimator. Simple cal
 \end{equation}
 In this paragraph we will simply write $\hat{Y}_n$ instead of $\CMC[n]$.
 
-Here appears a natural question, how big should be the number $n$ to obatain the satisfying accuracy of the estimator?
+Here appears a natural question, how big should be the number $n$ to obtain the satisfying accuracy of the estimator?
 To find an answer we have to specify the question a little more: for chosen numbers $b$ and $\alpha$, how big should be $n$, so we could tell, that an error of the estimation, with probability $1-\alpha$, is not greater than $b$?
 
 Let $\sigma = \sqrt{\Var{Y}}$, $z_{1-\alpha/2} = \Phi^{-1}(1-\alpha/2)$, where $\Phi$ is the cumulative distribution function of the normal distribution.
@@ -478,7 +478,7 @@ and replace $\sigma$ by $\hat{\sigma}$ in above approximation. The foregoing dis
 \end{thm}
 \noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulations. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
 
-Unfortunatly equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with the smallest possible variance. In next paragraphs, two methods of variance reduction are discussed.
+Unfortunately equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with the smallest possible variance. In next paragraphs, two methods of variance reduction are discussed.
 
 The confidence level $\alpha$, which appears in (\ref{eq:error}) in quantile function, is not essential when comparing two estimators. Hence we introduce 
 \begin{mydef}
@@ -502,7 +502,7 @@ where each $(Y_{2i-1}, Y_{2i})$ is independent from $(Y_{2j-1}, Y_{2j})$, if $i 
 \begin{equation*}
  \tilde{Y}_i = \frac{Y_{2i-1} + Y_{2i}}{2},\ \ \ i = 1,2,...,n.
 \end{equation*}
-It is clear that $(\tilde{Y}_i)_{i=1}^n$ are i.i.d., and their variance satisifies
+It is clear that $(\tilde{Y}_i)_{i=1}^n$ are i.i.d., and their variance satisfies
 \begin{equation*}
  \begin{split}
  \Var(\tilde{Y}_i) &= \dfrac{1}{4} \Var( Y_{2i-1} + Y_{2i} ) = \dfrac{1}{4} (\Var(Y_{2i-1}) + \Var(Y_{2i}) + 2\cdot\Cov(Y_{2i-1}, Y_{2i})) \\
@@ -624,7 +624,7 @@ Let us finish this example with a remark that this was a preconceived case, whic
 
 \subsection{Simulation}
 Now, when we know how Monte Carlo methods work, we need to describe how to get random values.
-\paragraph{Independent standard normal random variables.} Most computational enviroments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
+\paragraph{Independent standard normal random variables.} Most computational environments and programming languages have built-in generator of values from uniform distribution. We will show how to obtain (pseudo)random variables with ubiquitous normal distribution.
 
 The most popular way is to use the \textbf{Box-Muller transformation} (Algorithm \ref{alg:box-muller}) which uses two independent variates with the uniform distribution on $(0,1)$, and ``produces'' two independent variates with the standard normal distribution.
 \begin{algorithm}[!ht]
@@ -659,9 +659,9 @@ In \cite{london} we can find a remark that necessity of calculating sine and cos
  \caption{Polar rejection method.}
  \label{alg:polarRejection}
 \end{algorithm}
-However, conducted experiments do not show any significat diffrence in efficiency of both presented methods. It brings us to the conclusion that the efficiency of both algorithms is comparable and not worth bothering. Moreover, which method is faster may depend even on the choice of the programming language.
+However, conducted experiments do not show any significant difference in efficiency of both presented methods. It brings us to the conclusion that the efficiency of both algorithms is comparable and not worth bothering. Moreover, which method is faster may depend even on the choice of the programming language.
 
-\paragraph{Independet nonstandard normal random variables.} Sampling from an arbitrary normal distribution $\mathcal{N}(\mu, \sigma^2)$ is now straightforward. From the elementary probability theory comes the method presentented in Algorithm \ref{alg:gaussDist}.
+\paragraph{Independent non-standard normal random variables.} Sampling from an arbitrary normal distribution $\mathcal{N}(\mu, \sigma^2)$ is now straightforward. From the elementary probability theory comes the method presented in Algorithm \ref{alg:gaussDist}.
 \begin{algorithm}[!ht]
  \begin{algorithmic}[1]
   \Function{GaussDistr}{\null}
@@ -722,7 +722,7 @@ Matrix $L$ from the above theorem may be obtained by the \textbf{Cholesky algori
  Let $Z$ be a random vector with the multivariate normal distribution $\mathcal{N}(0, \mathbbm{I})$. Let $\Sigma$ be a co variance matrix and $\Sigma = LL'$. Then vector $N = \mu + LZ$ has the distribution $\mathcal{N}(\mu, \Sigma)$.
 \end{prop}
 \begin{proof}
- It is clear that $N$ has the multivariate normal distribution. Morever,
+ It is clear that $N$ has the multivariate normal distribution. Moreover,
  \[ \E N = \E(\mu + LZ) = \mu + L\cdot\E Z = \mu, \]
  \begin{equation*}
   \begin{split}
@@ -755,11 +755,11 @@ That explains how works Algorithm \ref{alg:gaussMulti} for generating values fro
 
 
 \chapter{Basics of option pricing}
-One of the main fields of interest in the financial mathematics is pricing so-called contingent claims, which are financial instruments whose value depends on some other assets. In case of the European options there exists a straightforward forumula, derived by Black and Scholes in 1973, which gives the option's price. Antother way of pricing is using Monte Carlo simulations.
+One of the main fields of interest in the financial mathematics is pricing so-called contingent claims, which are financial instruments whose value depends on some other assets. In case of the European options there exists a straightforward formula, derived by Black and Scholes in 1973, which gives the option's price. Another way of pricing is using Monte Carlo simulations.
 Although the simulations are time-consuming and for that reason less effective than Black-Scholes formula, they are widely used because of the possibility to adjust them to very sophisticated contingent claims. 
 
 \section{Elements of arbitrage theory}
-Mathematical approach to the analysis of assets' prices requires modeling the prices as stochastic processes. This section describes fundamental concepts. The notation and the description of the market model presented here is based on \cite{follmer}.
+Mathematical approach to the analysis of assets' prices requires modelling the prices as stochastic processes. This section describes fundamental concepts. The notation and the description of the market model presented here is based on \cite{follmer}.
 
 \subsection{Underlying framework}
 Throughout this thesis we assume we are given a probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$. Since it is observed by investors, $\P$ is sometimes called a \textbf{real measure}, in opposite to an artificial \textbf{risk-neutral measure}, which will be later on. Elements of $\Omega$ are called \textbf{market scenarios}.
@@ -778,7 +778,7 @@ We also introduce notation $\Sa$ for a $(d+1)$-dimensional vector of prices of a
 
 For convenience we also consider discounted time processes
 \[ X^{(i)}_t = \frac{S^{(i)}_t}{S^{(0)}_t}. \]
-It allows us to compare asset prices quoted at diffrent times. In similar manner as previously we will use notation $X, \Xa$ for vectors of the discounted prices,
+It allows us to compare asset prices quoted at different times. In similar manner as previously we will use notation $X, \Xa$ for vectors of the discounted prices,
 \begin{equation*}
  X_t = (X^{(1)}_t, X^{(2)}_t, \ldots, X^{(d)}_t)', \ \ \ 0 \leq t \leq T.
 \end{equation*}
@@ -794,7 +794,7 @@ Each $\xi^{(i)}_t$ has an interpretation of the quantity of shares of the $i$\te
 \[\xia_t \cdot \Sa_t = \sum\limits_{i=0}^d \xi^{(i)}_t S^{(i)}_t,\]
 where $\cdot$ is the inner product of two vectors.
 
-Assume that investor's portfolio is worth 101,000\$ today and a year ago it was worth 100,000\$. When was the investor's financial condition better, today or a year ago? If the riskless interest rate equals 5\%, then the investor would gain more if he put all his capital into a bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at diffrent times.
+Assume that investor's portfolio is worth 101,000\$ today and a year ago it was worth 100,000\$. When was the investor's financial condition better, today or a year ago? If the riskless interest rate equals 5\%, then the investor would gain more if he put all his capital into a bank account. This example shows the necessity of discounting to compare portfolios whose values are quoted at different times.
 \begin{mydef}
  The \textbf{discounted value process} $V^{\xi} = (V^{\xi}_t)_{t=0}^T$ associated with a trading strategy $\xia$ is given by 
  \begin{equation*}
@@ -808,8 +808,8 @@ The value $V^{\xi}_0$ is the initial investment into the portfolio. Following de
  A dynamic trading strategy is called \textbf{self-financing} if and only if for every $0 \leq t \leq T$
  \[ \sum\limits_{i=0}^d d\xi^{(i)}_t (S^{(i)}_t + dS^{(i)}_t) = 0. \]
 \end{mydef}
-This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let us think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $d\Sa_t$. The portfolio needs a rearrangment -- $d\xia_t$ represents changes of quantities of the held assets.
-Thus $d\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangment. From the definition it equals 0, what explains the name \textit{self-financing}.
+This definition, although being very simple, looks completely incomprehensible at first sight. To convey some intuition let us think that $dt$ is a very small, even infinitesimal, time period. Vector $\xia_t$ describes content of the portfolio at the beginning of the period. After time $dt$ change of the stock prices equals $d\Sa_t$. The portfolio needs a rearrangement -- $d\xia_t$ represents changes of quantities of the held assets.
+Thus $d\xia_t \cdot (\Sa_t + d\Sa_t)$ is the total cost of the rearrangement. From the definition it equals 0, what explains the name \textit{self-financing}.
 
 From now on we will consider only those market models that are efficient in the sense that they are arbitrage-free.
 \begin{mydef}
@@ -824,7 +824,7 @@ From now on we will consider only those market models that are efficient in the 
 What does arbitrage opportunity mean in practice? Assume an investor entering the market without any capital. He builds his portfolio by short sale of some assets and purchase of other assets for received money. Arbitrage opportunity is a situation when the investor at time $T$ can cover his short positions by sale of assets held long, and with positive probability he has some remaining cash.
 In the other words, he can make money without exposure to any downside risk. 
 
-Now we are moving to an important concept of a martingule measure.
+Now we are moving to an important concept of a martingale measure.
 \begin{mydef}
  A probability measure $\Pm$ is called a \textbf{martingale measure} (or a \textbf{risk neutral measure}) if and only if the discounted price process $X$ is a $\Pm$-martingale, i.e. for all  $0 \leq s \leq t \leq T$
  \begin{equation}
@@ -843,13 +843,13 @@ Now we are moving to an important concept of a martingule measure.
 Let us recall that two measures $\P$ and $\Pm$ defined on $\sigma$-algebra $\mathcal{F}$ are equivalent if and only if for all $A \in \mathcal{F}$, $\P(A)=0$ if and only if $\Pm(A)=0$. Next theorem, known as the \textbf{first fundamental theorem of asset pricing}, shows the importance of martingale measures.
 \begin{thm}[\bfseries First FTAP]
  \label{thm:fftap}
- The following to statements are \emph{essentialy} equivalent:
+ The following to statements are \emph{essentially} equivalent:
  \begin{enumerate}
   \item The market model is arbitrage free.
   \item There exists martingale measure $\Pm$ equivalent to $\P$.
  \end{enumerate}
 \end{thm}
-Unfortunatly, due to an appearence of a word ``essentialy'', this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentialy'', as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since in Monte Carlo methods price trajectories are simulated only in a finite number of points.
+Unfortunately, due to an appearance of a word ``essentially, this is rather a ``meta-theorem''. It can be given a sharp, mathematical sense -- see for example Theorems 10.9 and 10.10 in \cite{bjork}. In the discrete case, however, theorem holds without the word ``essentially, as it is proven in \cite{follmer} (Theorem 5.17). This case is sufficient for us, since in Monte Carlo methods price trajectories are simulated only in a finite number of points.
 
 \section{European contingent claims}
 \label{sec:ECC}
@@ -858,7 +858,7 @@ We start this section with a definition of a mentioned contingent claim.
  \label{def:cc_eu}
  An \textbf{European contingent claim} is a non-negative random variable $C$ on $(\Omega, \mathcal{F}_T, \P)$. A \textbf{derivative} of the underlying assets $S^{(1)}, \ldots, S^{(d)}$ is a contingent claim which is measurable with respect to $\sigma$-algebra generated by price processes.
 \end{mydef}
-European contingent claims may be seen as assets yielding a random payoff at the \textbf{expiration date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim cannot take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely nontrivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
+European contingent claims may be seen as assets yielding a random payoff at the \textbf{expiration date} $T$ (also called \textbf{maturity}). Of course the seller of such contingent claim cannot take a random amount of money from the buyer. What should be then the price at time $0$? The answer to this question is in general definitely non-trivial. However, for some simple derivatives, e.g. European options, there exists a straightforward formula for the price.
 
 \subsection{Examples of derivatives}
 \begin{mydef}
@@ -897,7 +897,7 @@ The payoff of the \textbf{down-and-out put} option on asset $S^{(i)}$ with expir
 \end{cases}
 \]
 \end{mydef}
-We have eight types of barrier options, as each of them is call or put, up or down, in or out. They are all defined in a similar manner. The best way to get a grip on the barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoffs from an up-and-out call option in three diffrent scenarios. 
+We have eight types of barrier options, as each of them is call or put, up or down, in or out. They are all defined in a similar manner. The best way to get a grip on the barrier options is possibly through a graphical example. Figure \ref{fig:barrier} discusses payoffs from an up-and-out call option in three different scenarios. 
 \begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.6]{images/BasicsOfOptionPricing/barrier.pdf}
@@ -917,7 +917,7 @@ Another modification of the vanilla options are the \textbf{Asian options}. Thei
 \[ \bar{S}^{(i)}_T = \frac{1}{K} \sum\limits_{j=0}^K S^{(i)}_{j\cdot T/K}, \]
 for some $K$. 
 
-So far we presented only options on one asset. Multiasset options are also in usage, for example \textbf{basket options} are options on the value $\eta \cdot S$. Vector $\eta$ describes quantity of shares of the assets contained in a basket. The basket call option gives us right to buy whole set of assets for the specified price, and the basket put allows us to sell it.
+So far we presented only options on one asset. Multi-asset options are also in usage, for example \textbf{basket options} are options on the value $\eta \cdot S$. Vector $\eta$ describes quantity of shares of the assets contained in a basket. The basket call option gives us right to buy whole set of assets for the specified price, and the basket put allows us to sell it.
 \begin{mydef}
  Payoffs of basket call and put options on basket $\eta$ with exercise date $T$ and strike price $E$, are given by
 \begin{align*}
@@ -931,14 +931,14 @@ So far we presented only options on one asset. Multiasset options are also in us
 \paragraph{Why do we need derivatives in the first place?}
 The well known anecdote claims that the first man who used derivatives was Tales of Miletus. His skills allowed him to predict that the olive harvest next year will be extraordinarily large. In the winter, when nobody needed olive presses, he reserved them for summer. During the season demand for the olive presses increased and Tales rented them for a good price. After all, it turned out that he earned much more then paid for the reservation. From this story appears the first reason to use options: they give opportunity to make money on accurate predictions.
 
-Second, and probably more important reason of option usage, is possibility to hedge against unconvienient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If asset price peaks, he can exercise the options. Either way he wins.
+Second, and probably more important reason of option usage, is possibility to hedge against inconvenient scenarios. Consider a producer making his articles from some raw material. The cost of his production depends on the price of this material. If it goes too high, then the factory may become unprofitable. By buying the options, the producer may ensure that the cost of the production will not exceed above known level. If the price of the raw material stays low, then the options expire worthless, but the producer stays content, because the production is not endangered. If asset price peaks, he can exercise the options. Either way he wins.
 
 
 \paragraph{What is the purpose of exotic options?}
 Altering the rules of ``typical'' payoffs may be caused by many reasons. The seller of a call option puts himself into a risk, induced by the fact, that his maximum possible loss is unbounded. Thus, he may be interested in entering only contracts with up-and-out barrier, which prevents too large payoffs. The buyer of the call option may want to hedge himself against high prices.
 He may purchase cheaper version of the option, with down-and-out  barrier -- maybe if the asset price is low, he does not need any extra hedge. Asian options may be a good choice for risk-averse investors, because they are less sensitive to changes in the underlying price, especially in the time close to the maturity.
 
-Both described stories show that derivatives idea arises in a natural way. In both stories there was an exchange of the money for some goods. In the real live, however, situation is not always that clear. Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the diffrence between prices is paid off.
+Both described stories show that derivatives idea arises in a natural way. In both stories there was an exchange of the money for some goods. In the real live, however, situation is not always that clear. Sometimes, even if the investor exercise his option on some commodity, there is no real transaction performed, only the difference between prices is paid off.
 It may seem that the derivatives are artificial tools, created by people living only in the theoretical, mathematical models. Some exotic options may be really complicated and at the first glance no one can tell what was the motivation of entering such contract. However, it is worth to remember, that many of the derivative contracts are designed by investors, economist or producers, and they correspond to their real needs. Mathematical models lend a hand in pricing such contracts.
 
 
@@ -954,7 +954,7 @@ The assumptions are following:
 \begin{enumerate}
   \item[BS1.] \textbf{The market does not admit arbitrage opportunities.}
 
- \item[BS2.] \textbf{The stock price of the underlying follows a geometric brownian motion.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE of the option price is described by equation
+ \item[BS2.] \textbf{The stock price of the underlying follows a geometric Brownian motion.} Moreover drift $\mu$ and volatility $\sigma$ are constant in time. Thus, SDE of the option price is described by equation
 \begin{equation}
  \label{eq:BS_dynamics}
  dS_t = \mu S_t dt + \sigma S_t dW_t. 
@@ -970,7 +970,7 @@ Investors may both, borrow and lend, any amount of money at rate $r$.
 
   \item[BS6.] \textbf{The underlying does not pay a dividend.}
   
-  \item[BS7.] We have to make one additional assumption on the options value. Many authors forget to mention it, altough it is required for It\^{o}'s lemma. Let $F$ be the process of the option's price\footnotemark.
+  \item[BS7.] We have to make one additional assumption on the options value. Many authors forget to mention it, although it is required for It\^{o}'s lemma. Let $F$ be the process of the option's price\footnotemark.
   \textbf{For some smooth function $\varphi$ the price process has the form:}
     \begin{equation}
     \label{eq:PriceProcessForm}
@@ -980,14 +980,14 @@ This assumption looks entirely natural, but it cannot be concluded from what we 
 \end{enumerate}
 \footnotetext{$F_t$ is the value of the option quoted at time $t$ (not discounted to time 0). The discounted price process is in this thesis denoted by letter $V$. }
 
-Instead of (\ref{eq:PriceProcessForm}) we will write $F_t = F(S_t, t)$. Then $F$ has an ambigous meaning -- left $F$ denotes the price process and the right one is some function. However, as in many other literature, we will identify them, since it does not lead to misunderstanding.
+Instead of (\ref{eq:PriceProcessForm}) we will write $F_t = F(S_t, t)$. Then $F$ has an ambiguous meaning -- left $F$ denotes the price process and the right one is some function. However, as in many other literature, we will identify them, since it does not lead to misunderstanding.
 
 Suppose that we are constructing a portfolio consisting of a short position in one option and a long position in $\Delta$ shares. Let $\Pi$ be the value process of the portfolio. Equation of the portfolio is given by
 \begin{equation}
  \label{eq:portfolio}
   \Pi = \Delta S - F 
 \end{equation}
-We analyze how much the portfolio will change in a short period of time. We have
+We analyse how much the portfolio will change in a short period of time. We have
 \[ d\Pi = \Delta dS - dF  \]
 Note that we do not have to differentiate $\Delta$, because it is constant in an infinitesimal increment of time. To handle $dF$ we will use It\^{o}'s lemma. Thus
 \[ d\Pi = \Delta dS - \frac{\partial F}{\partial S}dS - \frac{\partial F}{\partial t}dt - \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2}dt  \]
@@ -996,7 +996,7 @@ The risk in an increment of the portfolio is carriered by changes of the stock p
  \label{eq:delta}
  \Delta = \frac{\partial F}{\partial S}
 \end{equation}
-we get rid off the uncertainity. Now we have
+we get rid off the uncertainty. Now we have
 \begin{equation}
   \label{eq:portfolio_inc}
  d\Pi = -(\frac{\partial F}{\partial t} + \frac{1}{2}\sigma^2 S^2 \frac{\partial^2 F}{\partial S^2})dt.
@@ -1029,10 +1029,10 @@ d_2(t) &= \frac{\ln\left(\frac{S_t}{E}\right)+\left(r-\frac{\sigma^{2}}{2}\right
 \end{prop}
 We prove this proposition at the end of the section \ref{sec:risk-neutral}, using the risk-neutral measure.
 
-\subsection{Multiasset model.}
-All assumptions for a one-asset model carry over almost instantly to a multiasset model with just a little edition:
+\subsection{Multi-asset model.}
+All assumptions for a one-asset model carry over almost instantly to a multi-asset model with just a little edition:
 \begin{enumerate}
- \item[BS2.] \textbf{Stock prices of all risky assets follow a geometric brownian motion.} Each risky asset $S^{(i)}$ has constant drift $\mu_i$ and volatility $\sigma_i$. In symbolic form:
+ \item[BS2.] \textbf{Stock prices of all risky assets follow a geometric Brownian motion.} Each risky asset $S^{(i)}$ has constant drift $\mu_i$ and volatility $\sigma_i$. In symbolic form:
 \begin{equation}
  \label{eq:BS_multi_dynamics}
  dS^{(i)}_t = \mu S^{(i)}_t dt + \sigma S^{(i)}_t dW^{(i)}_t\ \ \ \ (i=1,2,\ldots,d). 
@@ -1065,11 +1065,11 @@ By looking at the previous section we can specify a set of values by which the m
  \item correlation $\Sigma$,
  \item riskless interest rate $r$.
 \end{itemize}
-While calibrating a model it is conveniet to assume that today is time $0$. We are interested in modeling asset prices in the future, up to time $T$. It is natural to use negative $t$ to denote times in the past. For example $S^{(i)}_{-0.5}$ means the price of the $i$\textsuperscript{th} asset half of a year ago. Hence for $t > 0,\ S_t$ is random vector, which we are about to model, and for $t \leq 0,\ S_t$ is a vector with historical prices, which may be obtained from the stock archives.
+While calibrating a model it is convenient to assume that today is time $0$. We are interested in modelling asset prices in the future, up to time $T$. It is natural to use negative $t$ to denote times in the past. For example $S^{(i)}_{-0.5}$ means the price of the $i$\textsuperscript{th} asset half of a year ago. Hence for $t > 0,\ S_t$ is random vector, which we are about to model, and for $t \leq 0,\ S_t$ is a vector with historical prices, which may be obtained from the stock archives.
 
 Since asset prices follow (\ref{eq:BS_multi_dynamics}) and its solution is given by (\ref{eq:gmb_sol}), thus for all $i$
 \[  S^{(i)}_{t_{n+1}} = S^{(i)}_{t_n} \exp\left\{ (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t + \sigma_i \sqrt{\Delta t} Z_i \right\}, \]
-where $\Delta t = t_{n+1} - t_n$, $Z$ is a random vector with corralation matrix $\Sigma = \bigl( \varrho_{ij} \bigr)_{i,j=1}^d$, and for each $Z_i$, $Z_i \sim \mathcal{N}(0,1)$. Let
+where $\Delta t = t_{n+1} - t_n$, $Z$ is a random vector with correlation matrix $\Sigma = \bigl( \varrho_{ij} \bigr)_{i,j=1}^d$, and for each $Z_i$, $Z_i \sim \mathcal{N}(0,1)$. Let
 \[  L^{(i)}_{n+1} = \ln\left( \frac{S^{(i)}_{t_{n+1}}}{S^{(i)}_{t_n}} \right). \]
 It is clear that $ L^{(i)}_{n+1} \sim \mathcal{N}\left(  (\mu_i - \frac{1}{2}\sigma_i^2)\Delta t,\ \sigma_i^2 \Delta t \right)$
 
@@ -1097,7 +1097,7 @@ Hence
   \sigma_i^2 &= \frac{\Var\left( L^{(i)} \right)}{\Delta t}.
  \end{split}
 \end{equation*}
-Now we can use the sample vector to estimate expectaion and variance. Let
+Now we can use the sample vector to estimate expectation and variance. Let
 \begin{equation*}
  \begin{split}
   \alpha_i &= \frac{1}{N}\sum\limits_{k=1}^{N} L^{(i)}_k\\
@@ -1116,12 +1116,12 @@ Values $\alpha_i$ and $\beta_i$ are unbiased estimators of expectation and varia
 \end{remark}
 
 
-\paragraph{Correlation.} At first recall that $\Corr(aX + b, cY + d) = \Corr(X,Y)$. Thus finding a correlation between $Z_i$ and $Z_j$ is equivalent to finding corralation between $L^{(i)}$ and $L^{(j)}$. We can do it using Pearson's estimator:
+\paragraph{Correlation.} At first recall that $\Corr(aX + b, cY + d) = \Corr(X,Y)$. Thus finding a correlation between $Z_i$ and $Z_j$ is equivalent to finding correlation between $L^{(i)}$ and $L^{(j)}$. We can do it using Pearson's estimator:
 
 \[ \varrho_{i,j} = \frac{1}{N-1} \frac{\sum\limits_{k=1}^N(L^{(i)}_k - \alpha_i)(L^{(j)}_k - \alpha_j)}{\sqrt{\beta_i \beta_j}} \]
 
 \paragraph{Riskless interest rate.}
-In order to calculate the interest rate it is necessary to choose a bond whose maturity is close to the expiry of the valuated option. The interest rate implied by that bond reflects well the real interest rate in the concerned time.
+In order to calculate the interest rate it is necessary to choose a bond whose maturity is close to the expiry of the valued option. The interest rate implied by that bond reflects well the real interest rate in the concerned time.
 
 It is clear that
 \[ C = Ne^{-rT}, \]
@@ -1156,6 +1156,7 @@ The next theorem is the key to defining prices of contingent claims. But first w
 \end{mydef}
 
 \begin{thm}
+\label{thm:pricesProcess_mtg}
  For every attainable discounted claim $H$ and for every equivalent martingale measure $\Pm$
  \[ \Em [H] < \infty. \]
  Moreover, for every replicating strategy $\xia$ its value process satisfies
@@ -1217,7 +1218,7 @@ In the literature there are many formulations of the theory which is presented h
 \begin{proof}
  Let $\Sigma = (\rho_{ij})_{i,j=1}^d$ be a correlation matrix. Cholesky's algorithm allows us to decompose $\Sigma$ to the form
  \[ \Sigma = LL^T, \]
- where $L$ is lower traingular matrix. Hence, $\bar{W}$ may be written in the form
+ where $L$ is lower triangular matrix. Hence, $\bar{W}$ may be written in the form
  \[ \bar{W} = L \bar{V}, \]
  where $\bar{V}$ is a standard $d$-dimensional Wiener process under measure $\P$. Let us apply Theorem \ref{thm:girsanov} (Girsanov theorem) with $\varphi := \theta = (\theta_1, \theta_2, \ldots, \theta_d)'$, where all $\theta_i$ are some constants. It implies that
  \[ V_t = \bar{V}_t - t\theta \]
@@ -1481,7 +1482,7 @@ Adjusting above estimators to use control variates does not bring any difficulti
 where $c$ is calculated as in (\ref{eq:CVc}) and value $\Em (E - S_T)_+$ is known from the Black-Scholes formula.
 
 In previous section while using AV method, we generated negatively correlated variables representing the asset price at the option's expiry. Since now, payoff depends on the whole process, thus we have to generate the antithetic trajectories. Algorithm \ref{alg:single-tr} presents a proper procedure. Figure \ref{fig:trajectoriesAnti} gives an idea how antithetic paths look like.
-We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and overly complicated. Analyzing an example application of AV method should be sufficient to understand how it works in general. To this end, we present procedure of pricing Asian call options (Algorithm \ref{alg:priceAsianAV}).
+We omit exact formulas for $\AVa[H, n]$, because they are becoming lengthy and overly complicated. Analysing an example application of AV method should be sufficient to understand how it works in general. To this end, we present procedure of pricing Asian call options (Algorithm \ref{alg:priceAsianAV}).
 
 \begin{figure}
 \centering
@@ -1597,7 +1598,7 @@ In the case of put@100 with down-and-in barrier 70, the barrier is set very low;
 
 At the end of this section, it is worth to mention, that there exist analytical formulas for prices of European barrier options, see \cite{wilmott}, chapter 23.
 
-\section{Multiasset instruments}
+\section{Multi-asset instruments}
 \label{sec:multi-asset}
 The valuation of derivatives whose payoff depends on many assets does not differ much from one dimensional case. We only have to remember to include correlations between the assets. Let
 \[ \Sigma = \left( \varrho_{ij} \right)_{i,j=1}^d \]
@@ -1608,7 +1609,7 @@ be the matrix describing correlation between risky assets (recall that by that w
 \end{equation}
 where each $Z_i$ is standard normal. However, we have to take into account correlation between variables $Z_i$. To be precise $Z \sim \mathcal{N}(0, \Sigma)$.
 
-Equation (\ref{eq:priceChangeMulti}) is the key to generating multiasset scenarios. Its usage is shown in Algorithm \ref{alg:multi-tr}, which creates two antithetic scenarios of market evolution. Figure \ref{fig:corrPaths} illustrates trajectories of prices of correlated assets.
+Equation (\ref{eq:priceChangeMulti}) is the key to generating multi-asset scenarios. Its usage is shown in Algorithm \ref{alg:multi-tr}, which creates two antithetic scenarios of market evolution. Figure \ref{fig:corrPaths} illustrates trajectories of prices of correlated assets.
 
 \begin{algorithm}
  \begin{algorithmic}[1]
@@ -1634,7 +1635,7 @@ Equation (\ref{eq:priceChangeMulti}) is the key to generating multiasset scenari
   \State \Return $(S, S^\star)$
   \EndFunction
  \end{algorithmic}
- \caption{Generating multiasset trajectories.}
+ \caption{Generating multi-asset trajectories.}
  \label{alg:multi-tr}
 \end{algorithm}
 
@@ -1654,7 +1655,7 @@ Equation (\ref{eq:priceChangeMulti}) is the key to generating multiasset scenari
 
 \end{remark}
 
-Since we have a method for scenario generation, valuation of the multiasset options is pretty straightforward. For example we write a procedure for pricing basket put options using AV method. The basket is described by an array $\eta$, where $\eta[i]$ means how many units of $i$-th asset are contained in a basket. In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. 
+Since we have a method for scenario generation, valuation of the multi-asset options is pretty straightforward. For example we write a procedure for pricing basket put options using AV method. The basket is described by an array $\eta$, where $\eta[i]$ means how many units of $i$-th asset are contained in a basket. In Algorithm \ref{alg:priceBasketPutAV} we called function \Call{MultiTrajectory}{} with $K=1$, because payoff of the basket option does not depend on the history. 
 
 \begin{algorithm}
  \begin{algorithmic}[1]
@@ -1723,25 +1724,25 @@ CV method gave the most accurate prices.
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxBasket.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergenceBasket.pdf}
-\caption{Accuracy of pricing basket option described in equations (\ref{eq:EuBasketParams}).}
+\caption{The accuracy of pricing basket option described in equations (\ref{eq:EuBasketParams}). Prices calculated using AV and CMC methods look like they were converging to different values. It is caused by the fact, that one price is underestimated and the second is overestimated. However, in both cases the distance to the correct value 19.70 is not greater than two standard errors. It means that the above plot gives us no reason to worry -- for greater numbers of simulations green and red lines would ``stick'' to each other almost surely. }
 \label{fig:EuBasket}
 \end{figure}
 
 \chapter[{Pricing American options using Least Squares Monte Carlo}]{Pricing American options using \\Least Squares Monte Carlo}
 \label{chapter:pricingAmerican}
-Part \Roman{chapter} describes American-style derivatives. The diffrence between them and discussed previously European-style contracts is that American feature allows the owner of the derivative to exercise it at \emph{any time} up to the expiration date. This additional attribute makes the instrument much harder to analyze and more advanced theory is necessary to value and hedge.
-Due to the practical nature of this thesis we will not get deep into details. Nevertheless, we will provide mathematical tools necessary for pricing American contingent claims, advising the reader to find proofs in more specialist literature. 
+In chapter \Roman{chapter} we describe American-style derivatives. The difference between them and previously discussed European-style contracts is that the American feature allows the owner of the derivative to exercise it in \emph{any time} up to the expiration date. This additional attribute makes the instrument much harder to analyse and more advanced theory is necessary to value and hedge it.
+Due to the practical nature of this thesis we do not get deep into details. Nevertheless, we provide mathematical tools necessary for pricing American contingent claims, advising the reader to find proofs in the more specialized literature. 
 
-It turns out that Monte Carlo method from previous part cannot be carried over directly to price American contracts. However, Least Squares Monte Carlo method uses a clever trick, so the simulations still can be involved. 
+It turns out that the Monte Carlo method from previous chapter cannot be carried over directly to price American contracts. However, the Least Squares Monte Carlo method to be defined below introduces a clever trick, so the simulations can still be involved. 
 
 \section{American contingent claims}
-Definition of the American contingent claim is analogous to its European counterpart, with one diffrence that it is not a random variable, but a \emph{process}.
+In opposite to European contingent claims, American contingent claims are not random variables, but \emph{processes}.
 \begin{mydef}
  \label{def:cc_am}
- An \textbf{American contingent claim} is a non-negative adapted process $C = (C_t)_{t=0}^T$ on the filtered probability space $(\Omega, (\mathcal{F}_t)_{t=0}^T, \P)$.
-By a \textbf{derivative} of the underlying assets $\Sa$ since now we will understand such American contingent claim $C$ which is adapted also to the filtration generated by $\Sa$ (which in general may be smaller than $\mathcal{F}$).
+ An \textbf{American contingent claim} is a non-negative adapted process $C = (C_t)_{t=0}^T$ on the filtered probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \P)$.
+From now on by a \textbf{derivative} of the underlying assets $\Sa$ we understand such American contingent claim $C$ which is adapted also to the filtration generated by $\Sa$ (which in general may be smaller than $\mathcal{F}$).
 \end{mydef}
-Value $C_t$ has the meaning of the payoff obtained from the claim if it is exercised at time $t$. The definitions from section \ref{sec:ECC} carry over directly to their American counterparts, for example American call and put options on $i$\textsuperscript{th} asset are defined as derivatives with the payoffs
+Value $C_t$ may be interpreted as the payoff obtained from the claim if it is exercised at time $t$. The definitions from section \ref{sec:ECC} carry over directly to their American counterparts, for example American call and put options on the $i$\textsuperscript{th} asset are defined as derivatives with the payoffs
 \begin{equation*}
  \begin{split}
   C^{\text{call}}_t &= (S^{(i)}_t - E)_+, \\
@@ -1750,7 +1751,7 @@ Value $C_t$ has the meaning of the payoff obtained from the claim if it is exerc
 \end{equation*}
 where $E$ is the strike price.
 \begin{remark}
- In fact European contracts are just a particular case of the American contracts. An European claim $\tilde{C}$ may be regarded as an American claim $C = (C_t)_{t=0}^T$ with payoff
+ European contracts are in fact  a particular case of American contracts. An European claim $\tilde{C}$ may be seen as an American claim $C = (C_t)_{t=0}^T$ with payoff
  \[ C_t = \begin{cases}
          \tilde{C},\ \ \ \ t = T \\
          0,\ \ \ \ \ t < T.
@@ -1758,7 +1759,7 @@ where $E$ is the strike price.
         \]
 \end{remark}
 
-As usually, it is conveniet to quote payoff values in terms of time 0.
+As usually, it is convenient to quote payoff values in terms of time 0.
 \begin{mydef}
  The discounted value of the American contingent claim $C$ is a process $H = (H_t)_{t=0}^T$ given by
  \begin{equation*}
@@ -1767,7 +1768,8 @@ As usually, it is conveniet to quote payoff values in terms of time 0.
  The process $H$ is called an \textbf{American discounted claim}.
 \end{mydef}
 
-The exercise time is entirely up to the buyer. He will decide when to get his payoff dynamically, watching the market evolution. However, at the very beginning he may plan under which conditions the option will be exercised.
+\subsection{Exercise strategies}
+The exercise time is entirely up to the buyer. He or she dynamically decides when to claim the payoff, watching the market evolution. However, at the very beginning he or she may plan under which conditions the option will be exercised.
 \begin{mydef}
  An \textbf{exercise strategy} for an American contingent claim $C$ is a stopping time $\tau$ taking values in $[0,T]$. The payoff resulting from following the strategy $\tau$ is defined for any $\omega \in \Omega$ as
  \[ C_{\tau}(\omega) = C_{\tau(\omega)}(\omega).\]
@@ -1785,11 +1787,11 @@ Of course the option buyer looks for the best exercise strategy. Thus, we need t
 \end{mydef}
 
 \begin{remark}
- The optimal exercise strategy does not always exist. However, for each $\epsilon > 0$ there exist such stopping time $\tau_\epsilon$ that
+ An optimal exercise strategy does not always exist. However, for each $\epsilon > 0$ there exist such a stopping time $\tau_\epsilon$ that
  \[ \Em[H_{\tau_\epsilon}] \geq \sup\limits_{\tau \in T} \Em[H_{\tau}] - \epsilon.\]
- Moreover, if the optimal exercise strategy exists it is not necessarly unique.
+ Moreover, if the optimal exercise strategy exists it is not necessarily unique.
 \end{remark}
-As we can see the owner of the claim may choose such strategy that its expected value is arbitrarily close to the $\sup\limits_{\tau \in T} \Em[H_{\tau}]$. It suggests how the option price should be defined.
+As we can see the owner of the claim may choose such a strategy that its expected value is arbitrarily close to the $\sup\limits_{\tau \in T} \Em[H_{\tau}]$. It suggests how the option price should be defined.
 \begin{mydef}
  Price of the discounted American contingent claim $H$ is given by
 \begin{equation}
@@ -1797,10 +1799,10 @@ As we can see the owner of the claim may choose such strategy that its expected 
 V_0 = \sup\limits_{\tau \in T} \Em[H_{\tau}]. 
 \end{equation}
 \end{mydef}
-We also need to analyze how the option price changes over time.
+We also need to analyse how the option price changes over time.
 \begin{mydef}
  \label{def:valueProcess}
- Let  $\mathcal{T}_t = \{ \tau \in \mathcal{T}:\ \tau \geq t \}$. The discounted \textbf{price process} (or \textbf{value process}) of the  discounted American contingent claim $H$ is given by
+ Let  $\mathcal{T}_t = \{ \tau \in \mathcal{T}:\ \tau \geq t \}$. The discounted \textbf{price process} (or the \textbf{value process}) of the  discounted American contingent claim $H$ is given by
 \begin{equation}
 \label{eq:AM_valueProcess}
 V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t]. 
@@ -1809,51 +1811,51 @@ V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t].
 \end{mydef}
 
 \begin{remark}
- The reader may ask how do we know that in the definitions above the martingale measure should be used. It may be even confusing that we \emph{define} what is the value of the option instead of \emph{proving} that some formula gives the value. Remember that the goal of the theory is to answer what should be the price of the option. The proposed definition is good in the sense that the extended market model $(S^{(0)}, S^{(1)}, \ldots, S^{(d)}, V)$ is still arbitrage free -- proof for discrete time is in \cite{follmer}.
+ The Reader may wonder why in the definitions above the martingale measure is used. It may be even confusing that we \emph{define} what is the value of the option instead of \emph{proving} that some formula gives the value. Remember that the goal of the theory is to answer what should be the price of the option. The proposed definition is good in the sense that the extended market model $(S^{(0)}, S^{(1)}, \ldots, S^{(d)}, V)$ is still arbitrage free -- proof for discrete time is in \cite{follmer} (Theorem 6.33).
 \end{remark}
 
 
 \begin{prop}
- At any time $t$ value of the American contingent claim is not less then value of its European counterpart.
+ At any time $t$ value of the American contingent claim is not less than the value of its European counterpart.
 \end{prop}
 \begin{proof}
- Following the exercise strategy $\tau_t \equiv T$ will always result in the same payoff from the American contract as from the European. The price of the American claim must be greater or equal, because the supremum is taken over all stopping times in $\mathcal{T}_t$.
+ Following the exercise strategy $\tau_t \equiv T$ always results in the same payoff from the American contract as from the European. Therefore, the price of the American claim must be greater or equal, because the supremum is taken over all stopping times in $\mathcal{T}_t$.
 \end{proof}
 
 \begin{prop}
 \label{prop:amCall}
- Assume that the interest rate $r$ is nonnegative. The exercise strategy $\tau \equiv T$ is optimal for an American call option on non-dividend-paying stock.
+ Assume that the interest rate $r$ is non-negative. The exercise strategy $\tau \equiv T$ is optimal for an American call option on a non-dividend-paying stock.
 \end{prop}
 \begin{proof}
- For the brevity let $S$ be the price process of the underlying asset (not the vector process of all the risky assets). From the previous Corollary we have
- \[V_t \geq \Em[e^{-r(T-t)}(S_T - E)_+ | \mathcal{F}_t].\] Moreover,
+ For brevity let $S$ be the price process of the underlying asset (not the vector process of all the risky assets). From the previous Proposition and Theorem \ref{thm:pricesProcess_mtg} we have
+ \[V_t \geq \Em[e^{-rT}(S_T - E)_+ | \mathcal{F}_t].\] Moreover,
  \[\Em[(S_T - E)_+ | \mathcal{F}_t] \geq \Em[S_T - E | \mathcal{F}_t],\]
- because the left hand side expectation zeroes negative values of $S_T - E$. Hence,
- \[ V_t \geq e^{-r(T-t)}\Em[S_T - E | \mathcal{F}_t] = S_t - e^{-r(T-t)}E > S_t - E.\]
+ because negative values of $S_T - E$ are zeroed in the left hand side expectation. Hence,
+ \[ e^{rt} V_t \geq e^{-r(T-t)}\Em[S_T - E | \mathcal{F}_t] = S_t - e^{-r(T-t)}E > S_t - E.\]
  The obtained inequality tells us that value of the option is always higher than the immediate exercise, thus it is more profitable to sell the option rather than exercise it.
 \end{proof}
-The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay a dividend and the interest rate is nonnegative). American puts do not have that property -- for low prices of the underlying it is optimal to exercise the option immediately. These facts are illustrated in the Figure \ref{fig:lsm:amPrice}.
+The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay a dividend and the interest rate is non-negative). American puts do not have that property -- for low prices of the underlying it is optimal to exercise the option immediately. These facts are illustrated in the Figure \ref{fig:lsm:amPrice}.
 
 \begin{figure}
 \centering
  \includegraphics[scale=0.5]{images/LSM/put.pdf}
  \includegraphics[scale=0.5]{images/LSM/call.pdf}
-\caption{Prices of American and European vanilla options. In case of a put (left picture), we see that for low stock ratings the European option's price is lower than its intrisnic value. On the other hand, the price of the put with an American exercise feature coincides with the immediate payoff for low asset prices -- this is the situation when the option should be exercised immediately. In case of a call (right picture), the option's price is always greater than its intrisnic value. We cannot see the curve of the European option's price, because it is entirely covered by the line of the American option's price -- their values are the same for every spot price. Calculations were performed under parameters: strike~$=100,\ T=1,\ \sigma=0.3,\ r=0.08$.}
+\caption{Prices of American and European vanilla options. In case of a put (left picture), we see that for low stock ratings the European option's price is lower than its intrinsic value. On the other hand, the price of the put with an American exercise feature coincides with the immediate payoff for low asset prices -- this is the situation when the option should be exercised immediately. In case of a call (right picture), the option's price is always greater than its intrinsic value. We cannot see the curve of the European option's price, because it is entirely covered by the line of the American option's price -- their values are the same for every spot price. Calculations were performed under parameters: strike~$=100,\ T=1,\ \sigma=0.3,\ r=0.08$.}
 \label{fig:lsm:amPrice}
 \end{figure}
 
-For negative interest rates the situation is inversed. A similar proof shows that in this case exercise of an American put should be postponed to expiry and American calls should be exercised for high stock prices. However, a negative interest rate is a very rare situation and somewhat pathological.
+For negative interest rates the situation is inverted. A similar proof shows that in this case the exercise of an American put should be postponed to the expiry and American calls should be exercised for high stock prices. However, a negative interest rate is a very rare situation and somewhat pathological.
 
-Unfortunately the above definition of the value process is not constructive. It does not tell us how to find the optimal exercise strategy nor how to compute options value. We need to involve a little more theory. Following two definitions are formulated for general measure $\Q$. 
+Unfortunately the above definition of the value process is not constructive. It does not tell us how to find the optimal exercise strategy nor how to compute the option's value. We need to introduce a little more theory. The following two definitions are formulated for a general measure $\Q$. 
 
 \begin{mydef}
- Let $X$ and $Y$ be two processes on the same probability space $(\Omega, (\mathcal{F}_t)_{t=0}^T, \Q)$. We say that $X$ \textbf{dominates} $Y$ if $ X_t \geq Y_t$ $\Q$-a.s. for all $t \geq 0$.
+ Let $X$ and $Y$ be two processes on the same probability space $(\Omega, \mathcal{F}, (\mathcal{F}_t)_{t=0}^T, \Q)$. We say that $X$ \textbf{dominates} $Y$ if for all $t \geq 0$, $X_t \geq Y_t$ $\Q$-a.s.
 \end{mydef}
  
 \begin{mydef}
- Let $Y$ be the process such that for all $0 \leq t \leq T$, $\E^{\Q}[Y_t] < \infty$. Its \textbf{Snell envelope} $U^{\Q}$ is defined as the smallest supermartingale dominating $Y$. In the other words $U^{\Q}$ is a supermartingale dominating $Y$ and if $\tilde{U}$ is another supermartingale dominating $Y$, then $U_t \leq \tilde{U}_t$, $\Q$-a.s. for all $t \geq 0$.
+ Let $Y$ be the process such that for all $0 \leq t \leq T$, $\E^{\Q}[Y_t] < \infty$. Its \textbf{Snell envelope} $U^{\Q}$ is defined as the smallest supermartingale dominating $Y$. In the other words $U^{\Q}$ is a supermartingale dominating $Y$ and if $\tilde{U}$ is another supermartingale dominating $Y$, then for all $t \geq 0$, $U_t \leq \tilde{U}_t$, $\Q$-a.s.
 \end{mydef}
-It is proven that Snell envelope exists for a vast class of processes. Its usefulness in the option pricing follows from the next theorem.
+It is proven that Snell envelope exists for a vast class of processes. Following statement shows its importance (it is quoted after \cite{bjork}, Theorem 21.23):
 \begin{thm}
  \label{thm:snell}
  If $\sup\limits_{\tau \in T} \Em|H_{\tau}| < \infty$, then the value process $V$ is the Snell envelope of the claim $H$ with respect to the measure $\Pm$. Moreover, if there exists an optimal stopping time (not necessarily unique), then the smallest one is given by
@@ -1862,22 +1864,22 @@ It is proven that Snell envelope exists for a vast class of processes. Its usefu
   \hat{\tau}_t = \inf\{ s \geq t:\ V_s = H_s \}.
  \end{equation}
 \end{thm}
-{\LARGE \color{red} TODO: referencja do dowodu}
-Theorem \ref{thm:snell} not only states that Snell envelope $U^{\Pm}$ of the claim $H$ coincides with its value $V$. It also gives us a recipe for the optimal stopping: \textbf{exercise the option when its value equals the payoff possible to obtain immediately}.
+Theorem \ref{thm:snell} not only states that the Snell envelope $U^{\Pm}$ of the claim $H$ coincides with its value $V$. It also gives us a recipe for the optimal stopping: \textbf{exercise the option when its value and immediate payoff are equal}.
 
-Presented theory may look incomprehensible at the first glance. In order to get some intuition let us explain the above concepts in discrete time. Let us divide the time to expiration on the $K$ intervals separated by points $0 = t_0 < t_1 < \ldots < t_K = T$. In order to reduce the number of indices we will use following notation in discrete time:
+\subsection{Explanations in discrete time}
+The presented theory may look incomprehensible at a first glance. In order to get some intuition let us explain the above concepts in a discrete time. Let us divide the time left to the expiration to $K$ intervals separated by points $0 = t_0 < t_1 < \ldots < t_K = T$. In order to reduce the number of indices we use the following notation in the discrete time:
 \begin{align*}
  V_k &:= V_{t_k} \\
  H_k &:= H_{t_k} \\
  \mathcal{F}_k &:= \mathcal{F}_{t_k}
 \end{align*}
-Also the stopping times $\tau$ will now take values in $\{0, 1, \ldots, K\}$ (and $\tau_k$ will denote such stopping time, that $\tau_k \geq k$ a.s.).
-Since $k$ is usually associated with natural numbers and $t$ with real numbers, we hope that when reader see $V_k$ he will remember that it is the value at $k$\textsuperscript{th} time point (i.e. at time $t_k$), not at time $k$.
+Also the stopping times $\tau$ now takes values in $\{0, 1, \ldots, K\}$ (and $\tau_k$ will denote such stopping time, that $\tau_k \geq k$ a.s.).
+Since $k$ is usually associated with natural numbers and $t$ with real numbers, we hope that whenever Reader encounters $V_k$ he or she bears in mind that it is the value at the $k$\textsuperscript{th} time point, i.e. at time $t_k$, not at time $k$.
 
 It turns out that in discrete time equation (\ref{eq:AM_valueProcess}) can be written in more friendly form.
 \begin{prop}
 \label{prop:AM_valueProcessDisc}
- In the discrete time the value process of the American contingent claim is given by recursion
+ In the discrete time the value process of the American contingent claim is given by the recursion
  \begin{equation}
   \label{eq:AM_valueProcessDisc}
   V_{k} = \begin{cases}
@@ -1888,13 +1890,13 @@ It turns out that in discrete time equation (\ref{eq:AM_valueProcess}) can be wr
  Moreover, it is optimal to stop at $k$\textsuperscript{th} time point if and only if $V_{k} = H_{k}$. 
 \end{prop}
 \begin{proof}
-Let us think about the value of the claim at $k$\textsuperscript{th} time point. From the definition, $V_{k}$ is the expected value resulting from following optimal strategy $\hat{\tau}_{k}$. However, at this point only one of these is possible: it is optimal to stop or not. If it is not optimal, then $\hat{\tau}_{k} = \hat{\tau}_{k+1}$ must hold. At $(k+1)$\textsuperscript{th} time point claim's value resulting from following $\hat{\tau}_{k+1}$ equals $V_{k+1}$, however, at $k$\textsuperscript{th} time point it equals (from the definition) 
-\[ V_{k} = \Em[H_{\hat{\tau}_{k}} | \mathcal{F}_{k}] = \Em[H_{\hat{\tau}_{k+1}} | \mathcal{F}_{k}] = \Em\bigl[[H_{\hat{\tau}_{k+1}} | \mathcal{F}_{k+1}] \bigl|\bigr. \mathcal{F}_{k} \bigr] = \Em[V_{k+1} | \mathcal{F}_{k}].\]
-On the other hand, if it is optimal to stop at time then the price equals immediate payoff, that is $V_{k} = H_{k}$. Hence, at time $k$ we have to compare $H_{k}$ and $\Em[V_{k+1} | \mathcal{F}_{k}]$, and we stop if and only if the former is greater.
+Let us consider the value of the claim at the $k$\textsuperscript{th} time point.  We have to decide if it is optimal to stop at this point. If it is not optimal, then $\hat{\tau}_{k} = \hat{\tau}_{k+1}$ must hold. By the definition, $V_{k}$ is the expected value of the payoff resulting from following strategy $\hat{\tau}_{k}$. Similarly, at the $(k+1)$\textsuperscript{th} time point the claim's value resulting from following $\hat{\tau}_{k+1}$ equals $V_{k+1}$, hence
+\[ V_{k} = \Em[H_{\hat{\tau}_{k}} | \mathcal{F}_{k}] = \Em[H_{\hat{\tau}_{k+1}} | \mathcal{F}_{k}] = \Em\bigl[\Em[H_{\hat{\tau}_{k+1}} | \mathcal{F}_{k+1}] \bigl|\bigr. \mathcal{F}_{k} \bigr] = \Em[V_{k+1} | \mathcal{F}_{k}].\]
+On the other hand, if it is optimal to stop at time $t_k$, then the price equals the immediate payoff, that is $V_{k} = H_{k}$. Hence, at the $k$\textsuperscript{th} time point we have to compare $H_{k}$ and $\Em[V_{k+1} | \mathcal{F}_{k}]$, and we stop if and only if the former is greater.
 \end{proof}
 Proposition 6.11 in \cite{follmer} states that process defined via (\ref{eq:AM_valueProcessDisc}) is the Snell envelope of $H$ (in the discrete sense).
 
-Obvious conclusion from the Proposition \ref{prop:AM_valueProcessDisc} gives us a useful formula for the optimal stopping.
+An obvious conclusion from Proposition \ref{prop:AM_valueProcessDisc} gives us a useful formula for the optimal stopping.
 \begin{coro}
  \label{coro:AM_optStopDisc}
  The optimal exercise strategies at time 0, and at $k$\textsuperscript{th} time point are given by:
@@ -1907,11 +1909,11 @@ Obvious conclusion from the Proposition \ref{prop:AM_valueProcessDisc} gives us 
  \end{equation}
 \end{coro}
 \begin{remark}
- Since finding the optimal exercise strategy in discrete time involves taking minimum, not infinum, hence it always exist. However, it is not necessarily unique.
+ Since finding the optimal exercise strategy in discrete time involves taking minimum, not infimum, hence it always exist. However, it is not necessarily unique.
 \end{remark}
 
 \begin{example}
- Figure \ref{fig:binTree} illustrates terms discussed above. It shows a binomial tree (readers not familiar with binomial trees may be interested in reading about CRR model) used to price an American put option. The red color indicates nodes where $V_{k} = H_{k}$, i.e. the immediate payoff exceeds the expected payoffs in the future. Hence, Corollary \ref{coro:AM_optStopDisc} states that following procedure is an optimal exercise strategy: exercise the option when you step in the red node.
+ Figure \ref{fig:binTree} illustrates terms discussed above. It contains a binomial tree (Reader not familiar with binomial trees is advised to read about the CRR model) used to price an American put option. The red colour indicates nodes where $V_{k} = H_{k}$, i.e. the immediate payoff exceeds the expected payoffs in the future. Hence, Corollary \ref{coro:AM_optStopDisc} states that following procedure is an optimal exercise strategy: exercise the option when you step in the red node.
  
  It is also remarkable that decision whether the option should be exercised depends not only on the price of the underlying, but also on time. Note that we should exercise the option for asset price 91 in the time step one before last, but not in the previous time steps.
 \end{example}
@@ -1919,7 +1921,7 @@ Obvious conclusion from the Proposition \ref{prop:AM_valueProcessDisc} gives us 
 \begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.4]{images/LSM/binomialTree.png}
-\caption{The binomial tree used to price American put@100. In nodes marked red it is optimal to exercise the option. Blue indicates those nodes where exercise should be postponed. }
+\caption{The binomial tree used to price American put@100. In nodes marked red it is optimal to exercise the option. Blue indicates those nodes where the exercise should be postponed. }
 \label{fig:binTree}
 \end{figure}
 
@@ -1958,7 +1960,7 @@ Unfortunately, this is a very ineffective procedure. Computing $\Em\bigl[ V_{k+1
 \begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.6]{images/LSM/LSMidea1.pdf}
-\caption{The illustration of difficulties occuring with attempts to involve Monte Carlo method in pricing American claims. At each time point we have to generate subtrajectories in order to calculate expected value of continuation.}
+\caption{The illustration of difficulties occurring with attempts to involve Monte Carlo method in pricing American claims. At each time point we have to generate subtrajectories in order to calculate expected value of continuation.}
 \label{fig:MC_difficulties}
 \end{figure}
 
@@ -1977,7 +1979,7 @@ Note that we have exactly the same problem on every path. Look at the Figure \re
 \label{fig:LSMidea}
 \end{figure}
 
-As in Part on pricing European options, $S_{i,k}$ will denote the price of the underlying at time $t_k$, on $i$\textsuperscript{th} simulated path (similarly for $V_{i,k}$ and $H_{i,k}$). Moreover, let $D_{i,k}$ be the payoff (discounted to time 0) obtained on $i$\textsuperscript{th} path conditional on not exercising the option up to time $t_k$ (inclusively).
+As in chapter on pricing European options, $S_{i,k}$ will denote the price of the underlying at time $t_k$, on $i$\textsuperscript{th} simulated path (similarly for $V_{i,k}$ and $H_{i,k}$). Moreover, let $D_{i,k}$ be the payoff (discounted to time 0) obtained on $i$\textsuperscript{th} path conditional on not exercising the option up to time $t_k$ (inclusively).
 \begin{remark}
   Some values appearing in the discussion have an ambiguous meaning. The reader must aware of both interpretations.
  \begin{itemize}
@@ -2166,7 +2168,7 @@ Values in column ``now'' are the payoffs obtained from the immediate exercise an
 \end{remark}
 
 \noindent \textbf{3. At time $t_1 = \frac{1}{3}$ we proceed as in time $t_2$.}
-Table \ref{tab:LSM_regression_t1} shows the data for regression. It is worth to mention that at time $t_1$ we still use realized cashflows, not for example option's prices calculated at previous step -- such approach would lead to an upward bias.
+Table \ref{tab:LSM_regression_t1} shows the data for regression. It is worth to mention that at time $t_1$ we still use realized cash flows, not for example option's prices calculated at previous step -- such approach would lead to an upward bias.
 \begin{table}[!ht]
 \parbox{.45\linewidth} {
   \centering
@@ -2205,11 +2207,11 @@ Table \ref{tab:LSM_regression_t1} shows the data for regression. It is worth to 
 
 This time quadratic function representing estimated future payoff has the form
 \[ Y = 0.36\cdot X^2 - 67.32\cdot X + 3173.71. \]
-We see that option should be exercised at paths 5,8,10, and we update properly the table of realized cashflows (Table \ref{tab:LSM_cashflows_t1}).
+We see that option should be exercised at paths 5,8,10, and we update properly the table of realized cash flows (Table \ref{tab:LSM_cashflows_t1}).
 
 \noindent \textbf{4. At time 0 we have to perform final calculations to find options value.} Here we proceed different than at times $t_1$, $t_2$, because there is no data for regression. However, Table \ref{tab:LSM_cashflows_t1} already tells us what would be the future payoffs if the option was not exercised immediately. In order to obtain estimated future payoff at time 0, we take the average of the realized payoffs discounted to time 0. If the average is greater than immediate payoff, then this is the value of the option. Otherwise option should be exercised at time 0 and its value equals the immediate payoff.
 
-In our example the average of realized cashflows equals 2.99. It is greater than value of immediate exercise, hence \textbf{the price of the option is 2.99}.
+In our example the average of realized cash flows equals 2.99. It is greater than value of immediate exercise, hence \textbf{the price of the option is 2.99}.
 
 \FloatBarrier
 \subsection{LSM algorithm}
@@ -2255,7 +2257,7 @@ In our example the average of realized cashflows equals 2.99. It is greater than
 \section{Modifications of LSM}
 
 \chapter{Application architecture}
-An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This part describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
+An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This chapter describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
 
 \section{Scenarios and trajectories}
 The basis of the Monte Carlo pricing is the trajectory generation. Hence, we begin with a presentation of classes performing this task. The corresponding class diagram is presented in Figure \ref{fig:arch:traj}.
@@ -2315,8 +2317,7 @@ Class \texttt{Option} is designed for American options. It stores information ab
 \end{lstlisting}
 Implementation of \texttt{payoff} is also not complicated:
 \begin{lstlisting}
-  protected double payoff_(Scenario s, int k)
-  {
+  protected double payoff_(Scenario s, int k) {
       Trajectory tr = s.getTr(underlying);
       double spot = tr.price(k);
       if (type == CALL) return max(0, spot - strike);
@@ -2345,18 +2346,19 @@ Let us discuss it on several examples. In class \texttt{EuExercise} we modify th
   }
 \end{lstlisting}
 Class \texttt{Barrier} checks if the barrier was hit and then, depending on whether the option is knock-out or knock-in, it allows for the option's exercise or not. Object \texttt{bp}, which is used below, stores the information about the type of the barrier and its level.
+%\begin{absolutelynopagebreak}
 \begin{lstlisting}
   public boolean modExAvail(Scenario s, int k)
   {
       Trajectory tr = s.getTr(underlying);
       boolean hit;
-      if (bp.isFromUp())
-	  hit = tr.cumMax(k) >= bp.level;
-      else
-	  hit = tr.cumMin(k) <= bp.level;
+      if (bp.isFromUp()) hit = tr.cumMax(k) >= bp.level;
+      else hit = tr.cumMin(k) <= bp.level;
       return (bp.isKnockIn() ? hit : !hit);
   }
 \end{lstlisting}
+%\end{absolutelynopagebreak}
+
 Class \texttt{Binary} does not change the exercise availability, thus its \texttt{modExAvail} simply returns \texttt{true}, but the payoff function is modified:
 \begin{lstlisting}
   protected double payoff(Scenario s, int k) {
@@ -2387,11 +2389,10 @@ Every variant of the Monte Carlo has its own representation in the methods' clas
 \label{fig:arch:MonteCarlo}
 \end{figure}
 
-\texttt{MonteCarlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing}, \texttt{oneSimulation}, \texttt{currentResult}:
-
+\texttt{MonteCarlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing},\\ \texttt{oneSimulation}, \texttt{currentResult}:
+\begin{absolutelynopagebreak}
 \begin{lstlisting}
-  public double price(Instr instr) throws InterruptedException
-  {
+  public double price(Instr instr) throws InterruptedException {
       initPricing(instr);
       for (int i = 1 ; i <= N; ++i) {
 	  oneSimulation(instr);
@@ -2402,19 +2403,18 @@ Every variant of the Monte Carlo has its own representation in the methods' clas
       return currentResult(N);
   }
 \end{lstlisting}
+\end{absolutelynopagebreak}
    
 This design extracts all the actions which are common for each method, and allows subclasses to perform some particular operations in their specific way. For example method \texttt{currentResult}, which returns intermediate results after given number of simulations, simply calculates mean in case of \texttt{CMC} and \texttt{AV}, but in \texttt{CV} it also determines value $c$ (recall equation (\ref{eq:CV})). Method \texttt{oneSimulation} also differs between classes -- in \texttt{CMC} it has the form
 
 \begin{lstlisting}
-  protected void oneSimulation(Instr instr)
-  {
+  protected void oneSimulation(Instr instr) {
       Scenario scenario = gen.generate();
       double p = getDiscountedPayoff(instr, scenario);
       sum += p;
       sumSq += p*p;
   }
 \end{lstlisting}
-   
 but in \texttt{AV} it uses antithetic variates, and in \texttt{CV} it calculates also the value of the control variate.
 
 Here we can see the incredible power of the Monte Carlo method, especially when it is joined with polymorphism in OO programming languages. The \textbf{pricing algorithm is entirely independent from the instrument under valuation.} The only place where the properties of the instrument are taken into account is a method determining the realized payoff, e.g. in \texttt{CMC} it has the form
@@ -2431,16 +2431,11 @@ The payoff is obtained via a polymorphic call to \texttt{payoff} from class \tex
    
 
 \subsection{LSM}
-Diagram in the figure is a LSM branch of the \texttt{Method} hierarchy.
-\begin{figure}
-\centering
- \includegraphics*[scale=0.6, viewport = 5 130 670 575]{images/Architecture/LSM2.pdf}
-\caption{Class diagram presenting hierarchy of classes used for option pricing.}
-\label{fig:arch:LSM}
-\end{figure}
+The diagram in the figure \ref{fig:arch:LSM} is a LSM branch of the \texttt{Method} hierarchy.
 
 An abstract class \texttt{LSMRoot} is an implementation of \texttt{Method} which employs Least Squares Monte Carlo. Unfortunately,  it is not as universal as the ordinary Monte Carlo, because, for example, path-dependent options require  special treatment. Thus, several variants of LSM were implemented: \texttt{LSM} is a basic version of LSM, which follows the original algorithm, \texttt{LSM2} is for options depending on two assets, for example basket options, \texttt{LSM\_Asian} can price Asian options.
 However, while implementing these methods we also strived to avoid code repetition, so the factory method pattern was involved once again. The following code snippet presents how the \texttt{price} method was implemented in \texttt{LSMRoot}.
+
 \begin{lstlisting}
   public double price(Instr instr) throws InterruptedException
   {       
@@ -2452,7 +2447,9 @@ However, while implementing these methods we also strived to avoid code repetiti
       Result res = makeResult(realizedCF);
       return Math.max(res.result, payoffAtTime0);
   }
-  
+\end{lstlisting} 
+\begin{absolutelynopagebreak}
+\begin{lstlisting}
   protected CashFlow[] realizedCashFlows(Scenario[] paths, Instr instr)
 	  throws InterruptedException
   {
@@ -2470,10 +2467,17 @@ However, while implementing these methods we also strived to avoid code repetiti
       return realizedCF;
   }
 \end{lstlisting} 
+\end{absolutelynopagebreak}
 
+\begin{figure}
+\centering
+ \includegraphics*[scale=0.6, viewport = 5 130 670 575]{images/Architecture/LSM2.pdf}
+\caption{Class diagram presenting hierarchy of classes used for option pricing.}
+\label{fig:arch:LSM}
+\end{figure}
+\newpage
 
 The general scheme is the same for all variants of LSM. Classes inheriting \texttt{LSMRoot} must implement three methods. In \texttt{initPricing} subclasses can set auxiliary variables specific for their variant of LSM. Method \texttt{makeGenerator} returns generator of scenarios. For example, the version of LSM for Asian options returns \texttt{Generator} which generates scenarios that have two trajectories: one is the proper asset price and the second is the cumulative average. The main difference between LSM for options depending on one and two assets is the estimation of the future flow. This task is done in the third abstract method of \texttt{LSM} -- \texttt{calcFutureEstimatedFlow}. In case of the basic LSM only one explanatory variable is used in regression, while in LSM for two assets or for path-dependent options future estimated flow is a function of two variables. Introduction of \texttt{calcFutureEstimatedFlow} allows to isolate these differences. It returns an object of a class implementing \texttt{FutureEstimatedFlow}. It has a single method \texttt{getEstimation} which for given scenario and time step returns estimated value of continuation. With its help updating the table of realized cash flows is very convenient:
-
 \begin{lstlisting}
   private void updateRealizedCFs(Scenario[] paths, Instr instr,
       CashFlow[] realizedCF, FutureEstimatedFlow fef, int timeStep)
@@ -2487,13 +2491,13 @@ The general scheme is the same for all variants of LSM. Classes inheriting \text
       }
   }
 \end{lstlisting}
-   
+
 Since regression is very similar for those versions of LSM which use two explanatory variables, so class \texttt{LSM2\_Support} was designed. It performs the calculation of the estimated future flow basing on two assets. Classes like \texttt{LSM2} or \texttt{LSM\_Asian} simply delegate \texttt{calcFutureEstimatedFlow} to \texttt{LSM2\_Support}.
    
 As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
 
 \chapter{Illustrations of results}
-This part presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which created presented charts using \texttt{ggplot2} library.
+The last chapter presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which created presented charts using \texttt{ggplot2} library.
 
 \begin{remark}
  Many charts have bothering irregularities in their shape. Keep in mind that they were obtained by simulation, which is vitiated by an error, what causes these plots to be not as smooth as they should be.
@@ -2576,10 +2580,10 @@ It turns out that it may be optimal to exercise an American call if the underlyi
 \chapter*{Concluding remarks}
 In the thesis we explained how Monte Carlo methods may be used for option pricing. Let us sum up their pros and cons.
 
-In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analitical formulas. However, for exotic options Monte Carlo may be the best choice.
+In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, for exotic options Monte Carlo may be the best choice.
 
 
-The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multiargument polynomials (in case of multiasset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunetly, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large number of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
+The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multi-argument polynomials (in case of multi-asset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunately, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large number of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
 
 
 Due to the possibility of pricing a vast class of options, methods based on Monte Carlo simulations have a great significance in finance. Time consumption may be regarded as their weakness, however, the computational power of modern processors is constantly increasing. Moreover, algorithms based on Monte Carlo are suitable for dividing into multiple threads and being run on huge computer clusters. Every year obtaining some fixed accuracy takes less time. Therefore, the methods presented in the thesis, which already are very popular, will over time even increase their importance.
