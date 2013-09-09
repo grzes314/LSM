@@ -70,13 +70,13 @@ makeBarPlot <- function(frame, xLab, yLab, legendLab)
   plot  
 }
 
-makeBoxPlot <- function(frame, labels, xLab, yLab)
+makeBoxPlot <- function(frame, labels, legTitle, xLab, yLab)
 {
   data <- melt(frame)
   ggplot(data=data, aes(x=variable, y=value, fill=variable)) +
     geom_boxplot() + geom_jitter(size=0.75) +
     my_theme(16) +
-    scale_fill_discrete(guide=FALSE) +
+    scale_fill_discrete(name=legTitle, labels=labels) +
     scale_x_discrete(labels=labels, name=xLab) +
     scale_y_continuous(labels=fmt(2), name=yLab)
 #   qplot(variable, value, data=data, ylab=yLab, geom="boxplot",

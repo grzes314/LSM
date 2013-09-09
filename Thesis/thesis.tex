@@ -417,6 +417,7 @@ We end this section with the Girsanov theorem, whose significance in the financi
 \end{remark}
 
 \section{Introduction to Monte Carlo methods}
+\label{sec:introMC}
 Monte Carlo methods are a class of algorithms designed for estimation of unknown values by simulation.
 They do not refer to any particular algorithm, they are rather a general ``recipe'' for procedures, which obtain results by simulation.
 
@@ -1297,6 +1298,7 @@ Propositions \ref{prop:rn-dynamics} and \ref{prop:solution_dynamics} have crucia
 
 
 \chapter[{Pricing European options using Monte Carlo method}]{Pricing European options using \\Monte Carlo method}
+\label{chapter:European}
 The Black-Scholes theory gives us compact formula for pricing European vanilla options. Such options gained popularity and are traded in many world markets. However, over the counter (ab. OTC) investors may trade much more complicated instruments, whose value cannot be derived analytically. Thus, other methods must be used.
 The most popular are finite difference, binomial trees and Monte Carlo. In this thesis we present the last one.
 
@@ -1738,7 +1740,7 @@ CV method gave the most accurate prices.
 In chapter \Roman{chapter} we describe American-style derivatives. The difference between them and previously discussed European-style contracts is that the American feature allows the owner of the derivative to exercise it in \emph{any time} up to the expiration date. This additional attribute makes the instrument much harder to analyse and more advanced theory is necessary to value and hedge it.
 Due to the practical nature of this thesis we do not get deep into details. Nevertheless, we provide mathematical tools necessary for pricing American contingent claims, advising the reader to find proofs in the more specialized literature. 
 
-It turns out that the Monte Carlo method from previous chapter cannot be carried over directly to price American contracts. However, the Least Squares Monte Carlo method to be defined below introduces a clever trick, so the simulations can still be involved. 
+It turns out that the Monte Carlo method from previous chapter cannot be carried over directly to price American contracts. However, we describe a method invented by Francis Longstaff and Eduardo Schwartz, called the Least Squares Monte Carlo. It introduces a clever trick, so the simulations can still be involved. 
 
 \section{American contingent claims}
 In opposite to European contingent claims, American contingent claims are not random variables, but \emph{processes}.
@@ -1933,7 +1935,7 @@ An obvious conclusion from Proposition \ref{prop:AM_valueProcessDisc} gives us a
 \section{Least Squares Monte Carlo}
 After wading through the theory we want to use it in practice. We showed in the previous chapter by examples of European options that Monte Carlo methods are very flexible and can be used to price exotic options with very sophisticated payoffs (at least when they are European-styled). Therefore, it is natural to try to adjust them for pricing American claims. 
 
-\subsection{Difficulties with pricing American options}
+\subsection{Difficulties with American options}
 
 Let us think how pricing American options using Monte Carlo method may look like. Of course, as for European options we need to simulate some paths and for each such a path we have to determine what payoff we would obtain. Since the option may be exercised at any time, it is not sufficient to check the payoff at the expiration date. We have, therefore, to follow the path and at each time step compare the immediate payoff with the expectation of the future payoff.
 
@@ -1960,7 +1962,12 @@ Consider an American put option. Suppose that we are already at time $k$, and we
  \label{alg:naiveProcedure}
 \end{algorithm}
 
-Unfortunately, this is a very ineffective procedure. Computing $\Em\bigl[ V_{k+1} | \mathcal{F}_{k} \bigr]$ involves generating new paths starting at time point $k$. We perform so-called ``Monte Carlo on Monte Carlo''. Since we have to do it at every time step, complexity of such algorithm becomes exponential. These difficulties are illustrated on Figure \ref{fig:MC_difficulties}.
+Unfortunately, this is a very ineffective procedure. We have trivial
+\begin{prop}
+ The computational complexity of Algorithm \ref{alg:naiveProcedure} equals $\mathcal{O}(N^K)$, where $N$ is the number of simulated paths and $K$ is the number of time steps.
+\end{prop}
+
+Computing $\Em\bigl[ V_{k+1} | \mathcal{F}_{k} \bigr]$ involves generating new paths starting at time point $k$. We perform so-called ``Monte Carlo on Monte Carlo''. Since we have to do it at every time step, complexity of such algorithm becomes exponential. These difficulties are illustrated on Figure \ref{fig:MC_difficulties}.
 \begin{figure}
 \centering
  \includegraphics[scale=0.6]{images/LSM/LSMidea1.pdf}
@@ -1971,6 +1978,8 @@ Unfortunately, this is a very ineffective procedure. Computing $\Em\bigl[ V_{k+1
 As we can see Monte Carlo methods used to price European options cannot directly translated to price American options.
 \newpage
 \subsection{LSM idea}
+\label{subsec:LSMidea}
+
 We present one of methods allowing to avoid the difficulties described above. It is called \textbf{Least Squares Monte Carlo}, or \textbf{Longstaff-Schwartz method}, after its discoverers Francis Longstaff and Eduardo Schwartz, abbreviated \textbf{LSM}.
 
 Consider again the problem of pricing American options with the Monte Carlo method. At the beginning we simulate thousands of trajectories. At every time point on every path we need to obtain an expectation of the future payoff. Assume that we follow one path and we are already at time $t_k$. In order to obtain the option's value at this point, we have to compute $\Em\bigl[ V_{k+1} | \mathcal{F}_{k} \bigr]$. Previously we came up with an idea to generate new trajectories starting from that point.
@@ -2181,6 +2190,54 @@ We see that option should be exercised at paths 5,8,10, and we update properly t
 
 In our example the average of the realized cash flows equals 2.99. It is greater than value of immediate exercise, hence \textbf{the price of the option is 2.99}.
 
+\subsection{Mathematical background of LSM}
+In the paragraph \ref{subsec:LSMidea} we described the LSM method. It gave some intuitions, however, the sign ``$\approx$`` appeared very often, thus it is certainly unclear if this method really works. Of course, we would not present it if it did not. After Longstaff and Schwartz we quote two convergence results. Reader may find the proofs in the appendix to their article (\cite{l-sch}).
+
+\begin{mydef}
+ For $\omega \in \Omega,\ 0 \leq t < s \leq T$ we define 
+ \begin{itemize}
+  \item $C(\omega, s; t)$ -- a cash flow generated by the option at time $s$ in the scenario $\omega$ conditional on the option not being exercised at or prior to time $t$ and the investor following the optimal strategy afterwards,
+  \item $F(\omega, t)$ -- the estimated future value of the option at time $t$ in the scenario $\omega$, conditional on the option not being exercised at or prior to time $t$ and the investor following the optimal strategy afterwards. We assume that $F$ depends on $\omega$ only through $S$ -- the asset price in the scenario $\omega$.
+ \end{itemize}
+\end{mydef}
+
+\begin{remark}
+ The above term $C(\omega, s; t)$ is similar to $D_{i,k}$ from paragraph \ref{subsec:LSMidea}. The main difference is that $C(\omega, s; t)$ emerges from following the optimal stopping, while $D_{i,k}$ is based on the strategy which is constructed during the operation of the algorithm.
+\end{remark}
+As in paragraph \ref{subsec:LSMidea} we assume that an option may be exercised in $K+1$ time points $0 = t_0 < t_1 < \ldots < t_K  = T$. At time $t_k < T$ the investor must decide whether to exercise the option. He or she must compare the value from immediate payoff with the value of continuation $F(\omega, t)$. Risk neutral valuation formula implies, that
+\[ F(\omega, t_k) = \Em \Bigl[ \sum\limits_{j=k+1}^K e^{-r(t_j - t_k)}\cdot C(\omega, t_j; t_k) \Bpipe \mathcal{F}_k \Bigl]. \] 
+\begin{remark}
+ Of course the option may be exercised only once, hence only one element in the above sum is non-zero.
+\end{remark}
+We assume that $F(\omega, t) \in L^2$. Since $L^2$ is a Hilbert space, thus its elements can be represented as countable series, i.e. for some coefficients $a_0^{(t)},a_1^{(t)},\ldots$
+\[ F(\omega, t) = \sum\limits_{j=0}^{\infty} a_j^{(t)} S_t(\omega)^j. \]
+Here we use the simplest possible basis functions -- simple powers of the state variable, however, Longstaff and Schwartz in their article consider also different sets of basis functions, e.g. Laguerre or Hermit polynomials.
+
+Since we cannot store an infinite series in a computer's memory, hence in the LSM algorithm we take only the first $M < \infty$ basis functions and denote this projection by $F_M(\omega, t)$, i.e.
+\[ F_M(\omega, t) = \sum\limits_{j=0}^{M} a_j^{(t)} S_t(\omega)^j. \]
+At each time $t_k$, the value $F_M(\omega, t_k)$ is unknown, but we approximate it with an estimator $\hat{F}_M(\omega, t_k)$ which is obtained by regressing the discounted values of $C(\omega, s; t_k)$ onto the basis functions.
+In order to decrease the range of the region over which the estimation is performed, we take only in-the-money paths. It is irrelevant to have a good estimation of the future payoff on the out-of-the-money paths, because there we do not have to decide whether the option should be exercised. $\hat{F}_M(\omega, t_k)$ converges to $F_M(\omega, t)$ in $L^2$ and in probability, as the number of in-the-money paths goes to infinity.
+The algorithm rolls back from $k=K$ to $k=0$ and when the exercise decisions are settled at each time point on each path, then the algorithm checks the realized cash flow at each path, calculates the mean, and returns it as the option's price.
+
+Let $V(S)$ be the true value of the American option. The following two propositions come from~\cite{l-sch}.
+\begin{prop}
+ For any finite choice of $M, K$, and vector $\theta \in \mathbb{R}^{M \times (K-1)}$ representing the coefficients for the $M$ basis functions at each of the $K-1$ early exercise dates, let $LSM(\omega; M, K)$ denote the discounted cash flow resulting from following the LSM rule of exercising when the immediate exercise value is positive and greater than or equal to $\hat{F}_M(\omega_i, t_k)$ as defined by $\theta$. Then the following inequality holds almost surely,
+ \[ V(S) \geq \lim_{N \rightarrow \infty} \frac{1}{N} \sum\limits_{i=1}^N LSM(\omega_i; M, K). \]
+\end{prop}
+\begin{prop}
+ Assume that the value of an American option depends on a single state variable $S$ with support on $(0, \infty)$ which follows a Markov process. Assume further that the option can only be exercised at times $t_1$ and $t_2$, and that the conditional expectation function $F(\omega, t_1)$ is absolutely continuous and
+ \[ \int_0^\infty e^{-S} F^2(\omega, t_1) dS < \infty,\ \ \ \ \  \int_0^\infty e^{-S} \left(\frac{\partial F}{\partial S}\right)^2(\omega, t_1) dS < \infty. \]
+ Then for any $\varepsilon > 0$, there exists an $M < \infty$ such that
+ \[ \lim_{N \rightarrow \infty} \P \Bigl[\bpipe V(S) - \frac{1}{N} \sum\limits_{i=1}^N LSM(\omega_i; M, K) \bpipe > \varepsilon \Bigr] = 0. \]
+\end{prop}
+
+The first proposition has a simple interpretation. The LSM algorithm constructs an exercise strategy and as the price of the option returns the mean of payoffs resulting from following that strategy. But the true value of the American option is maximized over all stopping times, hence for large numbers of simulations it should be greater than the price resulting from the LSM procedure.
+
+The second proposition tells that in case $K = 2$ and under some technical assumptions the LSM method really works.
+
+\section{LSM algorithm}
+In this section we move to practical aspects of pricing American contingent claims.
+
 \subsection{Regression}
 It turned out that regression is an important step in LSM. We explained that the estimated future payoff may be represented by a polynomial function of $S_k$ whose coefficients may be obtained from the least squares method. We briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
 \[ \begin{cases}
@@ -2219,48 +2276,152 @@ This system has $m+1$ variables and $m+1$ equations. It can be solved using the 
  For fixed $k$ computing $s_k$ or $t_k$ involves summation of $n$ values, and there is $\mathcal{O}(m)$ of $k$'s, hence the first part of the algorithm  has complexity $\mathcal{O}(nm)$. After that we have to solve the system of linear equations what can be done using the Gauss elimination method in time $\mathcal{O}(m^3)$.
 \end{proof}
 
-\FloatBarrier
-\subsection{LSM algorithm}
+\subsection{Pseudocode}
+We already have a base necessary to present the LSM method in the form of a pseudocode (Algorithm \ref{alg:LSM}).
+
 \begin{algorithm}
  \begin{algorithmic}[1]
-  \Function{LSM-Put}{$N$, $K$, $M$, $S_0$, $\sigma$, $r$, $T$, $E$ }
-    \State $S \gets$ matrix $N \times (K+1)$ \Comment{{\color{comment} $S[i,k]$ is the asset price at $i$\textsuperscript{th} path at time $t_k$.}}
-    \State $CF \gets$ matrix $N \times 2$ \Comment{{\color{comment} $CF[i,1]$ is the time of the realized cash flow at $i$\textsuperscript{th} path and $CF[i,2]$ is its value.}}
-    \For{$i = 1$ {\bf to} $N$} \Comment{{\color{comment} Generating trajectories like in Algorithm \ref{alg:single-tr}}}
-      \State $S[i,] \gets$ \Call{Trajectory}{$S_0$, $\sigma$, $r$, $T$, $K$ } \Comment{{\color{comment} but only positive path is taken.}}
-      \State $CF[i,1] \gets T$ \Comment{{\color{comment} Realized cash flows conditional on }}
-      \State $CF[i,2] \gets$ $\max(0, E - S[i,K])$ \Comment{{\color{comment} not exercising before expiration. }}
-    \EndFor
-    \For{$k = K-1$ {\bf to} $1$} 
-      \State $nrs \gets $ indices $i$ such that $E - S[i,k] > 0$
-      \State $X \gets S[nrs, k]$
-      \State $Y \gets \exp\bigl(-r\cdot(CF[nrs, 1]-t_k) \bigr)\cdot CF[nrs, 2]$
-      \State $P \gets $ polynomial of degree $M$ resulting from regression $Y = P(X)$
-      \For{$i = 1$ {\bf to} $N$}
-	\State $now \gets \max(0, E - S[i,k])$
-	\If{$now > 0$ and $now > P(S[i,k])$}
-	  \State $CF[i,1] \gets t_k$ \Comment{{\color{comment} Immediate exercise gives higher payoff}}
-	  \State $CF[i,2] \gets now$ \Comment{{\color{comment} than expected payoff in the future.}}
-	\EndIf
-      \EndFor
-    \EndFor
-    \State $sum \gets 0$
-    \For{$i = 1$ {\bf to} $N$} 
-      \State $sum \gets sum + \exp\bigl(-r\cdot(CF[i, 1]-t_k) \bigr)\cdot CF[i, 2]$
-    \EndFor
-    \State \Return $\max(E - S_0,\ sum/n)$
-    \EndFunction 
+  \State CashFlow = \textbf{record}
+    \State\ \ \ \ time: \textbf{real number}
+    \State\ \ \ \ val: \textbf{real number}
+  \State \textbf{end record} \\
+  \\
+  \textbf{input parameters:} $N$, $K$, $M$, $S_0$, $\sigma$, $r$, $T$, $E$
+  \\
+  \Function{LSM}{\null}
+    \State $S \gets $ \Call{generateTrajectories}{\null}\Comment{{\color{comment} $S[i,k]$ is the asset price at $i$\textsuperscript{th} path at time $t_k$.}}
+    \State $CF \gets$ \Call{getRealizedCashFlows}{$S$}
+    \Comment{{\color{comment} $CF[i]$ is the cash flow obtained at the $i$\textsuperscript{th} path.}}
+    \State $mean \gets$ \Call{getMean}{$CF$}
+    \State $H_0 \gets$ \Call{getPayoff}{$S_0$}
+    \State \Return $\max(mean, H_0)$
+  \EndFunction
+  \algstore{algLSM}
  \end{algorithmic}
- \caption{Valuation of American put options using LSM.}
+ \caption{The valuation of an American option using LSM.}
  \label{alg:LSM}
 \end{algorithm}
-
+  
+\begin{algorithm}[!ht]
+ \begin{algorithmic}[1]
+ \algrestore{algLSM}
+  \Function{getRealizedCashFlows}{$S$}
+    \For{$i = 1$ {\bf to} $N$}
+      \State $CF[i].time \gets T$
+      \Comment{{\color{comment} Realized cash flows conditional on }}
+      \State $CF[i].val \gets $ \Call{getPayoff}{$S[i,K]$}
+      \Comment{{\color{comment} not exercising before expiration. }}
+    \EndFor
+      \For{$k = K-1$ {\bf to} $1$} 
+      \State $nrs \gets $ indices $i$ such that immediate payoff is positive
+      \State $X \gets S[nrs, k]$
+      \State $Y \gets \exp\bigl(-r\cdot(CF[nrs].time-t_k) \bigr)\cdot CF[nrs].val$
+      \State $P \gets $ polynomial of degree $M$ resulting from regression $Y = P(X)$
+      \State \Call{updateCashFlows}{\null}
+    \EndFor
+  \EndFunction \\
+  
+  \Function{updateCashFlows}{$k$, $S$, $CF$}
+    \For{$i = 1$ {\bf to} $N$}
+      \State $now \gets$ \Call{getPayoff}{$S[i,K]$}
+      \If{$now > 0$ and $now > P(S[i,k])$}
+	\State $CF[i].time \gets t_k$ \Comment{{\color{comment} Immediate exercise gives higher payoff}}
+	\State $CF[i].val \gets now$ \Comment{{\color{comment} than expected payoff in the future.}}
+      \EndIf
+    \EndFor
+  \EndFunction \\
+  
+  \Function{getMean}{$CF$}
+    \State $sum \gets 0$
+    \For{$i = 1$ {\bf to} $N$} 
+      \State $sum \gets sum + \exp\bigl(-r\cdot CF[i].time \bigr) \cdot CF[i].val$
+    \EndFor
+    \State \Return $sum/N$
+  \EndFunction
+ \end{algorithmic}
+\end{algorithm}
+\newpage
 \begin{prop}
- The computational complexity of the LSM algorithm equals $\mathcal{O}(KNM + KM^3)$, where $N$ is the number of simulated paths, $M$ is the degree of approximating polynomial, $K$ is the number of time steps.
+ The computational complexity of Algorithm \ref{alg:LSM} equals $\mathcal{O}(KNM + KM^3)$, where $N$ is the number of simulated paths, $M$ is the degree of approximating polynomial, $K$ is the number of time steps.
 \end{prop}
+\begin{proof}
+ Trajectories are generated in time $\mathcal{O}(KN)$. In order to construct the exercise strategy we have to $\mathcal{O}(K)$ times perform regression, which takes $\mathcal{O}(NM + M^3)$ operations. In total we do $\mathcal{O}(KNM + KM^3)$ operations. The last step, calculating the mean, is done in $\mathcal{O}(N)$.
+\end{proof}
 
-\section{Mathematical background of LSM}
-\section{Modifications of LSM}
+In practice $N$ is greater than $M^2$ and then the complexity is simply $\mathcal{O}(KNM)$. As we can see we made a huge progress between Algorithms \ref{alg:naiveProcedure} and \ref{alg:LSM}. We reduced the exponential complexity of ''Monte Carlo on Monte Carlo`` $\mathcal{O}(N^K)$ to $\mathcal{O}(KNM)$.
+
+It turns out that now the bigger problem is the memory complexity. The algorithm requires generation of all trajectories at once, hence the complexity equals $\mathcal{O}(KN)$. Although an ordinary computer can execute LSM procedure with large numbers $K$ and $N$ in a reasonable time, it may run out of memory.
+
+\begin{example}
+ An implementation of Algorithm \ref{alg:LSM} was used to price American vanilla put under parameters: $K=100,\ M=3,\ S=100,\ \sigma=0.2,\ r=0.05,\ E=100,\ T=1$. Figure \ref{fig:LSM_res} presents a result cloud created by running the LSM procedure 100 times for $N \in \{10^3, 10^4, 10^5\}$. Table \ref{tab:LSM_res} compares results obtained by LSM with the true value calculated using the Finite Difference method. 
+\end{example}
+
+\begin{SCfigure}[][h]
+\centering
+ \includegraphics[scale=0.5]{images/LSM/put100.pdf}
+\caption{The dispersion of the results obtained by executing the LSM procedure for different numbers of simulations. For each each $N$, the procedure was run 100 times. Hence for each $N$ we obtained 100 estimations of the price. Small points indicate obtained values. }
+\label{fig:LSM_res}
+\end{SCfigure}
+
+\begin{table}[!ht]
+\centering
+ \caption{Results of pricing American put option under parameters listed in the text.}
+ \label{tab:LSM_res}
+\begin{tabular} {||c | c | c | c ||}  
+ \hline 
+  $\log_{10}(n)$ & FD price & LSM price & s.e. \\ \hline
+  3 & 6.09 & 5.94 & 0.221 \\ \hline 
+  4 & 6.09 & 6.20 & 0.071 \\ \hline 
+  5 & 6.09 & 6.08 & 0.023 \\ \hline 
+\end{tabular}  
+\end{table}
+
+Performed tests indicate that Finite Difference is better than LSM for vanilla option pricing. It gives more accurate results in shorter time and does not load the memory to the same extent as LSM. Therefore, we recommend using Finite Difference rather than LSM for American vanilla options.
+
+\subsection{Variance reduction}
+The variance reduction techniques described in the previous chapters may also be incorporated in the LSM.
+\paragraph{Antithetic variates.} Involving antithetic variates is simple. The antithetic trajectories are generated identically as in the previous chapter (Algorithm \ref{alg:single-tr}). We only have to ensure that \Call{generateTrajectories}{} from line 9 in Algorithm \ref{alg:LSM} returns alternately the positive and negative trajectories from subsequent generations. 
+
+\paragraph{Control variates.} The LSM algorithm may be divided into three parts: generating trajectories, building exercise strategy, collecting payoffs obtained by following constructed strategy on each path. Control variate method may be taken into account in the last part. 
+
+After the second step we have a concrete stopping time $\tau$. What we do in the last part is a calculation of $\Em[H_\tau]$. For fixed $\tau$, $H_\tau$ is an ordinary random variable, so its expectation can be estimated using the methods described in section \ref{sec:introMC}. As a control variate we can take the value of a corresponding European option.
+
+\section{LSM for exotic options}
+As we mentioned before, Finite Difference seems to be better method for pricing American vanilla options. However, it is hard to adjust Finite Difference for exotic options, while LSM is quite flexible and may be used to price a vast class of instruments.
+\subsection{Multi-asset options.}
+From chapter III we know how to generate multi-asset trajectories. The main difficulty lies in the regression. The observations vector is constructed in a similar manner as in Algorithm \ref{alg:LSM}, line 23, let us denote it by $\mathbb{Z}$. However, preparation of the matrix of explanatory variables is more complicated. We have two state variables (asset prices) $X$, $Y$. We attempt to estimate the value of continuation using the polynomial of the form 
+\[ P(X,Y) = \sum\limits_{i=0}^M \sum\limits_{j=0}^M a_{i,j} X^i Y^j. \]
+Let
+\begin{equation*}
+ \mathbb{X} = \left[ \begin{array}{cccccccccccc}
+           1 & Y_1 & \cdots & Y_1^M & X_1 & X_1 Y_1 & \cdots & X_1 Y_1^M & X_1^2 & X_1^2 Y_1 & \cdots & X_1^M Y_1^M \\
+           1 & Y_2 & \cdots & Y_2^M & X_2 & X_2 Y_2 & \cdots & X_2 Y_2^M & X_2^2 & X_2^2 Y_2 & \cdots & X_2^M Y_2^M \\
+           \vdots & \vdots & \ddots & \vdots \\
+           1 & Y_N & \cdots & Y_N^M & X_N & X_N Y_N & \cdots & X_N Y_N^M & X_N^2 & X_N^2 Y_N & \cdots & X_N^M Y_N^M \\
+          \end{array} \right],
+\end{equation*}
+\[ a = (a_{0,0},\ a_{0,1},\ \ldots,\ a_{0,M},\ a_{1,0},\ a_{1,1},\ \ldots,\ a_{M,M})'. \]
+The regression problem can now be written in the form 
+\[ \mathbb{Z} = \mathbb{X} a \]
+and the least squares method gives its solution:
+\[ a = (\mathbb{X}'\mathbb{X})^{-1}\mathbb{X}' \mathbb{Z} \]
+
+In theory, this procedure could be used for even higher dimensions, but unfortunately the number of coefficients grows exponentially. However, Longstaff and Schwartz mention in their article another procedure for approximating polynomial construction which allows to limit the coefficients to the number which grows only polynomially. 
+
+\subsection{Path-dependent instruments.}
+Algorithm \ref{alg:LSM} cannot be used directly to price most path-dependent options. Let us consider an Asian option. Suppose that at some time $t_k$ there exist such $i$ and $j$ that $S_{j,k} = S_{i,k}$, i.e. two paths have the same value at time $t_k$. For both of them Algorithm \ref{alg:LSM} would return the same value of the estimated future flow. However, it is possible that one of the trajectories for most of the time was above the current value, and the second one was below. Hence, the difference between the averages on both trajectories is high and in consequence also the value of continuation should be different. Clearly, Algorithm \ref{alg:LSM} does not work for that option.
+
+Fortunately, there is an easy trick allowing to price such instruments using LSM. We just have to add second state variable which in case of the Asian option is the cumulative average price at the trajectory. The Asian option can imitate a derivative of two assets, where the first is the ''proper`` asset and the second is the average. Then it can be priced using the method from \textbf{Multi-asset options} paragraph.
+
+This method can be used to price many other path-dependent instruments, for example lookback options.
+
+\subsection{Barrier options.}
+Barrier options are of course also path-dependent instruments, but it turns out that we do not need any modification to Algorithm \ref{alg:LSM} in order to price them. Consider for example knock-out options. Let us focus on a single trajectory and a time point $t_k$. The only aspect of the trajectory's history that matters in estimating the future flow, is the fact if the barrier was hit. If it was, then this trajectory will not be taken into account in the regression, because value of the immediate payoff equals zero. On the other hand, if the barrier was not hit, then the only factor influencing the future payoff is the current price.
+
+\subsection{Forward and Bermuda options.}
+These instruments also do not require any special adjustments. They differ from the vanilla options in that they disable possibility of the exercise at some time points. Therefore, in that points the exercise will postponed. In the rest of time points we have to calculate the estimated future payoff, but it depends only on the current price.
+
+
 
 \chapter{Application architecture}
 An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This chapter describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
@@ -2502,7 +2663,7 @@ Since regression is very similar for those versions of LSM which use two explana
    
 As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
 
-\chapter{Illustrations of results}
+\chapter{Results illustrations}
 The last chapter presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which created presented charts using \texttt{ggplot2} library.
 
 \begin{remark}
@@ -2586,13 +2747,13 @@ It turns out that it may be optimal to exercise an American call if the underlyi
 \chapter*{Concluding remarks}
 In the thesis we explained how Monte Carlo methods may be used for option pricing. Let us sum up their pros and cons.
 
-In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, for exotic options Monte Carlo may be the best choice.
+In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since the algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, for exotic options Monte Carlo may be the best choice.
 
 
-The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multi-argument polynomials (in case of multi-asset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunately, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large number of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
+The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multi-argument polynomials (in case of multi-asset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunately, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large numbers of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
 
 
-Due to the possibility of pricing a vast class of options, methods based on Monte Carlo simulations have a great significance in finance. Time consumption may be regarded as their weakness, however, the computational power of modern processors is constantly increasing. Moreover, algorithms based on Monte Carlo are suitable for dividing into multiple threads and being run on huge computer clusters. Every year obtaining some fixed accuracy takes less time. Therefore, the methods presented in the thesis, which already are very popular, over time will even increase their importance.
+Due to the possibility of pricing a vast class of options, methods based on Monte Carlo simulations have a great significance in finance. Time consumption may be regarded as their weakness, however, the computational power of modern processors is constantly increasing. Moreover, algorithms based on Monte Carlo are suitable for division into multiple threads and being run on huge computer clusters. Every year obtaining some fixed accuracy takes less time. Therefore, the methods presented in the thesis, which already are very popular, over time will even increase their importance.
 
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{\bfseries References}
