@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{titlesec}
+%\usepackage{hyperref}
 \usepackage{listings} % allows inclusion of code snippets
 \usepackage[chapter]{algorithm} % allows to keep algorithms as floats
 \usepackage{algpseudocode} % allows writing pseudocodes
@@ -157,6 +158,7 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 
 
 \chapter*{Abstract}
+\addcontentsline{toc}{chapter}{\bfseries Abstract}
 
 %\section*{\begin{center}\begin{normalsize} Abstract \end{normalsize}\end{center}}
 \begin{quotation}
@@ -462,12 +464,12 @@ From Central Limit Theorem we know that
 \[ \limn \P(-z_{1-\alpha/2} \leq \frac{\sum\limits_{i=1}^n Y_i - nI}{\sqrt{n}\sigma}  \leq z_{1-\alpha/2}) = 1 - \alpha, \]
 hence for large $n$ we have
 \[z_{1-\alpha/2} \approx \frac{b\sqrt{n}}{\sigma}.\]
-In a typical situation we do not know variation of $Y$ (we do not even know the expected value, after all we are using Monte Carlo method to find it!), so the above formula has rather theoretical meaning.
+In a typical situation we do not know the variation of $Y$ (we do not even know the expected value, after all we are using Monte Carlo method to find it!), so the above formula has rather theoretical meaning.
 Instead, we have to use an unbiased estimator
 \[ \hat{\sigma} = \frac{1}{n-1}\sum\limits_{i=1}^n (Y_i - \hat{Y}_n)^2 \]
 and replace $\sigma$ by $\hat{\sigma}$ in above approximation. The foregoing discussion may be considered a sketch of a proof of following
 \begin{thm}
- Dependency between number of simulations $n$, error $b$ and confidence level $\alpha$ is given by following formulas
+ Dependency between a number of simulations $n$, an error $b$ and a confidence level $\alpha$ is given by following formulas
  \begin{equation}
    \label{eq:error}
    b = \frac{\hat{\sigma} z_{1-\alpha/2}}{\sqrt{n}}
@@ -477,11 +479,11 @@ and replace $\sigma$ by $\hat{\sigma}$ in above approximation. The foregoing dis
    n = \frac{\hat{\sigma}^2 z_{1-\alpha/2}^2}{b^2}.
  \end{equation}
 \end{thm}
-\noindent Equation (\ref{eq:error}) tells us how big is an error of estimation when we performed $n$ simulations. Equation (\ref{eq:sim}) inverses situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
+\noindent Equation (\ref{eq:error}) tells us how big is an error of the estimation when we performed $n$ simulations. Equation (\ref{eq:sim}) inverses the situation, it allows us to plan the number of simulations necessary to obtain requested accuracy.
 
 Unfortunately equation (\ref{eq:error}) tells us that convergence of the Monte Carlo method is slow. To improve accuracy by one more digit, one have to perform 100 times more simulations. The only way to decrease the number of necessary simulations is to choose $Y$ with the smallest possible variance. In next paragraphs, two methods of variance reduction are discussed.
 
-The confidence level $\alpha$, which appears in (\ref{eq:error}) in quantile function, is not essential when comparing two estimators. Hence we introduce 
+The confidence level $\alpha$, which appears in (\ref{eq:error}) in the quantile function, is not essential when comparing two estimators. Hence we introduce 
 \begin{mydef}
  Value
  \begin{equation}
@@ -1314,7 +1316,7 @@ As in previous chapter, $V_0$ is the option's price and $H$ is the discounted pa
 \end{equation}
 By comparison with (\ref{eq:EY}), we see that equation (\ref{eq:price_for_MC}) is exactly what we need for simulations. To calculate options price we have to replicate its payoff many times and take the mean. Note, however, that expectation is taken under the risk-neutral measure. Hence, also the asset price must be generated under the risk-neutral measure. Corollary \ref{prop:rn-dynamics} describes its dynamics:
 \[ dS = rSdt + \sigma S dW. \]
-Lemma \ref{prop:solution_dynamics} gives the solution to above SDE:
+Proposition \ref{prop:solution_dynamics} gives the solution to above SDE:
 \begin{equation}
  \label{eq:vanilla_St}
  S_t = S_0 \exp\left\{ (r - \frac{1}{2}\sigma^2)t + \sigma W_t \right\}.
@@ -1434,7 +1436,7 @@ This time the asset price usually ended above the options strike, what means tha
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxCall130.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergenceCall130.pdf}
-\caption{The accuracy of pricing call@130. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing call@130. Plots were created in the similar manner as in Figure \ref{fig:vanilla1}.}
 \label{fig:vanilla2}
 \end{figure}
 
@@ -1566,7 +1568,7 @@ Monte Carlo methods allow us to price such an instrument, and the results are ga
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxPut100UaO115.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergencePut100UaO115.pdf}
-\caption{The accuracy of pricing put@100 with an up-and-in barrier 115. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing put@100 with an up-and-in barrier 115. Plots were created in the similar manner as in Figure \ref{fig:vanilla1}.}
 \label{fig:barrier1}
 \end{figure}
 
@@ -1595,7 +1597,7 @@ Table \ref{tab:barrier2} and Figure \ref{fig:barrier2} present results of pricin
 \centering
  \includegraphics[scale=0.5]{images/PricingEuropean/boxPut100DaI70.pdf}
  \includegraphics[scale=0.5]{images/PricingEuropean/convergencePut100DaI70.pdf}
-\caption{The accuracy of pricing put@100 with a down-and-in barrier 70. Plots were created in the similar manner as on the Figure \ref{fig:vanilla1}.}
+\caption{The accuracy of pricing put@100 with a down-and-in barrier 70. Plots were created in the similar manner as in Figure \ref{fig:vanilla1}.}
 \label{fig:barrier2}
 \end{figure}
 
@@ -1841,7 +1843,7 @@ V_t = \esssup\limits_{\tau \in  \mathcal{T}_t} \Em[H_{\tau} | \mathcal{F}_t].
  \[ e^{rt} V_t \geq e^{-r(T-t)}\Em[S_T - E | \mathcal{F}_t] = S_t - e^{-r(T-t)}E > S_t - E.\]
  The obtained inequality tells us that value of the option is always higher than the immediate exercise, thus it is more profitable to sell the option rather than exercise it.
 \end{proof}
-The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay a dividend and the interest rate is non-negative). American puts do not have that property -- for low prices of the underlying it is optimal to exercise the option immediately. These facts are illustrated in the Figure \ref{fig:lsm:amPrice}.
+The above proposition simply says that \textbf{it is never worth to exercise the American call option before the expiration date} (if the stock does not pay a dividend and the interest rate is non-negative). American puts do not have that property -- for low prices of the underlying it is optimal to exercise the option immediately. These facts are illustrated in Figure \ref{fig:lsm:amPrice}.
 
 \begin{figure}
 \centering
@@ -1983,7 +1985,7 @@ As we can see Monte Carlo methods used to price European options cannot directly
 We present one of methods allowing to avoid the difficulties described above. It is called \textbf{Least Squares Monte Carlo}, or \textbf{Longstaff-Schwartz method}, after its discoverers Francis Longstaff and Eduardo Schwartz, abbreviated \textbf{LSM}.
 
 Consider again the problem of pricing American options with the Monte Carlo method. At the beginning we simulate thousands of trajectories. At every time point on every path we need to obtain an expectation of the future payoff. Assume that we follow one path and we are already at time $t_k$. In order to obtain the option's value at this point, we have to compute $\Em\bigl[ V_{k+1} | \mathcal{F}_{k} \bigr]$. Previously we came up with an idea to generate new trajectories starting from that point.
-Note that we have exactly the same problem on every path. Look at the Figure \ref{fig:LSMidea}. There are several points marked at line $x = t_k (= 0.6)$, they are asset prices on simulated trajectories, at time $t_k$. Using previous method we had to release thousands of ``subpaths'' from each such a point. Clearly, we cannot afford this. However, these points are not lying far from each other. The main idea of the LSM is: instead of generating new ``subpaths'' starting at time $t_k$, we can use the remainders of the ``original'' paths.
+Note that we have exactly the same problem on every path. Look at Figure \ref{fig:LSMidea}. There are several points marked at line $x = t_k (= 0.6)$, they are asset prices on simulated trajectories, at time $t_k$. Using previous method we had to release thousands of ``subpaths'' from each such a point. Clearly, we cannot afford this. However, these points are not lying far from each other. The main idea of the LSM is: instead of generating new ``subpaths'' starting at time $t_k$, we can use the remainders of the ``original'' paths.
 \begin{figure}
 \centering
  \includegraphics[scale=0.6]{images/LSM/LSMidea2.pdf}
@@ -2401,9 +2403,7 @@ Let
           \end{array} \right],
 \end{equation*}
 \[ a = (a_{0,0},\ a_{0,1},\ \ldots,\ a_{0,M},\ a_{1,0},\ a_{1,1},\ \ldots,\ a_{M,M})'. \]
-The regression problem can now be written in the form 
-\[ \mathbb{Z} = \mathbb{X} a \]
-and the least squares method gives its solution:
+The regression problem can now be written in the form $\mathbb{Z} = \mathbb{X} a $, and the least squares method gives its solution:
 \[ a = (\mathbb{X}'\mathbb{X})^{-1}\mathbb{X}' \mathbb{Z} \]
 
 In theory, this procedure could be used for even higher dimensions, but unfortunately the number of coefficients grows exponentially. However, Longstaff and Schwartz mention in their article another procedure for approximating polynomial construction which allows to limit the coefficients to the number which grows only polynomially. 
@@ -2419,7 +2419,11 @@ This method can be used to price many other path-dependent instruments, for exam
 Barrier options are of course also path-dependent instruments, but it turns out that we do not need any modification to Algorithm \ref{alg:LSM} in order to price them. Consider for example knock-out options. Let us focus on a single trajectory and a time point $t_k$. The only aspect of the trajectory's history that matters in estimating the future flow, is the fact if the barrier was hit. If it was, then this trajectory will not be taken into account in the regression, because value of the immediate payoff equals zero. On the other hand, if the barrier was not hit, then the only factor influencing the future payoff is the current price.
 
 \subsection{Forward and Bermuda options.}
-These instruments also do not require any special adjustments. They differ from the vanilla options in that they disable possibility of the exercise at some time points. Therefore, in that points the exercise will postponed. In the rest of time points we have to calculate the estimated future payoff, but it depends only on the current price.
+\textbf{Bermudan options} are options which may be exercised only at the specified set of times. These instruments ``lie'' between European options, which may be exercised only at the expiry, and American options, which may be exercised at any occasion, just as Bermuda lies between Europe and America.
+
+\textbf{Forward options} are a particular case of Bermudan options. They may be exercised only at the final period of the option's life. In the other words a forward option is an American option, whose exercise is not available until a specified time before the maturity.
+
+Pricing such instruments does not require any special adjustments. They differ from the vanilla options in that they disable possibility of the exercise at some time points. Therefore, in that points the exercise will be postponed. In the rest of time points we have to calculate the estimated future payoff, but it depends only on the current price.
 
 
 
@@ -2598,7 +2602,7 @@ The payoff is obtained via a polymorphic call to \texttt{payoff} from class \tex
    
 
 \subsection{LSM}
-The diagram in the figure \ref{fig:arch:LSM} is a LSM branch of the \texttt{Method} hierarchy.
+The diagram in Figure \ref{fig:arch:LSM} is a LSM branch of the \texttt{Method} hierarchy.
 
 An abstract class \texttt{LSMRoot} is an implementation of \texttt{Method} which employs Least Squares Monte Carlo. Unfortunately,  it is not as universal as the ordinary Monte Carlo, because, for example, path-dependent options require  special treatment. Thus, several variants of LSM were implemented: \texttt{LSM} is a basic version of LSM, which follows the original algorithm, \texttt{LSM2} is for options depending on two assets, for example basket options, \texttt{LSM\_Asian} can price Asian options.
 However, while implementing these methods we also strived to avoid code repetition, so the factory method pattern was involved once again. The following code snippet presents how the \texttt{price} method was implemented in \texttt{LSMRoot}.
@@ -2664,23 +2668,18 @@ Since regression is very similar for those versions of LSM which use two explana
 As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
 
 \chapter{Results illustrations}
-The last chapter presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which created presented charts using \texttt{ggplot2} library.
+The last chapter presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which drew presented charts using \texttt{ggplot2} library.
 
 \begin{remark}
  Many charts have bothering irregularities in their shape. Keep in mind that they were obtained by simulation, which is vitiated by an error, what causes these plots to be not as smooth as they should be.
 \end{remark}
 
 
-\section{Vanilla options}
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \begin{center}
-    \includegraphics[width=0.48\textwidth]{images/Results/vanillaEuAndAmPut.pdf}
-  \end{center}
-  \caption{Comparison of prices of vanilla European and American puts depending on the spot price. Parameters: $vol = 30\%$, $r=8\%$, strike $=100$, $T=1$.}
-\label{fig:results:vanillaEuAndAmPut}
-\end{wrapfigure}
+\section{Options on a dividend-paying stock}
+From Proposition \ref{prop:amCall} we know that the value of an American call on a share of a non-dividend paying stock is equal to its European counterpart. 
+It turns out that it may be optimal to exercise an American call if the underlying pays a dividend.
 
-From Proposition \ref{prop:amCall} we know that the value of an American call on a share of non-dividend paying stock is equal to its European counterpart. Figure \ref{fig:results:vanillaEuAndAmPut} show that the same does not hold for put options.
+In Figure \ref{fig:results:vanillaAmCallPriceBeforeDividend} we can see the immediate payoff and the option's value as functions of the stock price just before the dividend payment. Both lines coincide for big values of the asset price. From chapter IV we know that in that case the option should be exercised immediately. 
 
 % \begin{SCfigure}
 % \centering
@@ -2689,14 +2688,13 @@ From Proposition \ref{prop:amCall} we know that the value of an American call on
 % \label{fig:results:vanillaEuAndAmPut}
 % \end{SCfigure}
 
-\begin{figure}
+\begin{figure}[!htb]
 \centering
- \includegraphics[scale=0.6]{images/Results/vanillaAmCallPriceBeforeDividend.pdf}
-\caption{Comparison of option's value and immediate payoff just before dividend payoff. Parameters: $vol = 30\%$, $r=5\%$, strike $=100$, $T=1$. }
+ \includegraphics[scale=0.5]{images/Results/vanillaAmCallPriceBeforeDividend.pdf}
+\caption{The comparison of the option's value and the immediate payoff just before a dividend. The stock pays a dividend equal to 5\% of its price at time $0.5$. Parameters: $vol = 30\%$, $r=5\%$, $E=100$, $T=1$. }
 \label{fig:results:vanillaAmCallPriceBeforeDividend}
 \end{figure}
 
-It turns out that it may be optimal to exercise an American call if the underlying pays a dividend. 
 % \begin{figure}
 %  \parbox{.45\linewidth} {
 %    \centering
@@ -2713,38 +2711,185 @@ It turns out that it may be optimal to exercise an American call if the underlyi
 % }
 % \end{figure}
 
-\begin{figure}
+In Figure \ref{fig:results:vanillaAmCallDividend} we consider an American call option on a stock paying two dividends, the first at time $\frac{1}{3}$ and the second at time $\frac{2}{3}$. We look at the cases for which the dividends equal 1, 5, and 10 percents of the stock's price. The chart presents the option's price at time~0 as a function of the spot price. Naturally, the option's value is the greatest when the stock does not pay a dividend -- the dividend lowers the asset price, what does not favour the owner of a call option. The greater the dividend is, the lower should be the option's value. It is seen especially for low spot prices. Surprisingly, for large values of the initial asset price, the option's price becomes equal for each dividend yield. It has a simple explanation. If the asset price is big enough at the day of the first dividend payment, then for each dividend yield the optimal strategy is to exercise the option. For the 1\% dividend yield the decision to exercise the option immediately becomes optimal for very high asset prices. However, for 5\% and 10\% dividend yields the option's owner should exercise it for lower asset prices, therefore corresponding plot lines start to coincide much earlier.
+
+
+\begin{figure}[!htb]
 \centering
  \includegraphics[scale=0.6]{images/Results/vanillaAmCallDividend.pdf}
-\caption{}
+\caption{The comparison of the option's prices depending on the value of the dividend yield. Dividends are paid at time $1/3$ and $2/3$. Parameters: $\sigma = 20\%$, $r=5\%$, $E=100$, $T=1$.}
 \label{fig:results:vanillaAmCallDividend}
 \end{figure}
 
-\begin{figure}
+The chart in Figure \ref{fig:results:vanillaAmCallDividend3D} illustrates how the price of the option  changes over time, if the stock pays a 20\% dividend at time $0.5$. We can see a sharp jump at the time of the dividend. This observation is not surprising. Suppose that at time $0.499$ the asset price equals $S$. Due to the dividend payment, soon the asset price will drop to $0.8S$. On the other hand, at time $0.501$ we are already after the dividend payment, so if the asset price equals $S$, then the expectation of the future asset price is greater, therefore, the option's value is significantly greater.
+
+
+\begin{figure}[!htb]
 \centering
- \includegraphics[scale=0.6]{images/Results/vanillaAmCallDividend3D.pdf}
-\caption{}
+ \includegraphics[scale=0.5]{images/Results/vanillaAmCallDividend3D.pdf}
+\caption{The value of the option as a function of time and asset price. The stock pays a 20\% dividend at time $0.5$. The chart was generated under parameters $\sigma = 20\%$, $r=5\%$, $E=100$, $T=1$.}
 \label{fig:results:vanillaAmCallDividend3D}
 \end{figure}
 
+\begin{remark}
+ In Figure \ref{fig:results:vanillaAmCallDividend3D} we can observe strange values for low asset prices. To explain their origin we have to describe how this chart is created. The LSM algorithm at each time step calculates the polynomial approximating the estimated future cash flow. To create the chart, for each pair of time $t$ and asset price $S$, we take the polynomial calculated at time $t$, and as the option's price we take the maximum of the immediate payoff and the polynomial's value for argument $S$. This method gives satisfactory results for high asset prices. Of course, the approximating polynomial is vitiated by an error, what causes the lines in the chart to be rugged, but it does not harm a general overview. However, remember that the regression is performed only for those asset prices where the immediate payoff is positive. Therefore, the polynomials approximating the value of continuation have garbage values for asset prices below the strike price (in case of a call option) and we see them in the chart. 
+ 
+ The same remark concerns Figure \ref{fig:results:vanillaAmCallPriceBeforeDividend}. The value of the option at time $0.5$ was calculated using the approximating polynomial, hence we prepared the chart only for high asset prices, due to the occurrence of garbage values for lower prices. However, this issue does not affect Figure \ref{fig:results:vanillaAmCallDividend}. It presents prices at time~0, thus the approximating polynomials were not used, instead the algorithm was run separately for each spot price.
+\end{remark}
+
+\section{Forward options}
+As we know from Proposition \ref{prop:amCall}, a call option on a non-dividend paying stock should be exercised only at the expiration date, therefore, the forward feature does not influence the optimal stopping strategy. The left chart in Figure \ref{fig:results:forward} confirms this observation -- prices of forward and vanilla calls entirely coincide.
+
+In case of forward puts, sometimes the owner is forced to postpone the exercise, even though he or she would exercise an ordinary American put. This inconvenience decreases the option's value, what we can see in the right chart of Figure \ref{fig:results:forward}. The sooner the exercise is available, the greater is the price of the option.
+
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.45]{images/Results/forwardCall.pdf}
+ \includegraphics[scale=0.45]{images/Results/forwardPut.pdf}
+\caption{Prices forward options of in comparison to vanilla options. Parameters: $\sigma = 30\%$, $r=10\%$, $E=100$, $T=1$.}
+\label{fig:results:forward}
+\end{figure}
+
+
 \section{Barrier options}
-\begin{figure}
+Barriers have a great influence on the option's value. Surprisingly, price functions of European and American barrier options have totally different properties.
+
+Let us begin with European claims. We know that in case of vanilla options, the higher is the spot price, the greater is the value of the option. The left chart in Figure \ref{fig:results:barrierEu} shows that the same does not hold for barrier options. We see there the price function of an up-and-out call option. For small spots the price function is increasing, at some point it reaches the maximum, then the function decreases, and finally, for spot equal the barrier, the price sinks down to zero. This behavior is understandable -- if the spot price is high, close to the barrier, then the risk of hitting the barrier is high, and in consequence the option's value is low. The right chart gives an idea of the difference between the prices of barrier and vanilla options.
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.45]{images/Results/barrierEuComp.pdf}
+ \includegraphics[scale=0.45]{images/Results/barrierAndVanillaEu.pdf}
+\caption{Prices of an European up-and-out call option. The barrier on the right chart equals 140. Other parameters: $\sigma = 30\%$, $r=0$, $E=100$, $T=1$.}
+\label{fig:results:barrierEu}
+\end{figure}
+
+American claims are not as affected by knock-out barriers as their European counterparts. Of course, even in the American case, prices of knock-out options are lower then vanilla options, due to the fact that barriers prevent large payoffs. However, an American option may be exercised any time, therefore, there is no risk of hitting the barrier (unless the spot price is already above the barrier), and in consequence the price of barrier options is not much lower than the price of vanilla options. Foregoing remarks are illustrated in Figure \ref{fig:results:barrierAm}.
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.45]{images/Results/barrierAmComp.pdf}
+ \includegraphics[scale=0.45]{images/Results/barrierAndVanillaAm.pdf}
+\caption{Prices of an American up-and-out call option. As long as the spot price is below the barrier, the value of the barrier option is not much lower than the value of the vanilla option. It is only for asset prices greater than the barrier were the value is cut down to zero. The barrier on the right chart equals 140. Other parameters: $\sigma = 30\%$, $r=0$, $E=100$, $T=1$.}
+\label{fig:results:barrierAm}
+\end{figure}
+
+Figures \ref{fig:results:barrierEuCall3D} and \ref{fig:results:barrierAmCall3D} picturize prices of up-and-out call option, the first figure in the European case, and the second in the American case. Notice that price of the European derivative smoothly decreases for high spot prices, while the American version has a sharp jump.
+
+\begin{figure}[!ht]
 \centering
  \includegraphics[scale=0.5]{images/Results/barrierCall3D.pdf}
-\caption{Chcem sprawdzic jak obrazek wyglada w pracy}
-\label{fig:results:dupa2}
+\caption{The value of an European up-and-out call as a function of the spot price and the barrier level. Parameters: $\sigma = 30\%$, $r=0$, $E=100$, $T=1$.}
+\label{fig:results:barrierEuCall3D}
+\end{figure}
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.4]{images/Results/barrierAmCall3D_1.pdf}
+ \includegraphics[scale=0.4]{images/Results/barrierAmCall3D_2.pdf}
+\caption{The value of an American up-and-out call as a function of the spot price and the barrier level, viewed from two angles. ``Steps'' seen on both charts are caused by the fact that they were created in a finite number of points. If we could calculate the price of the option in continuum points, then the shape would be smooth. Parameters: $\sigma = 30\%$, $r=0$, $E=100$, $T=1$.}
+\label{fig:results:barrierAmCall3D}
+\end{figure}
+
+\FloatBarrier
+It turns out that high volatility also does not work in favor of European knock-out options, what can be seen in Figure \ref{fig:results:barrierEuPut3D}. Sudden jumps increase the risk of hitting the barrier. In case of American options we can only benefit from high volatility. It allows the asset price to get close to the barrier, and then it may be exercised. In Figure \ref{fig:results:barrierAmPut3D} we can see the value of an option analogical to that on Figure \ref{fig:results:barrierEuPut3D}, but with an American exercise feature. Its price is an increasing function of the volatility.
+
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.4]{images/Results/barrierEuPut3D_1.pdf}
+ \includegraphics[scale=0.4]{images/Results/barrierEuPut3D_2.pdf}
+\caption{The value of an European down-and-out put as a function of the spot price and the volatility, viewed from two angles. Parameters: $r=0$, $E=100$, $T=1$, barrier level $=150$.}
+\label{fig:results:barrierEuPut3D}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.4]{images/Results/barrierAmPut3D_1.pdf}
+ \includegraphics[scale=0.4]{images/Results/barrierAmPut3D_2.pdf}
+\caption{The value of an American down-and-out put as a function of the spot price and the volatility, viewed from two angles. Parameters: $r=0$, $E=100$, $T=1$, barrier level $=150$.}
+\label{fig:results:barrierAmPut3D}
+\end{figure}
+
+Let us mention one more aspect of barrier option pricing. In order to value such path-dependent instruments, asset prices must be generated in multiple points before the expiry. The chosen number of time steps has a significant influence on the option's price. Look at Figure~\ref{fig:results:barrierTimeSteps}. For a low number of time steps, the value of an knock-in option is higly underestimated. That is because the asset price may hit the barrier between time points and we do not reflect it in simulations. Note that as the number of time steps increases, the estimated value approaches the price resulting from continous model. For knock-out option the situation is opposite -- a small number of time steps decreases the chance of ``turning off'' the option, hence its price is overestimated.
+
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.5]{images/Results/barrierTimeStepsCallUAI.pdf}
+ \includegraphics[scale=0.5]{images/Results/barrierTimeStepsPutDAO.pdf}
+\caption{Prices of barrier options estimated for different barrier levels and numbers of intermediate times steps. In the picture on the left we see results for up-and-in call option, and on the right for down-and-out put. Orange lines indicate the value calculated from analytical formula. Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$ (on the left), $\sigma=40\%$ (on the right).}
+\label{fig:results:barrierTimeSteps}
 \end{figure}
 
 \section{Binary options}
-\begin{figure}
+The payoff from the binary option (also called digital option) always equals 1 or 0. The owner obtains the payoff when the asset price is higher than the strike, in case of a call, or when the asset price is lower than the strike, in case of a put. 
+
+Figure \ref{fig:results:binaryPut} shows how the price of such an instrument looks. We see that the value of an European binary put forms a slope from 1 to 0. The lower the volatility, the sharper the slope. It has the following explanation. If the volatility is low and the asset price is far from the strike then the chances of changing the moneyness of the option are very slim. If the volatility is high, then the price line is flattened, because even if the option is out-of-the money, it still has a good chance to end in-the-money, thus the price is much above zero. On the other hand, even if the option is in-the-money, the price is still much lower than 1, because a rapid jump, which may occur as a consequence of high volatility, could move the final asset price at the ``wrong'' side of the strike.
+
+In case of an American binary option the situation is similar. However, note that the option's value becomes 1 at the strike. Obviously, under assumption that the interest rate is non-negative, the optimal strategy of exercising an American binary option is to exercise at the first time when it is in-the-money.
+\begin{figure}[!htb]
 \centering
- \includegraphics[scale=0.5]{images/Results/binaryEuPut.pdf}
- \includegraphics[scale=0.5]{images/Results/binaryEuPut.pdf}
-\caption{Chcem sprawdzic jak obrazek wyglada w pracy}
-\label{fig:results:dupa3}
+ \includegraphics[scale=0.45]{images/Results/binaryEuPut.pdf}
+ \includegraphics[scale=0.45]{images/Results/binaryAmPut.pdf}
+\caption{Prices of binary puts. On the left -- European option, on the right -- American. Parameters: $r=0$, $E=100$, $T=1$.}
+\label{fig:results:binaryPut}
+\end{figure}
+
+In Figure \ref{fig:results:binaryCall} we can see how values of binary options change over time.
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.4]{images/Results/binaryEuCall3D.pdf}
+ \includegraphics[scale=0.4]{images/Results/binaryAmCall3D.pdf}
+\caption{Prices of binary calls. On the left -- European option, on the right -- American. Parameters: $\sigma = 0.2$, $r=0$, $E=100$, $T=1$.}
+\label{fig:results:binaryCall}
+\end{figure}
+
+\section{Asian and lookback options}
+Lookback options allow its owner to buy or sell (depending on the type) the asset for the most beneficial price. Such an instrument favors the buyer, so obviously, it must be expensive. Asian options are to some extent an opposite, someone might regard them as the most fair contract between buyer and seller. Asian options prevent large payoffs, thus they are relatively cheap. These remarks are confirmed by a chart in the Figure~\ref{fig:results:asianLookbackComp}.
+
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.5]{images/Results/asianLookbackComp.pdf}
+\caption{The comparison of the prices of European call options of different kinds. The strike of vanilla option equals the spot price. Parameters: $T=1,\ r=5\%,\ \sigma=20\%$.}
+\label{fig:results:asianLookbackComp}
+\end{figure}
+
+In case of Asian and lookback options we may ask the same question which bothered us at the barrier options section: how does the number of time steps influence the estimated price? Several results are gathered in Figure \ref{fig:results:asianTimeSteps}.
+
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.5]{images/Results/asianTimeSteps.pdf}
+ \includegraphics[scale=0.5]{images/Results/lookbackTimeSteps.pdf}
+\caption{Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$.}
+\label{fig:results:asianTimeSteps}
+\end{figure}
+
+As we could expect, Asian options, especially with European exercise, are not strongly affected by the number of time points. High asset price jumps, which could possibly happen between time steps, are overcome by taking the average. Price of the American-Asian option is slightly rising if the option may be exercised more often, however, even in this case the price is quickly stabilizing.
+
+Prices of lookback options are visibly rising, as the number of time steps increases. It reflects the fact the asset price takes the maximum and minimum value between the time points. Thus, as we thicken the time points, the extreme value is estimated more accurately. Therefore, the calculated price is closer to the value of continuously exerciseable instrument. Note by the way, that the price of an American-lookback option is significantly greater than its European counterpart. Someone might think that the option should not be exercised before expiry, in order to take maximum or minimum over the longer interval. However, obtained results show that it is not true. Let us focus on a lookback put which gives a right to sell an asset for the maximum price. At the beginning the asset price could have a peak and then rapidly sink down. In this situation it may be optimal to exercise the option immediately, while the asset prices are low.
+
+\section{Pricing real market options}
+So far we presented only pricing results for some preconceived parameters. The created application would be worthless if it could not price the instruments existing in real markets.
+
+We present valuation of options on two worldwide known companies, Facebook and Google, traded in Nasdaq. Basing on historical prices from 30 August 2012 to 30 August 2013, the application determined following parameters:
+\begin{align*}
+S_F &= 41.29,\ \sigma_F = 0.519,\ \mu_F = 0.913,\\
+ S_G &= 846.9,\ \sigma_G = 0.198,\ \mu_G =0.238,\\
+ \rho &= 0.076 
+\end{align*}
+As the interest rate we take $r = 0.002$. The valuation is performed from a perspective of day 30 August 2013 and considered options expire at 21 December 2013, thus we have $T = 0.31$. 
+
+In Figures \ref{fig:results:realFacebook} and \ref{fig:results:realGoogle} we can see comparisons of market prices to the values calculated by an application. We observe some differences, but they are not big. They can be a consequence of miscellaneous reasons, for example different models, or at least different parameters. Moreover, prices on real markets adjust to the demand, therefore, they are never exactly the same as in the mathematical model.
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.5]{images/Results/realFacebookPut.pdf}
+\caption{The comparison of calculated and market prices of put options on Facebook.}
+\label{fig:results:realFacebook}
+\end{figure}
+\begin{figure}[!htb]
+\centering
+ \includegraphics[scale=0.5]{images/Results/realGoogleCall.pdf}
+\caption{The comparison of calculated and market prices of call options on Google.}
+\label{fig:results:realGoogle}
 \end{figure}
 
 \chapter*{Concluding remarks}
+\addcontentsline{toc}{chapter}{\bfseries Concluding remarks}
 In the thesis we explained how Monte Carlo methods may be used for option pricing. Let us sum up their pros and cons.
 
 In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since the algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, for exotic options Monte Carlo may be the best choice.
@@ -2756,7 +2901,7 @@ The Least Squares Monte Carlo method allows to price American options. Its imple
 Due to the possibility of pricing a vast class of options, methods based on Monte Carlo simulations have a great significance in finance. Time consumption may be regarded as their weakness, however, the computational power of modern processors is constantly increasing. Moreover, algorithms based on Monte Carlo are suitable for division into multiple threads and being run on huge computer clusters. Every year obtaining some fixed accuracy takes less time. Therefore, the methods presented in the thesis, which already are very popular, over time will even increase their importance.
 
 \begin{thebibliography}{99}
-\addcontentsline{toc}{section}{\bfseries References}
+\addcontentsline{toc}{chapter}{\bfseries References}
 
 \bibitem{bjork}
 T. Bj\"{o}rk, \emph{Arbitrage Theory in Continuous Time}, Oxford University Press,  New York, 3rd edition, 2009

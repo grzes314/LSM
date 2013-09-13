@@ -13,6 +13,7 @@ import finance.parameters.BarrierParams;
 import finance.parameters.SimpleModelParams;
 import static finance.parameters.SimpleModelParams.onlyAsset;
 import finance.parameters.VanillaOptionParams;
+import finance.parameters.VanillaOptionParams.AmOrEu;
 import finance.parameters.VanillaOptionParams.CallOrPut;
 import finance.trajectories.Dividend;
 import finance.trajectories.DividendPerc;
@@ -48,7 +49,7 @@ public class LauncherForThesis
         File file = new File("/home/grzes/Printed.R");
         //PrintStream out = new PrintStream( file );
         //l.callAll(out);
-        l.makeAmPutBoxPlot(System.out);
+        l.makeAsianAndLookback(System.out, AmOrEu.EU, CallOrPut.CALL);
     }
     
     void callAll(PrintStream out)
@@ -93,8 +94,10 @@ public class LauncherForThesis
         
         
 //**************************** Binary options *******************************************/
-        try { makeEuropeanBinaryPut2D(out); }
-        catch (Throwable t) { System.err.println("makeEuropeanBinaryPut2D sie zesralo"); }
+        try { makeBinaryPut2D(out, AmOrEu.EU); }
+        catch (Throwable t) { System.err.println("makeBinaryPut2D sie zesralo"); }
+        try { makeBinaryPut2D(out, AmOrEu.AM); }
+        catch (Throwable t) { System.err.println("makeBinaryPut2D sie zesralo"); }
         try { makeEuropeanBinaryCall3D(out); }
         catch (Throwable t) { System.err.println("makeEuropeanBinaryCall3D sie zesralo"); }
         try { makeAmericanBinaryCall3D(out); }
@@ -102,6 +105,8 @@ public class LauncherForThesis
         
 //************************************** Other ****************************************************/
         try { makeTrajectoryWithDividends(out); }
+        catch (Throwable t) { System.err.println("makeTrajectoryWithDividends sie zesralo"); }
+        try { makeAsianAndLookback(out, AmOrEu.EU, CallOrPut.CALL); }
         catch (Throwable t) { System.err.println("makeTrajectoryWithDividends sie zesralo"); }
     }
     
@@ -334,7 +339,7 @@ public class LauncherForThesis
         final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
         final LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>() /*No auxiliary statistics */);
         lsm.setMethodParams(100000, 50, 3);
-        lsm.setDividends(makeDividend(0.5, 20));
+        lsm.setDividends(makeDividend(0.5, 5));
         final Instr opt = new Option(vop, onlyAsset);
         try {
             lsm.setModelParams(smp);
@@ -346,8 +351,7 @@ public class LauncherForThesis
         double[] S = new double[50];
         for (int i = 0; i < 50; ++i)
             S[i] = 80 + 2 * i;
-        double t = 0.48;
-        final int timeStep = ts.timeToNr(t);
+        final int timeStep = ts.timeToNr(0.5) - 1;
         DataForMaker_2D maker = new DataForMaker_2D(S) {
             @Override
             int getNumberOfYVals() {
@@ -497,7 +501,8 @@ public class LauncherForThesis
                 return "barrier";
             }
             @Override String getDesc() {
-                return "European up-and-out call with E=100, T=1, vol=0.3, r=0";
+                return "European up-and-out call with E=100, T=1, vol=0.3, r=0 as function of spot"
+                    + " and barrier";
             }
             @Override void setFst(double d) {
                 try {
@@ -519,6 +524,62 @@ public class LauncherForThesis
                 }
             }
             Instr instr;
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+    
+    private void makeBarrierPut3D(PrintStream out, AmOrEu amOrEu)
+    {
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.PUT);
+        double[] spots = new double[20];
+        for (int i = 0; i < 20; ++i)
+            spots[i] = 40 + i*5;
+        double[] vols = new double[20];
+        for (int i = 0; i < 20; ++i)
+            vols[i] = 0.05 + 0.02 * i;
+        BarrierParams bp = new BarrierParams(BarrierParams.Type.DAO, 50);
+        final Instr instr;
+        Instr barrier = new Barrier( bp, onlyAsset,
+                        new Option(vop, onlyAsset) );
+        final Method method;
+        if (amOrEu == AmOrEu.AM) {
+            LSM lsm = new LSM();
+            lsm.setMethodParams(10000, 100, 3);
+            method = lsm;
+            instr = barrier;
+        }
+        else {
+            instr = new EuExercise(barrier);
+            method = new BSMethod();
+        }
+        DataForMaker_3D maker = new DataForMaker_3D(spots, vols)
+        {
+            @Override String fstName() {
+                return "spot";
+            }
+            @Override String sndName() {
+                return "volatility";
+            }
+            @Override String getDesc() {
+                return "European up-and-out call with E=100, T=1, barrier=150, r=0 as function of"
+                    + "spot and volatility";
+            }
+            @Override void setFst(double d) {
+                currS = d;
+            }
+            @Override void setSnd(double d) {
+                currVol = d;
+            }
+            @Override double getPrice() {
+                try {
+                    method.setModelParams(new SimpleModelParams(currS, currVol, 0.05));
+                    return method.price(instr);
+                } catch (WrongModelException | WrongInstrException | InterruptedException ex) {
+                    throw new RuntimeException();
+                }
+            }
+            double currS, currVol;
         };
         String str = maker.makeCode();
         out.println(str);
@@ -841,9 +902,8 @@ public class LauncherForThesis
         out.println(str);
     }
     
-    private void makeEuropeanBinaryPut2D(PrintStream out)
+    private void makeBinaryPut2D(PrintStream out, AmOrEu amOrEu)
     {
-        final BSMethod bs = new BSMethod();
         final SimpleModelParams[] smp = new SimpleModelParams[4];
         for (int i = 0; i < 4; ++i)
             smp[i] = new SimpleModelParams(onlyAsset, 100, 0.1 + 0.1*i, 0, 0);
@@ -851,7 +911,21 @@ public class LauncherForThesis
         double[] spots = new double[100];
         for (int i = 0; i < 100; ++i)
             spots[i] = 0 + i*2;
-        final Instr instr = new Binary( new EuExercise( new Option(vop, onlyAsset) ) );
+        Instr binary = new Binary( new Option(vop, onlyAsset) );
+        final Method method;
+        final Instr instr;
+        if (amOrEu == AmOrEu.EU)
+        {
+            method = new BSMethod();
+            instr = new EuExercise(binary);
+        }
+        else 
+        {
+            LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>());
+            lsm.setMethodParams(10000, 100, 3);
+            method = lsm;
+            instr = binary;
+        }
         DataForMaker_2D maker = new DataForMaker_2D(spots) {
             @Override int getNumberOfYVals() {
                 return 4;
@@ -877,8 +951,8 @@ public class LauncherForThesis
                 if (i == 4)
                     return (currS < 100 ? 1 : 0);
                 try {
-                    bs.setModelParams(smp[i].withS(currS));
-                    return bs.price(instr);
+                    method.setModelParams(smp[i].withS(currS));
+                    return method.price(instr);
                 } catch (Exception ex) { throw new RuntimeException(); }
             }
             double currS;
@@ -1026,6 +1100,73 @@ public class LauncherForThesis
                 return sc.getTr(1).price(k);
             }
             int k = 0;
+        };
+        String str = maker.makeCode();
+        out.println(str);
+    }
+
+    private void makeAsianAndLookback(PrintStream out, final AmOrEu amOrEu, final CallOrPut callOrPut)
+    {
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0, 0.05);
+        final VanillaOptionParams vop = new VanillaOptionParams(100, 1, callOrPut);
+        double[] spots = new double[50];
+        for (int i = 0; i < 50; ++i)
+            spots[i] = 50 + i*2;
+        final Instr[] instrs = new Instr[3];
+        instrs[0] = new AsianOption(1, callOrPut, onlyAsset);
+        instrs[1] = new LookbackOption(1, callOrPut, onlyAsset);
+        instrs[2] = new Option(vop, onlyAsset);
+        final Method method;
+        if (amOrEu == AmOrEu.EU)
+        {
+            method = new AV();
+            ((AV) method).setK(100);
+            ((AV) method).setN(100000);
+            for (int i = 0; i < 3; ++i)
+                instrs[i] = new EuExercise(instrs[i]);
+        }
+        else 
+        {
+            LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>());
+            lsm.setMethodParams(10000, 100, 3);
+            method = lsm;
+        }
+        DataForMaker_2D maker = new DataForMaker_2D(spots) {
+            @Override int getNumberOfYVals() {
+                return 3;
+            }
+            @Override String getXLabel() {
+                return "spot";
+            }
+            @Override String getYLabel() {
+                return "price";
+            }
+            @Override String getLegend(int i) {
+                if (i == 0) return "Asian";
+                else if (i == 1) return "lookback";
+                else return "vanilla";
+            }
+            @Override String getDesc() {
+                return "Comparision of prices of asian, lookback and vanilla options";
+            }
+            @Override void setXVal(double d) {
+                    instrs[2] = new Option(new VanillaOptionParams(d, 1, callOrPut), onlyAsset);
+                    if (amOrEu == AmOrEu.EU) instrs[2] = new EuExercise(instrs[2]);
+                try {
+                    method.setModelParams(smp.withS(d));
+                } catch (WrongModelException ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException();
+                }
+            }
+            @Override double getPrice(int i) {
+                try {
+                    return method.price(instrs[i]);
+                } catch (WrongInstrException | InterruptedException ex) {
+                    Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
+                    throw new RuntimeException();
+                } 
+            }
         };
         String str = maker.makeCode();
         out.println(str);

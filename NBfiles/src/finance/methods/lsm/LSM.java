@@ -5,10 +5,7 @@ import finance.instruments.Instr;
 import finance.methods.common.WrongModelException;
 import finance.parameters.ModelParams;
 import finance.parameters.SimpleModelParams;
-import finance.trajectories.Generator;
-import finance.trajectories.OneTrGenerator;
-import finance.trajectories.Scenario;
-import finance.trajectories.Trajectory;
+import finance.trajectories.*;
 import finance.trajectories.Trajectory.Auxiliary;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +28,8 @@ public class LSM extends LSMRoot
 
     public LSM()
     {
-        this.auxTrStats = new ArrayList<>();
+        //this.auxTrStats = new ArrayList<>();
+        this.auxTrStats = SimpleTrajectory.makeAllAuxiliary();
     }
 
     @Override
