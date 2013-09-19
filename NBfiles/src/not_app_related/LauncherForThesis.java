@@ -49,7 +49,7 @@ public class LauncherForThesis
         File file = new File("/home/grzes/Printed.R");
         //PrintStream out = new PrintStream( file );
         //l.callAll(out);
-        l.makeAsianAndLookback(System.out, AmOrEu.EU, CallOrPut.CALL);
+        l.makeBinaryPut2D(System.out, AmOrEu.AM);
     }
     
     void callAll(PrintStream out)
@@ -642,12 +642,16 @@ public class LauncherForThesis
     {
         ArrayList<Trajectory.Auxiliary> auxStats = new ArrayList<>();
         auxStats.add(Trajectory.Auxiliary.CUMMAX);
-        final LSM lsm = new LSM(auxStats); lsm.setMethodParams(100000, 50, 3);
-        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.3, 0, 0);
+        final LSM lsm = new LSM(auxStats); lsm.setMethodParams(50000, 500, 3);
+        final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.1, 0, 0);
         final VanillaOptionParams vop = new VanillaOptionParams(100, 1, CallOrPut.CALL);
-        double[] spots = new double[60];
-        for (int i = 0; i < 60; ++i)
-            spots[i] = 40 + i*2;
+        double[] spots = new double[100];
+        for (int i = 0; i <= 40; ++i)
+            spots[i] = 40 + i*1.5;
+        for (int i = 41; i <= 90; ++i)
+            spots[i] = 100 + (i-40)*0.8;
+        for (int i = 91; i < 100; ++i)
+            spots[i] = 140 + (i-90)*2;
         final Instr[] instr = new Instr[4];
         for (int i = 0; i < 4; ++i)
         {
@@ -922,7 +926,7 @@ public class LauncherForThesis
         else 
         {
             LSM lsm = new LSM(new ArrayList<Trajectory.Auxiliary>());
-            lsm.setMethodParams(10000, 100, 3);
+            lsm.setMethodParams(50000, 100, 3);
             method = lsm;
             instr = binary;
         }
@@ -969,8 +973,8 @@ public class LauncherForThesis
         for (int i = 0; i < 20; ++i)
             spots[i] = 50 + i*6;
         double[] T = new double[20];
-        for (int i = 0; i < 20; ++i)
-            T[i] = i/10.0;
+        for (int i = 1; i <= 20; ++i)
+            T[i-1] = i/10.0;
         
         DataForMaker_3D maker = new DataForMaker_3D(spots, T)
         {
@@ -1010,7 +1014,6 @@ public class LauncherForThesis
     private void makeAmericanBinaryCall3D(PrintStream out)
     {
         final LSM lsm = new LSM();
-        final AV av = new AV(); av.setN(1000); av.setK(50);
         lsm.setMethodParams(100000, 50, 3);
         final SimpleModelParams smp = new SimpleModelParams(onlyAsset, 100, 0.2, 0, 0);
         double[] spots = new double[20];
@@ -1021,8 +1024,8 @@ public class LauncherForThesis
         for (int i = 0; i < 6; ++i)
             spots[14+i] = 105 + i*6;
         double[] T = new double[20];
-        for (int i = 0; i < 20; ++i)
-            T[i] = i/4.0;
+        for (int i = 1; i <= 20; ++i)
+            T[i-1] = i/10.0;
         
         DataForMaker_3D maker = new DataForMaker_3D(spots, T)
         {
@@ -1038,7 +1041,6 @@ public class LauncherForThesis
             @Override void setFst(double d) {
                 try {
                     lsm.setModelParams(smp.withS(d));
-                    av.setModelParams(smp.withS(d));
                 } catch (WrongModelException ex) {
                     throw new RuntimeException();
                 }
@@ -1051,7 +1053,6 @@ public class LauncherForThesis
             @Override double getPrice() {
                 try {
                     return lsm.price(instr);
-                    //return av.price(instr2);
                 } catch (Exception ex) {
                     Logger.getLogger(LauncherForThesis.class.getName()).log(Level.SEVERE, null, ex);
                     throw new RuntimeException();

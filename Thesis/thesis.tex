@@ -161,20 +161,33 @@ Data:.................... \hfill Podpis opiekuna pracy:.........................
 \addcontentsline{toc}{chapter}{\bfseries Abstract}
 
 %\section*{\begin{center}\begin{normalsize} Abstract \end{normalsize}\end{center}}
-\begin{quotation}
+
 \noindent
-  This thesis presents techniques of option pricing based on Monte Carlo simulations. Mathematical theories underlying the presented methods are recalled, however, the thesis is practical in nature, hence it not always gets deep into mathematical details.
-  Instead, it provides many algorithms in the form of concise pseudocode, which outline how to use the theory in practice. The utility of depicted methods is affirmed by implementations in R and Java programming languages. This paper is filled with illustrations of the results obtained by the created application.
+  This thesis presents techniques of option pricing based on Monte Carlo simulations. Mathematical theories underlying the presented methods are recalled, however, the thesis is practical in its nature, hence intentionally it does not always get deep into mathematical details.
+  I do not consider myself as an author of any new proofs of commonly known theorems, but I attempted to formulate and sketch key (even if sometimes not difficult) reasonings, so browsing through this thesis could be beneficial even for people who are not engaged in academic mathematics, but use it in their every day work (e.g. quants).
+  Instead, it provides many algorithms in the form of a concise pseudocode, which outline how to use the theory in practice. The utility of depicted methods is affirmed by implementations in R and Java programming languages. This paper is filled with illustrations of the results obtained by the created application.
   
-  The first chapter of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s, lemma Girsanov theorem, a general description of Monte Carlo methods.
-  In the second part, Reader may find an introduction to option pricing. It contains description of the market model, Black-Scholes paradigm, definition of the martingale measure. It also provides a detailed explanation how to calibrate parameters of the Black-Scholes model from the real-world market's history.
-  In the next part, the Monte Carlo pricing procedure for European options is described. It starts with simple vanilla options, and gradually moves to more complicated exotic instruments, whose exercise may depend on multiple assets or on the whole history of the market scenario. 
-  The fourth chapter introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method, which may be used to price American options, is described.
-  The next part depicts an architecture of a financial Java library, which was created as a part of the thesis and bases on the presented algorithms.
-  In the last part, illustrations of several pricing results are collected.
-\end{quotation}
+  The first chapter of the thesis gathers a group of definitions and facts from the probability theory which are essential for the thesis, like It\^{o}'s lemma, Girsanov theorem, a general description of Monte Carlo methods.
+  I begin with crude Monte Carlo method, because of its intuitiveness and simplicity. I estimate the accuracy of this method, that is I derive a formula for dependency between the number of simulations and the error of the estimation. Afterwards I describe two variance reduction techniques used widely in practice -- antithetic variates method and control variates method. In Example~\ref{chapter:Pre}.\ref{exm:varianceReduction} I compare these methods in a concrete application, which shows how easily we can benefit by using the variance reduction.
+  Paragraph \ref{subsec:simulation} is devoted to a practical problem of generating correlated pseudorandom values from the normal distribution in a way available in most computational environments. Although the recalled algorithm is presented in a $n$-dimensional context, I mostly focus on a 2-dimensional case. The experience shows indeed, that this case appears most often in the quant's practice.
+  
+  In the second part, Reader may find an introduction to option pricing. It contains a description of the market model, the Black-Scholes paradigm, a definition of the martingale measure. It also provides a detailed explanation how to calibrate parameters of the Black-Scholes model from the real-world market's history. 
+  Later, in section \ref{sec:pricingReal}, the presented method is used to calibrate the model for pricing options on a real-world assets. The second chapter also gathers definitions of instruments which appear in practice most often. At first, simple vanilla options are described, but more complicated derivatives, like barrier, Asian or basket options, are introduced as well. 
+  
+  In the next chapter, I describe the Monte Carlo pricing procedure for European options. I start that part by applying the variance reduction techniques, described in chapter I, to price instruments with European exercise. Consistent with the spirit of the whole thesis, I present concrete valuations and analysis of the result stability on examples based on the real-life practice.
+  I gradually move to more complicated exotic instruments, at first to those derivatives, whose payoff may depend on on the whole history of the market scenario. At this point the superiority of Monte Carlo methods over binomial trees, commonly used by economists, is clearly seen.
+  For instance, an attempt to use a binomial tree to price an Asian option expiring after one year would require analysis of more than $10^{75}$ paths. Assuming that all present computers were combined in one extremely powerful cluster, and that cluster was processing this particular pricing task since the beginning of the universe, the humanity still would not have the valuation result.On the other hand, the Monte Carlo method gives the price with a satisfactory accuracy in seconds.
+  The next kind of instruments described in the third chapter are basket options, whose payoff depends on several assets. As previously, I illustrate this matter by concrete examples and I provide pseudocodes, which may be easily implemented by the Reader. To the thesis I enclose a Java application which uses implementations of these pseudocodes in an object oriented paradigm.
+  
+  The fourth chapter introduces American contracts and collects several facts necessary to value instruments with American-style exercise. A technique known as Least Squares Monte Carlo or Longstaff-Schwartz method (LSM), which may be used to price American options, is described. This technique is very desirable, due to the possibility to valuate a vast class of American derivatives. 
+  However, it is unattainable for practicians who do not have a sufficient mathematical background. In this chapter I strive to explain in the maximum extent the idea behind the LSM method (especially in the context of difficulties occurring during naive attempts to price American contracts using Monte Carlo methods). Afterwards I present a concrete step by step example of the algorithm's operation. After discoverers of the LSM, I quote two propositions showing the correctness of the algorithm. In the last section I discuss the adjustments to LSM allowing to price several types of exotic instruments.
+  
+  The next part depicts an application which was created as an indispensable part of the thesis. The application allows its users to price miscellaneous instruments via a user-friendly GUI. The most important part of the program is a financial Java library, whose architecture is described in the fifth chapter. The library bases on pseudocodes appearing in the paper, however, it was adjusted to the object oriented programming language. I present the structure of the designed classes in a form of UML diagrams. Of course, I focus only on the most important elements, i.e. on these classes which correspond to topics discussed in the thesis, because the whole application has about 200 classes and 30000 lines of code. Every concrete instrument, like a bond or an option, has its own corresponding class, which derives from an interface representing an abstract instrument. In order to implement the instrument hierarchy, the decorator pattern was used, what allows to represent very exotic options without a necessity to create an additional class for such an instrument. In the library there are also classes related to the algorithms described in the thesis. Classes corresponding to crude Monte Carlo, antithetic variates and control variates have a common base. Here, the template method pattern is involved -- the pricing procedure is implemented in the base class, however, it uses functionalities which have to be implemented in the derived classes.
+  
+  The last chapter shows capabilities of the created financial library. It gathers illustrations of pricing results of several more complex instruments. Clearly, the application gives great possibilities, therefore, it may be used by either practicians and academic community.
 
 \chapter{Preliminaries}
+\label{chapter:Pre}
 There exists several approaches to the analysis of assets' prices, for example fundamental analysis, technical analysis and quantitative analysis. Mathematicians are interested in the last one, in which every asset is considered to be a stochastic process.
 Despite the fact that nobody really believes that movements of asset prices are truly random, markets' stochastic models are commonly used, due to very satisfactory results. However, this approach requires non-trivial mathematical background whose essentials are collected in this part.
 
@@ -568,6 +581,7 @@ where
 \end{equation*}
 
 \begin{example}
+\label{exm:varianceReduction}
 To compare presented Monte Carlo methods let us calculate value of $I = \int_0^1 e^x dx$ by simulation. Of course exact value equals $e - 1 \approx 1.71828183$. Let $g(x) = e^x$ and $U \sim \mathcal{U}(0,1)$. Then 
 \[ I = \E[g(U)], \]
  hence we can use derived theory with $Y = g(U)$. We consider following estimators:
@@ -627,6 +641,7 @@ Let us finish this example with a remark that this was a preconceived case, whic
 
 
 \subsection{Simulation}
+\label{subsec:simulation}
 Now, when we know how Monte Carlo methods work, we need to describe how to get random values.
 \paragraph{Independent standard normal random variables.} Most computational environments and programming languages have built-in generator of values from uniform distribution. We show how to obtain (pseudo)random variables with the ubiquitous normal distribution.
 
@@ -2193,7 +2208,7 @@ We see that option should be exercised at paths 5,8,10, and we update properly t
 In our example the average of the realized cash flows equals 2.99. It is greater than value of immediate exercise, hence \textbf{the price of the option is 2.99}.
 
 \subsection{Mathematical background of LSM}
-In the paragraph \ref{subsec:LSMidea} we described the LSM method. It gave some intuitions, however, the sign ``$\approx$`` appeared very often, thus it is certainly unclear if this method really works. Of course, we would not present it if it did not. After Longstaff and Schwartz we quote two convergence results. Reader may find the proofs in the appendix to their article (\cite{l-sch}).
+In the paragraph \ref{subsec:LSMidea} we described the LSM method. It gave some intuitions, however, due to a frequent appearance of sign ``$\approx$``, it is certainly unclear if this method really works. Of course, we would not present it if it did not. After Longstaff and Schwartz we quote two convergence results. Reader may find the proofs in the appendix to their article (\cite{l-sch}).
 
 \begin{mydef}
  For $\omega \in \Omega,\ 0 \leq t < s \leq T$ we define 
@@ -2218,24 +2233,25 @@ Here we use the simplest possible basis functions -- simple powers of the state 
 Since we cannot store an infinite series in a computer's memory, hence in the LSM algorithm we take only the first $M < \infty$ basis functions and denote this projection by $F_M(\omega, t)$, i.e.
 \[ F_M(\omega, t) = \sum\limits_{j=0}^{M} a_j^{(t)} S_t(\omega)^j. \]
 At each time $t_k$, the value $F_M(\omega, t_k)$ is unknown, but we approximate it with an estimator $\hat{F}_M(\omega, t_k)$ which is obtained by regressing the discounted values of $C(\omega, s; t_k)$ onto the basis functions.
-In order to decrease the range of the region over which the estimation is performed, we take only in-the-money paths. It is irrelevant to have a good estimation of the future payoff on the out-of-the-money paths, because there we do not have to decide whether the option should be exercised. $\hat{F}_M(\omega, t_k)$ converges to $F_M(\omega, t)$ in $L^2$ and in probability, as the number of in-the-money paths goes to infinity.
+In order to decrease the range of the region over which the estimation is performed, we take only in-the-money paths. A good estimation of the future payoff is irrelevant on the out-of-the-money paths, because there we do not have to decide whether the option should be exercised. $\hat{F}_M(\omega, t_k)$ converges to $F_M(\omega, t)$ in $L^2$ and in probability, as the number of in-the-money paths goes to infinity.
 The algorithm rolls back from $k=K$ to $k=0$ and when the exercise decisions are settled at each time point on each path, then the algorithm checks the realized cash flow at each path, calculates the mean, and returns it as the option's price.
 
 Let $V(S)$ be the true value of the American option. The following two propositions come from~\cite{l-sch}.
 \begin{prop}
- For any finite choice of $M, K$, and vector $\theta \in \mathbb{R}^{M \times (K-1)}$ representing the coefficients for the $M$ basis functions at each of the $K-1$ early exercise dates, let $LSM(\omega; M, K)$ denote the discounted cash flow resulting from following the LSM rule of exercising when the immediate exercise value is positive and greater than or equal to $\hat{F}_M(\omega_i, t_k)$ as defined by $\theta$. Then the following inequality holds almost surely,
+ For any finite choice of $M, K$, and matrix $\theta \in \mathbb{R}^{M \times (K-1)}$ representing the coefficients for the $M$ basis functions at each of the $K-1$ early exercise dates, let $LSM(\omega; M, K)$ denote the discounted cash flow resulting from following the LSM rule of exercising when the immediate exercise value is positive and greater than or equal to $\hat{F}_M(\omega_i, t_k)$ as defined by $\theta$. Then the following inequality holds almost surely,
  \[ V(S) \geq \lim_{N \rightarrow \infty} \frac{1}{N} \sum\limits_{i=1}^N LSM(\omega_i; M, K). \]
 \end{prop}
 \begin{prop}
+\label{prop:lsmWorks}
  Assume that the value of an American option depends on a single state variable $S$ with support on $(0, \infty)$ which follows a Markov process. Assume further that the option can only be exercised at times $t_1$ and $t_2$, and that the conditional expectation function $F(\omega, t_1)$ is absolutely continuous and
- \[ \int_0^\infty e^{-S} F^2(\omega, t_1) dS < \infty,\ \ \ \ \  \int_0^\infty e^{-S} \left(\frac{\partial F}{\partial S}\right)^2(\omega, t_1) dS < \infty. \]
+ \[ \int_0^\infty e^{-S} F^2(\omega, t_1) dS < \infty,\ \ \ \ \  \int_0^\infty e^{-S} \left(\frac{\partial F}{\partial S}\right)^2 \Bigl(\omega, t_1\Bigr) dS < \infty. \]
  Then for any $\varepsilon > 0$, there exists an $M < \infty$ such that
  \[ \lim_{N \rightarrow \infty} \P \Bigl[\bpipe V(S) - \frac{1}{N} \sum\limits_{i=1}^N LSM(\omega_i; M, K) \bpipe > \varepsilon \Bigr] = 0. \]
 \end{prop}
 
 The first proposition has a simple interpretation. The LSM algorithm constructs an exercise strategy and as the price of the option returns the mean of payoffs resulting from following that strategy. But the true value of the American option is maximized over all stopping times, hence for large numbers of simulations it should be greater than the price resulting from the LSM procedure.
 
-The second proposition tells that in case $K = 2$ and under some technical assumptions the LSM method really works.
+The second proposition tells that in case $K = 2$ and under some technical assumptions the LSM method really works. According to Longstaff and Schwartz Proposition \ref{prop:lsmWorks} may be generalized for an arbitrary number $K$.
 
 \section{LSM algorithm}
 In this section we move to practical aspects of pricing American contingent claims.
@@ -2244,7 +2260,7 @@ In this section we move to practical aspects of pricing American contingent clai
 It turned out that regression is an important step in LSM. We explained that the estimated future payoff may be represented by a polynomial function of $S_k$ whose coefficients may be obtained from the least squares method. We briefly describe the general method of finding the polynomial of degree $m$, best fitting given set of points $(x_i, y_i)$, $i=1,2,...n$.
 \[ \begin{cases}
     a_0 + a_1 x_1 + \ldots + a_m x_1^m &= y_1 \\
-    a_0 + a_1 x_2 + \ldots + a_m x_1^m &= y_2 \\
+    a_0 + a_1 x_2 + \ldots + a_m x_2^m &= y_2 \\
     \vdots & \\
     a_0 + a_1 x_n + \ldots + a_m x_n^m &= y_n
    \end{cases}
@@ -2297,16 +2313,8 @@ We already have a base necessary to present the LSM method in the form of a pseu
     \State $mean \gets$ \Call{getMean}{$CF$}
     \State $H_0 \gets$ \Call{getPayoff}{$S_0$}
     \State \Return $\max(mean, H_0)$
-  \EndFunction
-  \algstore{algLSM}
- \end{algorithmic}
- \caption{The valuation of an American option using LSM.}
- \label{alg:LSM}
-\end{algorithm}
+  \EndFunction \\
   
-\begin{algorithm}[!ht]
- \begin{algorithmic}[1]
- \algrestore{algLSM}
   \Function{getRealizedCashFlows}{$S$}
     \For{$i = 1$ {\bf to} $N$}
       \State $CF[i].time \gets T$
@@ -2340,20 +2348,29 @@ We already have a base necessary to present the LSM method in the form of a pseu
     \EndFor
     \State \Return $sum/N$
   \EndFunction
+  %\algstore{algLSM}
  \end{algorithmic}
+ \caption{The valuation of an American option using LSM.}
+ \label{alg:LSM}
 \end{algorithm}
-\newpage
+  
+% \begin{algorithm}[!ht]
+%  \begin{algorithmic}[1]
+%  \algrestore{algLSM}
+%  \end{algorithmic}
+% \end{algorithm}
+
 \begin{prop}
- The computational complexity of Algorithm \ref{alg:LSM} equals $\mathcal{O}(KNM + KM^3)$, where $N$ is the number of simulated paths, $M$ is the degree of approximating polynomial, $K$ is the number of time steps.
+ The computational complexity of Algorithm \ref{alg:LSM} equals $\mathcal{O}(KNM + KM^3)$, where $N$ is the number of simulated paths, $M$ is the degree of the approximating polynomial, $K$ is the number of time steps.
 \end{prop}
 \begin{proof}
- Trajectories are generated in time $\mathcal{O}(KN)$. In order to construct the exercise strategy we have to $\mathcal{O}(K)$ times perform regression, which takes $\mathcal{O}(NM + M^3)$ operations. In total we do $\mathcal{O}(KNM + KM^3)$ operations. The last step, calculating the mean, is done in $\mathcal{O}(N)$.
+ Trajectories are generated in time $\mathcal{O}(KN)$. In order to construct the exercise strategy we have to $\mathcal{O}(K)$ times perform regression, and each requires $\mathcal{O}(NM + M^3)$ operations. In total we do $\mathcal{O}(KNM + KM^3)$ operations. The last step, calculating the mean, is done in $\mathcal{O}(N)$.
 \end{proof}
 
 In practice $N$ is greater than $M^2$ and then the complexity is simply $\mathcal{O}(KNM)$. As we can see we made a huge progress between Algorithms \ref{alg:naiveProcedure} and \ref{alg:LSM}. We reduced the exponential complexity of ''Monte Carlo on Monte Carlo`` $\mathcal{O}(N^K)$ to $\mathcal{O}(KNM)$.
 
 It turns out that now the bigger problem is the memory complexity. The algorithm requires generation of all trajectories at once, hence the complexity equals $\mathcal{O}(KN)$. Although an ordinary computer can execute LSM procedure with large numbers $K$ and $N$ in a reasonable time, it may run out of memory.
-
+\FloatBarrier
 \begin{example}
  An implementation of Algorithm \ref{alg:LSM} was used to price American vanilla put under parameters: $K=100,\ M=3,\ S=100,\ \sigma=0.2,\ r=0.05,\ E=100,\ T=1$. Figure \ref{fig:LSM_res} presents a result cloud created by running the LSM procedure 100 times for $N \in \{10^3, 10^4, 10^5\}$. Table \ref{tab:LSM_res} compares results obtained by LSM with the true value calculated using the Finite Difference method. 
 \end{example}
@@ -2361,7 +2378,7 @@ It turns out that now the bigger problem is the memory complexity. The algorithm
 \begin{SCfigure}[][h]
 \centering
  \includegraphics[scale=0.5]{images/LSM/put100.pdf}
-\caption{The dispersion of the results obtained by executing the LSM procedure for different numbers of simulations. For each each $N$, the procedure was run 100 times. Hence for each $N$ we obtained 100 estimations of the price. Small points indicate obtained values. }
+\caption{The dispersion of the results obtained by executing the LSM procedure for different numbers of simulations. For each $N$, the procedure was run 100 times. Hence, for each $N$ we obtained 100 estimations of the price. Small points indicate obtained values. }
 \label{fig:LSM_res}
 \end{SCfigure}
 
@@ -2378,20 +2395,20 @@ It turns out that now the bigger problem is the memory complexity. The algorithm
 \end{tabular}  
 \end{table}
 
-Performed tests indicate that Finite Difference is better than LSM for vanilla option pricing. It gives more accurate results in shorter time and does not load the memory to the same extent as LSM. Therefore, we recommend using Finite Difference rather than LSM for American vanilla options.
+Performed tests indicate that Finite Difference is better than LSM for vanilla option pricing. It gives more accurate results in a shorter time and does not load the memory to the same extent as LSM. Therefore, we recommend using Finite Difference rather than LSM for American vanilla options.
 
 \subsection{Variance reduction}
 The variance reduction techniques described in the previous chapters may also be incorporated in the LSM.
 \paragraph{Antithetic variates.} Involving antithetic variates is simple. The antithetic trajectories are generated identically as in the previous chapter (Algorithm \ref{alg:single-tr}). We only have to ensure that \Call{generateTrajectories}{} from line 9 in Algorithm \ref{alg:LSM} returns alternately the positive and negative trajectories from subsequent generations. 
 
-\paragraph{Control variates.} The LSM algorithm may be divided into three parts: generating trajectories, building exercise strategy, collecting payoffs obtained by following constructed strategy on each path. Control variate method may be taken into account in the last part. 
+\paragraph{Control variates.} The LSM algorithm may be divided into three parts: generating trajectories, building exercise strategy, collecting payoffs obtained by following the constructed strategy along each path. Control variate method may be taken into account in the last part. 
 
 After the second step we have a concrete stopping time $\tau$. What we do in the last part is a calculation of $\Em[H_\tau]$. For fixed $\tau$, $H_\tau$ is an ordinary random variable, so its expectation can be estimated using the methods described in section \ref{sec:introMC}. As a control variate we can take the value of a corresponding European option.
 
 \section{LSM for exotic options}
 As we mentioned before, Finite Difference seems to be better method for pricing American vanilla options. However, it is hard to adjust Finite Difference for exotic options, while LSM is quite flexible and may be used to price a vast class of instruments.
-\subsection{Multi-asset options.}
-From chapter III we know how to generate multi-asset trajectories. The main difficulty lies in the regression. The observations vector is constructed in a similar manner as in Algorithm \ref{alg:LSM}, line 23, let us denote it by $\mathbb{Z}$. However, preparation of the matrix of explanatory variables is more complicated. We have two state variables (asset prices) $X$, $Y$. We attempt to estimate the value of continuation using the polynomial of the form 
+\subsection{Multi-asset options}
+From chapter III we know how to generate multi-asset trajectories. The main difficulty lies in the regression. The observation vector is constructed in a similar manner as in Algorithm \ref{alg:LSM}, line 23, let us denote it by $\mathbb{Z}$. However, preparation of the matrix of explanatory variables is more complicated. We have two state variables (asset prices) $X$, $Y$. We attempt to estimate the value of continuation using the polynomial of the form 
 \[ P(X,Y) = \sum\limits_{i=0}^M \sum\limits_{j=0}^M a_{i,j} X^i Y^j. \]
 Let
 \begin{equation*}
@@ -2408,17 +2425,17 @@ The regression problem can now be written in the form $\mathbb{Z} = \mathbb{X} a
 
 In theory, this procedure could be used for even higher dimensions, but unfortunately the number of coefficients grows exponentially. However, Longstaff and Schwartz mention in their article another procedure for approximating polynomial construction which allows to limit the coefficients to the number which grows only polynomially. 
 
-\subsection{Path-dependent instruments.}
+\subsection{Path-dependent instruments}
 Algorithm \ref{alg:LSM} cannot be used directly to price most path-dependent options. Let us consider an Asian option. Suppose that at some time $t_k$ there exist such $i$ and $j$ that $S_{j,k} = S_{i,k}$, i.e. two paths have the same value at time $t_k$. For both of them Algorithm \ref{alg:LSM} would return the same value of the estimated future flow. However, it is possible that one of the trajectories for most of the time was above the current value, and the second one was below. Hence, the difference between the averages on both trajectories is high and in consequence also the value of continuation should be different. Clearly, Algorithm \ref{alg:LSM} does not work for that option.
 
 Fortunately, there is an easy trick allowing to price such instruments using LSM. We just have to add second state variable which in case of the Asian option is the cumulative average price at the trajectory. The Asian option can imitate a derivative of two assets, where the first is the ''proper`` asset and the second is the average. Then it can be priced using the method from \textbf{Multi-asset options} paragraph.
 
 This method can be used to price many other path-dependent instruments, for example lookback options.
 
-\subsection{Barrier options.}
+\subsection{Barrier options}
 Barrier options are of course also path-dependent instruments, but it turns out that we do not need any modification to Algorithm \ref{alg:LSM} in order to price them. Consider for example knock-out options. Let us focus on a single trajectory and a time point $t_k$. The only aspect of the trajectory's history that matters in estimating the future flow, is the fact if the barrier was hit. If it was, then this trajectory will not be taken into account in the regression, because value of the immediate payoff equals zero. On the other hand, if the barrier was not hit, then the only factor influencing the future payoff is the current price.
 
-\subsection{Forward and Bermuda options.}
+\subsection{Forward and Bermuda options}
 \textbf{Bermudan options} are options which may be exercised only at the specified set of times. These instruments ``lie'' between European options, which may be exercised only at the expiry, and American options, which may be exercised at any occasion, just as Bermuda lies between Europe and America.
 
 \textbf{Forward options} are a particular case of Bermudan options. They may be exercised only at the final period of the option's life. In the other words a forward option is an American option, whose exercise is not available until a specified time before the maturity.
@@ -2428,7 +2445,7 @@ Pricing such instruments does not require any special adjustments. They differ f
 
 
 \chapter{Application architecture}
-An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This chapter describes architecture of the created financial library which forms application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
+An inherent component of the thesis is an application for pricing miscellaneous financial instruments. The application was written in Java and is taking advantage of the best object oriented paradigm practices and design patterns. This chapter describes architecture of the created financial library which forms the application's back end. The library is to some extent an implementation of algorithms presented in previous parts of the thesis, however, they are generalized and adjusted to the object oriented language.
 
 \section{Scenarios and trajectories}
 The basis of the Monte Carlo pricing is the trajectory generation. Hence, we begin with a presentation of classes performing this task. The corresponding class diagram is presented in Figure \ref{fig:arch:traj}.
@@ -2460,14 +2477,14 @@ Classes representing financial instruments are arranged in a hierarchy based on 
 \end{sidewaysfigure}
 
 
-\texttt{Instr} is an abstract class representing a general financial instrument. It stores a field \texttt{T} which holds time to the expiration. Classes deriving from \texttt{Instr} must implement methods \texttt{exAvail} and \texttt{payoff\_}. The first method, for specified scenario and time point, answers if the exercise is available. For example an European option may be exercised if and only if given time point is the last one on the trajectory. On the other hand, exercise of knock-out option is possible if and only if barrier was not hit in given Scenario. Method \texttt{payoff\_} returns a real number which means what would be the payoff obtained in given scenario if the exercise was possible and the instrument was exercised at given time point. Method \texttt{price} from class \texttt{Instr} uses both aforementioned methods:
+\texttt{Instr} is an abstract class representing a general financial instrument. It stores a field \texttt{T} which holds time to the expiration. Classes deriving from \texttt{Instr} must implement methods \texttt{exAvail} and \texttt{payoff\_}. The first method, for specified scenario and time point, answers if the exercise is available. For example an European option may be exercised if and only if given time point is the last one on the trajectory. On the other hand, exercise of a knock-out option is possible if and only if the barrier was not hit in a given Scenario. Method \texttt{payoff\_} returns a real number which means what would be the payoff obtained in the given scenario if the exercise was possible and the instrument was exercised at the given time point. Method \texttt{payoff} from class \texttt{Instr} uses both aforementioned methods:
 \begin{lstlisting}
   public double payoff(Scenario s, int k) {
       if (exAvail(s,k)) return payoff_(s,k);
       else return 0;
   }
 \end{lstlisting}
-Clearly, \texttt{payoff} returns the value which would be obtained from the immediate exercise, it the exercise is possible, otherwise it returns zero. Since \texttt{payoff} is a ``sketch'', which delegates part of the logic to subclasses, hence we may say that we used here the factory method pattern. 
+Clearly, \texttt{payoff} returns the value which would be obtained from the immediate exercise, it the exercise is possible, otherwise it returns zero. Since \texttt{payoff} is a ``sketch'', which delegates part of the logic to subclasses, hence we may say that we used here the template method pattern. 
 
 \texttt{Bond} and \texttt{Option} are concrete instruments. As the name indicates \texttt{Bond} represents instruments paying \texttt{nominal} after time \texttt{T}. Implementation of the methods from class \texttt{Instr} looks as follows: 
 \begin{lstlisting}
@@ -2480,7 +2497,7 @@ Clearly, \texttt{payoff} returns the value which would be obtained from the imme
 \end{lstlisting}
 
 	
-Class \texttt{Option} is designed for American options. It stores information about the strike price, its type (call or put) and name of the underlying asset. American vanilla option may be exercised at any time, hence \texttt{exAvail} has the form:
+Class \texttt{Option} is designed for American options. It stores information about the strike price, its type (call or put) and name of the underlying asset. An American vanilla option may be exercised at any time, hence \texttt{exAvail} has the form:
 \begin{lstlisting}
   protected boolean exAvail(Scenario s, int k) {
       return true;
@@ -2496,7 +2513,7 @@ Implementation of \texttt{payoff} is also not complicated:
   }
 \end{lstlisting}
 
-\texttt{Modificator} class is the place where the decorator pattern does its job. \texttt{Modificator} is a wrapper for another instrument, which allows for a modification of its payoff and exercise availability. \texttt{EuExercise} and \texttt{Barrier}, as well as many other modifications, do not change the payoff, hence \texttt{payoff\_} is coded in \texttt{Modificator} as follows (of course it may be changed in subclasses):
+\texttt{Modificator} class is the place where the decorator pattern does its job. \texttt{Modificator} is a wrapper for another instrument, whose payoff or exercise availability are modified. \texttt{EuExercise} and \texttt{Barrier}, as well as many other modifications, do not change the payoff, hence \texttt{payoff\_} is coded in \texttt{Modificator} as follows (of course it may be changed in subclasses):
 \begin{lstlisting}
   protected double payoff_(Scenario s, int k) {
       return wrapped.payoff_(s, k);
@@ -2537,7 +2554,7 @@ Class \texttt{Binary} does not change the exercise availability, thus its \textt
     }
 \end{lstlisting}
 	
-This design may look overly complicated. Let us explain what is its advantage. Suppose that at some point we will have a need to price not only typical barrier options, but also options with double barrier, for example knock-out corridor options, which has zero payoff if the stock price goes beyond some specified range during the option's lifetime. Our design lets us to instantiate an object representing such instrument without necessity to write any additional classes! We just type\footnote{Constructors' arguments which are irrelevant for the example were omitted.}:
+This design may look overly complicated. Let us explain what is its advantage. Suppose that at some point we will have a need to price not only typical barrier options, but also options with double barrier, for example knock-out corridor options, which has a zero payoff if the stock price goes beyond some specified range during the option's lifetime. Our design lets us to instantiate an object representing such instrument without necessity to write any additional classes! We just type\footnote{Constructors' arguments which are irrelevant for the example were omitted.}:
 \begin{lstlisting}
   Instr corridor = new Barrier(new Barrier(new Option()));
 \end{lstlisting}
@@ -2560,7 +2577,7 @@ Every variant of the Monte Carlo has its own representation in the methods' clas
 \label{fig:arch:MonteCarlo}
 \end{figure}
 
-\texttt{MonteCarlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the factory method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing},\\ \texttt{oneSimulation}, \texttt{currentResult}:
+\texttt{MonteCarlo} implements \texttt{Method}, however, it is still an abstract class. It forms a basis for classes \texttt{CMC}, \texttt{AV} and \texttt{CV}. \texttt{MonteCarlo} takes advantage of the template method pattern. It implements \texttt{price}, however, the implementation calls abstract methods \texttt{initPricing},\\ \texttt{oneSimulation}, \texttt{currentResult}:
 \begin{absolutelynopagebreak}
 \begin{lstlisting}
   public double price(Instr instr) throws InterruptedException {
@@ -2605,7 +2622,7 @@ The payoff is obtained via a polymorphic call to \texttt{payoff} from class \tex
 The diagram in Figure \ref{fig:arch:LSM} is a LSM branch of the \texttt{Method} hierarchy.
 
 An abstract class \texttt{LSMRoot} is an implementation of \texttt{Method} which employs Least Squares Monte Carlo. Unfortunately,  it is not as universal as the ordinary Monte Carlo, because, for example, path-dependent options require  special treatment. Thus, several variants of LSM were implemented: \texttt{LSM} is a basic version of LSM, which follows the original algorithm, \texttt{LSM2} is for options depending on two assets, for example basket options, \texttt{LSM\_Asian} can price Asian options.
-However, while implementing these methods we also strived to avoid code repetition, so the factory method pattern was involved once again. The following code snippet presents how the \texttt{price} method was implemented in \texttt{LSMRoot}.
+However, while implementing these methods we also strived to avoid code repetition, so the template method pattern was involved once again. The following code snippet presents how the \texttt{price} method was implemented in \texttt{LSMRoot}.
 
 \begin{lstlisting}
   public double price(Instr instr) throws InterruptedException
@@ -2665,7 +2682,46 @@ The general scheme is the same for all variants of LSM. Classes inheriting \text
 
 Since regression is very similar for those versions of LSM which use two explanatory variables, so class \texttt{LSM2\_Support} was designed. It performs the calculation of the estimated future flow basing on two assets. Classes like \texttt{LSM2} or \texttt{LSM\_Asian} simply delegate \texttt{calcFutureEstimatedFlow} to \texttt{LSM2\_Support}.
    
-As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
+As we can see, in case of LSM we do not have the property that every new instrument can be priced instantaneously. Of course, we can pass every \texttt{Instr} to \texttt{LSM}'s \texttt{price} method, but it is possible that the result may be entirely inadequate. For some instruments it may be compulsory to implement a separate version of LSM. However, we hope that the interface, which is already provided, makes this task easy. All the programmer has to do is inherit \texttt{LSMRoot} and implement three abstract methods, what should not be a big effort.
+
+\newpage
+\section{Application interface}
+Add the end of the current chapter we present the GUI of the application. We will describe it by following the steps necessary to price an European barrier put using the application.
+
+At the beginning we have to provide model parameters to the application. We can do it manually by clicking visible buttons and writing values to prepared fields. However, we assume we possess a file \texttt{nasdaq.csv} which contains the market's history in the CSV form. The application can parse this data and calibrate the model automatically. This is presented in Figure~\ref{fig:arch:reading}.
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=0.66]{images/Architecture/readingModel.png}
+ \caption{Step 1. At first we have to read model data into the application. We do it by choosing in menu {\upshape File} an item {\upshape Read model from CSV} (upper left picture). Then a dialog appears which allows us to select a file with historical data in CSV format (lower left picture). The right picture shows the appearance of the {\upshape Model} tab after calibrating the parameters.}
+\label{fig:arch:reading}
+\end{figure}
+
+\FloatBarrier
+In the second step we prepare the instrument for pricing. Appropriate procedure is shown in Figure~\ref{fig:arch:newinstr}.
+\begin{figure}[!hb]
+\centering
+ \includegraphics[scale=1]{images/Architecture/newinstr.png}
+ \caption{Step 2. The upper picture presents the appearance of the {\upshape Instruments} tab before creating any instruments. To add one, we press {\upshape Add instrument} button and then we are prompted (middle left picture) to write a name and select a type of the created instrument. Afterwards, we may set the parameters of the option as it seen in the lower picture. Moreover, we may add a barrier by clicking on the button on the right side of the application. A dialog from the middle right picture appears and we may customize parameters of the barrier.}
+\label{fig:arch:newinstr}
+\end{figure}
+Finally, we are able to perform the valuation. We switch to tab \textit{Tasks}, choose the pricing method, e.g. classic Monte Carlo, then we simply hit \textit{Price} and wait for the results. In Figure \ref{fig:arch:newtask} we see the screens from the application. We can simultaneously start many pricing tasks. Each task is run in a separate thread and may be canceled at any time.
+
+\begin{figure}[!hb]
+\centering
+ \includegraphics[scale=1]{images/Architecture/newtask.png}
+ \caption{Step 3. In tab {\upshape Tasks} we select the method for pricing and its parameters. By hitting {\upshape Price} button we initiate a new pricing task. Progresses of the running tasks are visible on the right side of the window.}
+\label{fig:arch:newtask}
+\end{figure}
+
+The results are attached to \textit{Results} tab, as we can see in Figure~\ref{fig:arch:results}. In the result panel we can see model parameters used for valuation, instrument attributes, and of course the calculated price. Some methods attach also additional results, for example Monte Carlo prepares a convergence plot.
+
+\begin{figure}[!ht]
+\centering
+ \includegraphics[scale=1]{images/Architecture/results.png}
+ \includegraphics[scale=0.5]{images/Architecture/plot.png}
+ \caption{Step 4. The results are visible in {\upshape Results} tab. From the list on the left side of the window we can choose the results of which subsequent task should be shown. On the right side we see the results summary. Moreover, from the Monte Carlo method we receive also a convergence plot.}
+\label{fig:arch:results}
+\end{figure}
 
 \chapter{Results illustrations}
 The last chapter presents pricing results of a bunch of instruments, received from the created program. Collected values were moved to \texttt{R} code, which drew presented charts using \texttt{ggplot2} library.
@@ -2740,13 +2796,13 @@ The chart in Figure \ref{fig:results:vanillaAmCallDividend3D} illustrates how th
 \section{Forward options}
 As we know from Proposition \ref{prop:amCall}, a call option on a non-dividend paying stock should be exercised only at the expiration date, therefore, the forward feature does not influence the optimal stopping strategy. The left chart in Figure \ref{fig:results:forward} confirms this observation -- prices of forward and vanilla calls entirely coincide.
 
-In case of forward puts, sometimes the owner is forced to postpone the exercise, even though he or she would exercise an ordinary American put. This inconvenience decreases the option's value, what we can see in the right chart of Figure \ref{fig:results:forward}. The sooner the exercise is available, the greater is the price of the option.
+In case of forward puts, sometimes the owner is forced to postpone the exercise, even though he or she would exercise an ordinary American put. This inconvenience decreases the option's value, what we can see in the right chart in Figure \ref{fig:results:forward}. The sooner the exercise is available, the greater is the price of the option.
 
 \begin{figure}[!htb]
 \centering
  \includegraphics[scale=0.45]{images/Results/forwardCall.pdf}
  \includegraphics[scale=0.45]{images/Results/forwardPut.pdf}
-\caption{Prices forward options of in comparison to vanilla options. Parameters: $\sigma = 30\%$, $r=10\%$, $E=100$, $T=1$.}
+\caption{Prices of forward options in comparison to vanilla options. Parameters: $\sigma = 30\%$, $r=10\%$, $E=100$, $T=1$.}
 \label{fig:results:forward}
 \end{figure}
 
@@ -2772,7 +2828,7 @@ American claims are not as affected by knock-out barriers as their European coun
 \label{fig:results:barrierAm}
 \end{figure}
 
-Figures \ref{fig:results:barrierEuCall3D} and \ref{fig:results:barrierAmCall3D} picturize prices of up-and-out call option, the first figure in the European case, and the second in the American case. Notice that price of the European derivative smoothly decreases for high spot prices, while the American version has a sharp jump.
+Figures \ref{fig:results:barrierEuCall3D} and \ref{fig:results:barrierAmCall3D} picturize over-time prices of an up-and-out call option, the first figure in the European case, and the second in the American case. Notice that the price of the European derivative smoothly decreases for high spot prices, while the American version has a sharp jump.
 
 \begin{figure}[!ht]
 \centering
@@ -2812,7 +2868,7 @@ Let us mention one more aspect of barrier option pricing. In order to value such
 \centering
  \includegraphics[scale=0.5]{images/Results/barrierTimeStepsCallUAI.pdf}
  \includegraphics[scale=0.5]{images/Results/barrierTimeStepsPutDAO.pdf}
-\caption{Prices of barrier options estimated for different barrier levels and numbers of intermediate times steps. In the picture on the left we see results for up-and-in call option, and on the right for down-and-out put. Orange lines indicate the value calculated from analytical formula. Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$ (on the left), $\sigma=40\%$ (on the right).}
+\caption{Prices of barrier options estimated for different barrier levels and numbers of intermediate times steps. In the picture on the left we see results for an up-and-in call option, and on the right for a down-and-out put. Orange lines indicate the value calculated from analytical formula. Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$ (on the left), $\sigma=40\%$ (on the right).}
 \label{fig:results:barrierTimeSteps}
 \end{figure}
 
@@ -2822,6 +2878,8 @@ The payoff from the binary option (also called digital option) always equals 1 o
 Figure \ref{fig:results:binaryPut} shows how the price of such an instrument looks. We see that the value of an European binary put forms a slope from 1 to 0. The lower the volatility, the sharper the slope. It has the following explanation. If the volatility is low and the asset price is far from the strike then the chances of changing the moneyness of the option are very slim. If the volatility is high, then the price line is flattened, because even if the option is out-of-the money, it still has a good chance to end in-the-money, thus the price is much above zero. On the other hand, even if the option is in-the-money, the price is still much lower than 1, because a rapid jump, which may occur as a consequence of high volatility, could move the final asset price at the ``wrong'' side of the strike.
 
 In case of an American binary option the situation is similar. However, note that the option's value becomes 1 at the strike. Obviously, under assumption that the interest rate is non-negative, the optimal strategy of exercising an American binary option is to exercise at the first time when it is in-the-money.
+
+In Figure \ref{fig:results:binaryCall} we can see how values of binary options change over time.
 \begin{figure}[!htb]
 \centering
  \includegraphics[scale=0.45]{images/Results/binaryEuPut.pdf}
@@ -2830,12 +2888,11 @@ In case of an American binary option the situation is similar. However, note tha
 \label{fig:results:binaryPut}
 \end{figure}
 
-In Figure \ref{fig:results:binaryCall} we can see how values of binary options change over time.
 \begin{figure}[!htb]
 \centering
  \includegraphics[scale=0.4]{images/Results/binaryEuCall3D.pdf}
  \includegraphics[scale=0.4]{images/Results/binaryAmCall3D.pdf}
-\caption{Prices of binary calls. On the left -- European option, on the right -- American. Parameters: $\sigma = 0.2$, $r=0$, $E=100$, $T=1$.}
+\caption{Prices of binary calls. On the left -- European option, on the right -- American. Parameters: $\sigma = 0.2$, $r=0$, $E=100$, $T=2$.}
 \label{fig:results:binaryCall}
 \end{figure}
 
@@ -2855,15 +2912,16 @@ In case of Asian and lookback options we may ask the same question which bothere
 \centering
  \includegraphics[scale=0.5]{images/Results/asianTimeSteps.pdf}
  \includegraphics[scale=0.5]{images/Results/lookbackTimeSteps.pdf}
-\caption{Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$.}
+\caption{Prices of Asian and Lookback options, in American and European case. Valuation performed for different numbers of intermediate time steps. Parameters: $E=100,\ T=1,\ S=100,\ r=5\%,\ \sigma=20\%$.}
 \label{fig:results:asianTimeSteps}
 \end{figure}
 
-As we could expect, Asian options, especially with European exercise, are not strongly affected by the number of time points. High asset price jumps, which could possibly happen between time steps, are overcome by taking the average. Price of the American-Asian option is slightly rising if the option may be exercised more often, however, even in this case the price is quickly stabilizing.
+As we could expect, Asian options, especially with European exercise, are not strongly affected by the number of time points. High asset price jumps, which could possibly happen between time steps, are overcome by taking the average. The price of the American-Asian option is slightly rising if the option may be exercised more often, however, even in this case the price is quickly stabilizing.
 
-Prices of lookback options are visibly rising, as the number of time steps increases. It reflects the fact the asset price takes the maximum and minimum value between the time points. Thus, as we thicken the time points, the extreme value is estimated more accurately. Therefore, the calculated price is closer to the value of continuously exerciseable instrument. Note by the way, that the price of an American-lookback option is significantly greater than its European counterpart. Someone might think that the option should not be exercised before expiry, in order to take maximum or minimum over the longer interval. However, obtained results show that it is not true. Let us focus on a lookback put which gives a right to sell an asset for the maximum price. At the beginning the asset price could have a peak and then rapidly sink down. In this situation it may be optimal to exercise the option immediately, while the asset prices are low.
+Prices of lookback options are visibly rising, as the number of time steps increases. It reflects the fact the asset price takes the maximum and minimum value between the time points. Thus, as we thicken the time points, the extreme value is estimated more accurately. Therefore, the calculated price is closer to the value of continuously exerciseable instrument. Note by the way, that the price of an American-lookback option is significantly greater than its European counterpart. Someone might think that the option should not be exercised before the expiry, in order to take maximum or minimum over the longer interval. However, obtained results show that it is not true. Let us focus on a lookback put which gives a right to sell an asset for the maximum price. At the beginning the asset price could have a peak and then rapidly sink down. In this situation it may be optimal to exercise the option immediately, while the asset prices are low.
 
 \section{Pricing real market options}
+\label{sec:pricingReal}
 So far we presented only pricing results for some preconceived parameters. The created application would be worthless if it could not price the instruments existing in real markets.
 
 We present valuation of options on two worldwide known companies, Facebook and Google, traded in Nasdaq. Basing on historical prices from 30 August 2012 to 30 August 2013, the application determined following parameters:
@@ -2892,7 +2950,7 @@ In Figures \ref{fig:results:realFacebook} and \ref{fig:results:realGoogle} we ca
 \addcontentsline{toc}{chapter}{\bfseries Concluding remarks}
 In the thesis we explained how Monte Carlo methods may be used for option pricing. Let us sum up their pros and cons.
 
-In practice every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since the algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, for exotic options Monte Carlo may be the best choice.
+In practice, every European contingent claim may be valued by the ordinary Monte Carlo method. It is easy to implement and very universal, since the algorithm implemented once may be used to price every new option. This is the greatest advantage of the Monte Carlo method -- preparing new instruments for pricing requires almost no effort. The main disadvantage is time consumption. Convergence of the Monte Carlo estimator is slow, hence obtaining desired accuracy may take a huge number of simulations. Moreover, valuation of path-dependent options requires simulating the trajectory in many points prior to the expiration date. We showed in the thesis that the number of time steps in which trajectories are simulated highly influences  the resulting price. Thus, we may be interested in lowering the number of necessary replications. For this purpose the described variance reduction techniques may be used. When pricing simple instruments like vanilla options it is of course better use analytical formulas. However, Monte Carlo may be the best choice for exotic options.
 
 
 The Least Squares Monte Carlo method allows to price American options. Its implementation takes much more effort, since it involves regression and handling multi-argument polynomials (in case of multi-asset options), whose numbers of coefficients rapidly grows as the dimensionality of the problem increases. Unfortunately, this algorithm is not that universal as an ordinary Monte Carlo. For some instruments we have to write separate versions of LSM. However, the scheme is always the same and adjusting it to a particular instrument is usually not too difficult. LSM inherits all disadvantages of Monte Carlo. It requires simulations of large numbers of trajectories which must be generated in many times steps. Moreover, in LSM all market scenarios must be generated at once, what makes the algorithm not only time consuming but also memory consuming. As a consequence, when pricing vanilla options LSM loses the comparison with finite difference or binomial tree methods. However, there are not many methods allowing to price exotic American options. LSM is one of the few and gives satisfactory results.
