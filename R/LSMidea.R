@@ -1,4 +1,4 @@
-trajectory <- function(start, end, K, r = 0.05, vol=0.05, Sstart = 100, T = 1.0, N = NULL)
+trajectory <- function(start, end, K, r = 0.05, vol=0.15, Sstart = 100, T = 1.0, N = NULL)
 {    
   dt <- T/K
   S <- rep(NA, K+1)
@@ -16,8 +16,9 @@ require("reshape")
 require("ggplot2")
 LSMidea1 <- function()
 {
+  set.seed(6)
   mainTr <- trajectory(0, 50, 100)
-  rs <- c(0.4, 0.2, -0.2, -0.4)
+  rs <- c(0.2, 0.1, -0.1, -0.2)
   subTr <- sapply(1:4, function(i) trajectory(50, 75, 100, Sstart = mainTr[51], T = 0.5, r = rs[i]))
   subsubTr1 <- sapply(1:5, function(i) trajectory(75, 100, 100, Sstart = subTr[76,1], T = 0.25, r = rs[i]))
   subsubTr2 <- sapply(1:5, function(i) trajectory(75, 100, 100, Sstart = subTr[76,2], T = 0.25, r = rs[i]))
@@ -34,6 +35,12 @@ LSMidea1 <- function()
     scale_y_continuous(limits = range(trs$value, na.rm=TRUE), breaks = seq(from=90, to=120, by=5)) +
     scale_x_continuous(breaks = (0:10)/10)
 }
+
+ggplot(data=trs) + xlab("time")  + ylab("asset price") +
+  geom_line( aes(x=time, y=value, group=variable) ) +
+  theme_bw(base_size=14) + theme(legend.position = "none") +
+  scale_y_continuous(limits = c(95,120), breaks = seq(from=90, to=120, by=5)) +
+  scale_x_continuous(breaks = (0:10)/10)
 
 LSMidea2 <- function()
 {

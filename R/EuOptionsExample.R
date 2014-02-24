@@ -41,6 +41,38 @@ plotTrajectories <- function(n, K, alpha=0.5, r = 0.05, vol=0.2, S0 = 100, T=1.0
     scale_x_continuous(breaks = (0:10)/10)
 }
 
+
+plotTrsAndPayoffs <- function(n, K, alpha=0.5, r = 0.05, vol=0.2, S0 = 100, T=1.0)
+{  
+  rynek <- list(
+    r = r,
+    t = 0,
+    S = S0,
+    vol = vol,
+    mu = 0,
+    q = 0
+  )
+  
+  trs <- sapply(1:n, function(foo) trajectory(rynek, T, K))
+  payoff <- function(S) { max(0, round(S-110)) }
+  
+  trs <- cbind( (0:K)*(T/K), trs)  # adding labels of x axis
+  colnames(trs) <- c("time", sapply(1:n, function(i) paste("tr", i)))
+  trs <- data.frame(trs)
+  last <- data.frame(nr=1:n, value=sapply(1:n, function(i) trs[K+1,i+1]),
+                     payoff=sapply(1:n, function(i) payoff(trs[K+1,i+1])) )
+  trs <- melt(trs, id="time")
+  
+  ggplot(data=trs) + xlab("time")  + ylab("asset price") +
+    geom_line( aes(x=time, y=value, group=variable) ) +
+    geom_hline(aes(yintercept=110), colour="#00FF00") + 
+    guides(color=guide_legend(title=NULL)) +
+    theme_bw(base_size=12) + theme(legend.justification=c(0,1), legend.position=c(0,1)) +
+    scale_y_continuous(breaks = seq(from=50, to=200, by=10)) +
+    scale_x_continuous(breaks = (0:10)/10, limits=c(0,1.1)) +
+    geom_text(data=last, aes(x=1.0, y=value, label=payoff), hjust=0)
+}
+
 plotTrajectoriesAnti <- function(K, r = 0.05, vol=0.2, S0 = 100, T=1.0)
 {
   rynek <- list(

@@ -10,14 +10,23 @@ public class Numerics
 {
     public static boolean doublesEqual(double a, double b)
     {
-        return doublesEqual(a, b, 1e-5);
+        return doublesEqual(a, b, 1e-9);
+    }
+    
+    public static double absoluteError(double a, double b)
+    {
+        return Math.abs(a-b);
+    }
+    
+    public static double relativeError(double a, double b)
+    {
+        return Math.abs((a - b) / b);
     }
     
     public static boolean doublesEqual(double a, double b, double eps)
     {
-        if ( isZero(a) ) return isZero(b);
-        if ( isZero(b) ) return isZero(a);
-        double err = (a - b) / b;
+        double err = Math.min( absoluteError(a,b),
+                               relativeError(a,b));
         return Math.abs(err) < eps;        
     }
     

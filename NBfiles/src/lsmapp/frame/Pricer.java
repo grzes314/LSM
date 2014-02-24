@@ -45,7 +45,7 @@ public class Pricer extends JFrame
             public void run() {
                 application = new Pricer();
                 application.setVisible(true);
-                addAssetsAndInstrs();
+                //addAssetsAndInstrs();
             }
         });
     }
